@@ -94,19 +94,19 @@ def _initialise_sensor(sensor_id, model=W1ThermSensor.THERM_SENSOR_DS18B20):
 
 def read_from_sample():
     try:
-        SAMPLE_SENSOR
+        global SAMPLE_SENSOR
     except NameError:
         SAMPLE_SENSOR = _initialise_sensor(TEMP_SENSOR_ID_SAMPLE)
-        global SAMPLE_SENSOR
+        globals()['SAMPLE_SENSOR'] = SAMPLE_SENSOR
     return SAMPLE_SENSOR.get_temperature()
 
 
 def read_from_ref():
     try:
-        REF_SENSOR
+        global REF_SENSOR
     except NameError:
         REF_SENSOR = _initialise_sensor(TEMP_SENSOR_ID_REF)
-        global REF_SENSOR
+        globals()['REF_SENSOR'] = REF_SENSOR
     return REF_SENSOR.get_temperature()
 
 

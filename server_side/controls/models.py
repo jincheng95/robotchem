@@ -1,3 +1,8 @@
+""" Models for the website database.
+
+Jin Cheng, 2/12/16
+
+"""
 from django.db import models
 
 
@@ -11,6 +16,10 @@ class Calorimeter(models.Model):
     access_code = models.CharField('Access Code', max_length=100)
     name = models.CharField('Nickname', max_length=100, blank=True, null=True)
     creation_time = models.DateTimeField(auto_now_add=True, blank=True)
+
+    current_sample_temp = models.FloatField(null=True, blank=True)
+    current_ref_temp = models.FloatField(null=True, blank=True)
+
     last_changed_time = models.DateTimeField(auto_now=True, blank=True)
     last_comm_time = models.DateTimeField('Time of Last Communication From Device')
 
