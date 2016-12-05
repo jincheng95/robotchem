@@ -5,7 +5,6 @@ import includes from 'lodash/includes';
 import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import TwoColumnRow from '../TwoColumnRow';
 import {simple_humanized_axes} from '../../utils/humanize_axes';
 import units from '../../utils/units';
 

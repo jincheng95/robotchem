@@ -19,6 +19,7 @@ export default class PlotContainer extends Component {
       ]
     };
     this.getReferenceLines = this.getReferenceLines.bind(this);
+    this.renderIndividualPlot = this.renderIndividualPlot.bind(this);
   }
 
   getReferenceLines(xKey, yKeys) {
@@ -42,18 +43,35 @@ export default class PlotContainer extends Component {
     return refs;
   }
 
+  renderIndividualPlot(type, index, extraProps) {
+    var plot;
+    switch (type) {
+      case "line":
+        plot = LinePlot;
+        break;
+      default:
+        plot = LinePlot;
+    }
+
+    const props = {
+      data: this.props.data_points,
+      key: index,
+      ...extraProps,
+    };
+    return <plot {...props}/>;
+  }
+
   render() {
     const { plots } = this.state;
     return (
       <div>
         <h4>{plots.length > 1 ? "PLOTS" : "PLOT"}</h4>
           {plots.map((value, index) => {
-            switch (value.type) {
-              case "line":
-                return <LinePlot key={index} data={this.props.data_points}
-                                 referenceLines={this.getReferenceLines(value.xKey, value.yKeys)}
-                                 {...value}/>
-            }
+            return this.renderIndividualPlot(
+              value.type,
+              index,
+              {referenceLines: this.getReferenceLines(value.xKey, value.yKeys), ...value}
+            ).bind(this);
           })}
       </div>
     )

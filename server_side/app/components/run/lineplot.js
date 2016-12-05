@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import forEach from 'lodash/forEach';
 
 import {XAxis, YAxis, CartesianGrid, Line, LineChart, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 import SimpleTooltip from './simpletooltip';
