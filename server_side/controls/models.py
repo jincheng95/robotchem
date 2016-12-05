@@ -23,11 +23,16 @@ class Calorimeter(models.Model):
     last_changed_time = models.DateTimeField(auto_now=True, blank=True)
     last_comm_time = models.DateTimeField('Time of Last Communication From Device')
 
-    def __unicode__(self):
+    stop_flag = models.BooleanField('Stop Flag', default=False, blank=True)
+
+    def __repr__(self):
         if self.name:
             return "{0} ({1})".format(self.name, self.serial)
         else:
             return "Unnamed Device ({0})".format(self.serial)
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class Run(models.Model):
@@ -40,20 +45,26 @@ class Run(models.Model):
     name = models.CharField('Nickname', max_length=100, blank=True, null=True)
 
     # user defined numbers
+    start_temp = models.FloatField('Start Temperature (Celsius)')
     target_temp = models.FloatField('Target Temperature (Celsius)')
     ramp_rate = models.FloatField('Rate of Temp Ramp (Celsius per second)')
 
     # automatically edited flags and dates to determine state of the run
     creation_time = models.DateTimeField('Creation Date', auto_now_add=True)
     start_time = models.DateTimeField('Start Time', blank=True, null=True)
+    finish_time = models.DateTimeField('Finish Time', blank=True, null=True)
     is_running = models.BooleanField('Is currently running?', blank=True, default=False)
     is_finished = models.BooleanField('Has finished running?', blank=True, default=False)
+    email = models.EmailField('Notification Email Address', blank=True, null=True)
 
-    def __unicode__(self):
+    def __repr__(self):
         if self.name:
             return self.name
         else:
             return "Run #{0}".format(self.pk)
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class DataPoint(models.Model):
@@ -73,7 +84,10 @@ class DataPoint(models.Model):
     heat_ref = models.FloatField("Reference Heat Flow Since Last (Joules)")
     heat_sample = models.FloatField("Sample Heat Flow Since Last (Joules)")
 
-    def __unicode__(self):
+    def __repr__(self):
         return "#{0} ({1})".format(self.pk, self.measured_at)
+
+    def __str__(self):
+        return self.__repr__()
 
 

@@ -4,7 +4,6 @@ import {teal300, cyan50} from 'material-ui/styles/colors';
 import IconButton from 'material-ui/IconButton';
 import LinearProgress from 'material-ui/LinearProgress';
 import Dashboard from 'material-ui/svg-icons/action/dashboard';
-import {Grid, Row, Cell} from 'react-inline-grid';
 
 import Access from './access';
 
@@ -19,8 +18,21 @@ export default class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      access_code: '',
-      calorimeter: null,
+      access_code: '123456',
+      calorimeter: {
+        access_code: "123456",
+        creation_time: "2016-12-02T23:17:28.683866Z",
+        current_ref_temp: 20.12,
+        current_sample_temp: 20.30,
+        id: 1,
+        is_active: false,
+        last_comm_time: "2016-12-02T23:17:27Z",
+        last_changed_time: "2016-12-03T00:00:48.462929Z",
+        name: "RPI3",
+        serial: "2323423y40hi993240934"
+      },
+      // access_code: '',
+      // calorimeter: null,
       loading: false,
       accessCodeEntered: false,
     };
@@ -40,14 +52,14 @@ export default class Main extends Component {
   }
 
   render() {
-    var clonePropsFunction = (child) => React.cloneElement(child, {
+    const clonePropsFunction = (child) => React.cloneElement(child, {
         changeAccessCode: this.changeAccessCode,
         changeCalorimeterStatus: this.changeCalorimeterStatus,
         code: this.state.access_code,
         toggleLoading: this.toggleLoading,
         calorimeter: this.state.calorimeter,
     });
-    var clonedChildren = React.Children.map( this.props.children, clonePropsFunction );
+    const clonedChildren = React.Children.map( this.props.children, clonePropsFunction );
     return (
       <div>
         <TitleBar/>
@@ -58,7 +70,7 @@ export default class Main extends Component {
                         value={0} mode="determinate"/>
         }
         {this.state.access_code
-          ? clonedChildren
+          ? <div>{clonedChildren}</div>
           : clonePropsFunction(<Access />)
         }
       </div>

@@ -12,13 +12,14 @@ from .models import Calorimeter, Run, DataPoint
 
 class CalorimeterSerializer(serializers.ModelSerializer):
     is_active = serializers.SerializerMethodField('is_calorimeter_active')
+    has_active_runs = serializers.SerializerMethodField('check_active_runs')
 
     class Meta:
         model = Calorimeter
         fields = ('id', 'serial', 'access_code', 'name', 'creation_time',
                   'current_sample_temp', 'current_ref_temp',
                   'last_changed_time', 'last_comm_time',
-                  'is_active',
+                  'is_active', 'has_active_runs',
                   )
 
     def __init__(self, *args, **kwargs):
@@ -30,23 +31,24 @@ class CalorimeterSerializer(serializers.ModelSerializer):
 
     def is_calorimeter_active(self, instance):
         time_delta = instance.last_comm_time - timezone.now()
-        return time_delta.seconds < 60
+        return abs(time_delta.total_seconds()) < 60
 
-    def last_comm(self, instance, validated_data):
-        if self.from_device:
-            instance.last_comm_time = timezone.now()
+    def check_active_runs(self, instance):
+        kwargs = {'calorimeter': instance, 'is_finished': False}
+        if Run.objects.filter(**kwargs).exists():
+            active_run = Run.objects.filter(**kwargs).order_by('-start_time')[0]
+            return RunSerializer(active_run).data
+        return False
+
+    def update(self, instance, validated_data):
+        instance.last_comm_time = timezone.now()
+        super(CalorimeterSerializer, self).update(instance, validated_data)
         return instance
 
 
-class RunSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Run
-        fields = ('id', 'name', 'creation_time', 'start_time',
-                  'is_running', 'is_finished',
-                  )
-
-
 class DataPointSerializer(serializers.ModelSerializer):
+    measured_at = serializers.DateTimeField(input_formats=['iso-8601'])
+
     class Meta:
         model = DataPoint
         fields = ('measured_at', 'received_at',
@@ -54,3 +56,15 @@ class DataPointSerializer(serializers.ModelSerializer):
                   'heat_ref', 'heat_sample',
                   )
 
+
+class RunSerializer(serializers.ModelSerializer):
+    calorimeter = serializers.PrimaryKeyRelatedField(queryset=Calorimeter.objects.all(), validators=[])
+    # data_points = DataPointSerializer(read_only=True, many=True, source='datapoint_set')
+
+    class Meta:
+        model = Run
+        fields = ('id', 'name', 'creation_time', 'start_time',
+                  'is_running', 'is_finished', 'email',
+                  'start_temp', 'target_temp', 'ramp_rate',
+                  'calorimeter',
+                  )

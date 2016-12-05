@@ -8,8 +8,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import Loading from './loading';
 
-import {Grid, Row, Cell} from 'react-inline-grid';
-import Center from 'react-center';
+import {Grid, Row, Col} from 'react-flexbox-grid';
 
 export default class Access extends Component {
   constructor(props) {
@@ -90,10 +89,14 @@ export default class Access extends Component {
 
     return (
         <Grid>
-          <Row is="center">
-            <Cell is="middle 9 tablet-10 phone-11">
-              {main}
-            </Cell>
+          <Row>
+            <Col xs={12}>
+              <Row center="xs sm md lg">
+                <Col xs={12} sm={11} md={9} lg={8}>
+                  {main}
+                </Col>
+              </Row>
+            </Col>
           </Row>
         </Grid>
     );
