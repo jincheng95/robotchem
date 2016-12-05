@@ -48,12 +48,14 @@ class CalorimeterSerializer(serializers.ModelSerializer):
 
 class DataPointSerializer(serializers.ModelSerializer):
     measured_at = serializers.DateTimeField(input_formats=['iso-8601'])
+    run = serializers.PrimaryKeyRelatedField(queryset=Run.objects.all(), validators=[])
 
     class Meta:
         model = DataPoint
         fields = ('measured_at', 'received_at',
                   'temp_ref', 'temp_sample',
                   'heat_ref', 'heat_sample',
+                  'run',
                   )
 
 

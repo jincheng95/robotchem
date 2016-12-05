@@ -3,12 +3,12 @@
 export const simple_humanized_axes = {
   time_since: 'Time',
 
-  temp_ref: 'Reference Temp.',
-  temp_sample: 'Sample Temp.',
+  temp_ref: 'Temp. (reference)',
+  temp_sample: 'Temp. (sample)',
 
-  heat_ref: 'Heat To Reference',
-  heat_sample: 'Heat To Sample',
-  heat_diff: 'Heat Differential'
+  heat_ref: 'Heat (reference)',
+  heat_sample: 'Heat (sample)',
+  heat_diff: 'Heat Difference'
 };
 
 const humanized_axes = {

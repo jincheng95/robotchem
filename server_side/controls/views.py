@@ -118,7 +118,7 @@ def datetime_parser(raw_input):
     """
 
     # if input is a number, convert this POSIX timestamp to a Python datetime object
-    if re.match(r'^[+-]?[0-9]*[.]?[0-9]+$', raw_input):
+    if re.match(r'^[+-]?[0-9]*[.]?[0-9]+$', raw_input) or isinstance(raw_input, float) or isinstance(raw_input, int):
         since = datetime.fromtimestamp(float(raw_input))
 
     # else assume it is ISO formatted time string
@@ -149,7 +149,7 @@ class DataPointListAPI(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if 'since' in request.GET:
-            kwargs['measured_at__gte'] = datetime_parser(request.GET['since'])
+            kwargs['measured_at__gt'] = datetime_parser(request.GET['since'])
 
         data_points = DataPoint.objects.filter(**kwargs)
         serializer = DataPointSerializer(data_points, many=True)
@@ -168,7 +168,9 @@ class DataPointListAPI(APIView):
         The stop flag, if true, should instruct the device to immediately stop heating or cooling.
         The error list will be empty if no error is found.
         """
-        data_points = request.data.get('data_point') or request.data.get('data') or request.data.get('data_points')
+        data_points = request.data
+        if not isinstance(data_points, list):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         response = {
             'errors': [],
@@ -183,13 +185,21 @@ class DataPointListAPI(APIView):
             else:
                 response['errors'].append(serializer.errors)
 
-        # Calorimeter related operations also go here,
+        # Calorimeter + Run related operations also go here,
         # so that the device does not need to send multiple HTTP requests
         last_data_point = data_points[-1]
-        calorimeter = Run.objects.get(id=last_data_point['run']).calorimeter
+        last_sample_temp = last_data_point['temp_sample']
+        run = Run.objects.get(id=last_data_point['run'])
+
+        if not run.is_running and not run.is_finished and last_sample_temp > run.start_temp:
+            run.is_running = True
+        if not run.is_finished and run.is_running and last_sample_temp > run.target_temp:
+            run.is_running = False
+            run.is_finished = True
 
         # If a stop flag is set in the database (instructed by user on browser page),
         # send stop flag to device and reset this flag
+        calorimeter = run.calorimeter
         response['stop_flag'] = calorimeter.stop_flag
         calorimeter.stop_flag = False
 
@@ -199,8 +209,11 @@ class DataPointListAPI(APIView):
         calorimeter.last_comm_time = timezone.now()
         calorimeter.current_ref_temp = last_data_point['temp_ref']
         calorimeter.current_sample_temp = last_data_point['temp_sample']
+
         calorimeter.save()
+        run.save()
 
         if response['errors']:
-            return Response(response, status.HTTP_400_BAD_REQUEST)
+            print(response['errors'])
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response(response)

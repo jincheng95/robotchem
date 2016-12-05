@@ -5,11 +5,12 @@ var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 module.exports = {
 	entry: [
+		'babel-polyfill',
 		'./app/index.js'
 	],
 	output: {
 		path: path.join(__dirname, 'static'),
-		filename: '[chunkhash].js'
+		filename: 'bundle.js'
 	},
 	resolve: {
 		extensions: ['', '.js', '.jsx']
@@ -27,6 +28,7 @@ module.exports = {
 				NODE_ENV: '"production"'
 			}
 		}),
+		new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false,

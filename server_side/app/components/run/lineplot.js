@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {XAxis, YAxis, CartesianGrid, Line, LineChart, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import {XAxis, YAxis, CartesianGrid, Line, LineChart, Tooltip, Legend, ResponsiveContainer, Brush} from 'recharts';
 import SimpleTooltip from './simpletooltip';
 import list_of_colors from '../../utils/list_of_colors';
 import humanized_axes from '../../utils/humanize_axes';
@@ -15,29 +15,32 @@ export default class LinePlot extends Component {
     const { data, yKeys, xKey, referenceLines } = this.props;
 
     return(
-      <ResponsiveContainer minHeight={300}>
-        <LineChart data={data} height={300} width={500} minHeight={250}>
-          <XAxis dataKey={xKey} label={humanized_axes[xKey]}
-                 type="number" allowDecimals={false}
-                 padding={{right: 3}}/>
-          <YAxis domain={['auto', 'auto']}
-                 allowDecimals={false}
-                 type="number" />
+      <ResponsiveContainer minHeight={350}>
+          <LineChart data={data} minHeight={350} syncId="1"
+                     margin={{top: 20, right: 40, left: -5, bottom: 2}}>
 
-          <CartesianGrid />
+            <XAxis dataKey={xKey} label={humanized_axes[xKey]}
+                   domain={['auto', 'auto']} tickCount={12}
+                   type="number"/>
+            <YAxis domain={['auto', 'auto']} tickCount={6}
+                   type="number" />
 
-          <Tooltip content={<SimpleTooltip xLabel={xKey}/>}/>
-          <Legend />
+            <CartesianGrid />
+            <Tooltip content={<SimpleTooltip xLabel={xKey}/>}/>
+            <Legend />
 
-          {referenceLines}
+            {referenceLines}
 
-          {yKeys.map((value, index) => {
-            return (
-              <Line key={index} type="monotone" dataKey={value} name={humanized_axes[value]}
-                    stroke={list_of_colors[index]} />
-            )
-          })}
-        </LineChart>
+            {yKeys.map((value, index) => {
+              return (
+                <Line key={index} type="monotone" dataKey={value} name={humanized_axes[value]}
+                      isAnimationActive={false}
+                      stroke={list_of_colors[index]} />
+              )
+            })}
+
+
+          </LineChart>
       </ResponsiveContainer>
     )
   }

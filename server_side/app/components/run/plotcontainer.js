@@ -3,7 +3,10 @@ import moment from 'moment';
 import includes from 'lodash/includes';
 import concat from 'lodash/concat';
 
+import Divider from 'material-ui/Divider';
+
 import LinePlot from './lineplot';
+import PlotToolbar from './plottoolbar';
 import {ReferenceLine} from 'recharts';
 
 export default class PlotContainer extends Component {
@@ -16,10 +19,19 @@ export default class PlotContainer extends Component {
           xKey: 'time_since',
           yKeys: ['temp_ref', 'temp_sample',]
         },
-      ]
+      ],
+      new_plot: {
+        type: 'line',
+        xKey: 'temp_sample',
+        yKeys: ['heat_diff'],
+      },
     };
     this.getReferenceLines = this.getReferenceLines.bind(this);
+    this.handlePlotChange = this.handlePlotChange.bind(this);
+    this.handleNewPlotChange = this.handleNewPlotChange.bind(this)
     this.renderIndividualPlot = this.renderIndividualPlot.bind(this);
+    this.handleAddPlot = this.handleAddPlot.bind(this);
+    this.handleDeletePlot = this.handleDeletePlot.bind(this);
   }
 
   getReferenceLines(xKey, yKeys) {
@@ -29,50 +41,98 @@ export default class PlotContainer extends Component {
     var refs = [];
     if( includes(yKeys, 'temp_ref') || includes(yKeys, 'temp_sample') ){
       refs = concat(refs, [
-        (<ReferenceLine key="start-temp" y={start_temp} label="Start Temperature" stroke="red" strokeDasharray="5 5"/>),
-        (<ReferenceLine key="target-temp" y={target_temp} label="End Temperature" stroke="red" strokeDasharray="5 5"/>),
+        (<ReferenceLine key="start-temp" alwaysShow y={start_temp} label="Start Temperature" stroke="red" strokeDasharray="5 5"/>),
+        (<ReferenceLine key="target-temp" alwaysShow y={target_temp} label="End Temperature" stroke="red" strokeDasharray="5 5"/>),
       ]);
     }
 
     if ( xKey == 'time_since' && !is_finished ) {
       const diff = moment().diff(data_points[0].measured_at, 'seconds');
       refs = concat(refs,
-        (<ReferenceLine key="now-relative" x={diff} label="Now" stroke="grey" strokeDasharray="3 3"/>)
+        (<ReferenceLine key="now-relative" alwaysShow x={diff} label="Now" stroke="grey" strokeDasharray="3 3"/>)
       );
     }
     return refs;
   }
 
-  renderIndividualPlot(type, index, extraProps) {
-    var plot;
-    switch (type) {
-      case "line":
-        plot = LinePlot;
-        break;
-      default:
-        plot = LinePlot;
-    }
+  handlePlotChange(plotIndex, key, value) {
+    const { plots } = this.state;
+    const plot = plots[plotIndex];
+    plots[plotIndex] = {...plot};
+    plots[plotIndex][key] = value;
+    this.setState({plots});
+  }
+  handleNewPlotChange(key, value) {
+    const {new_plot} = this.state;
+    new_plot[key] = value;
+    this.setState({new_plot});
+  }
+  handleAddPlot() {
+    const { plots, new_plot } = this.state;
+    const concatenated = concat(plots, new_plot);
+    this.setState({
+      plots: concatenated,
+      new_plot: {
+        type: 'line',
+        xKey: 'temp_sample',
+        yKeys: [],
+      },
+    });
+  }
+  handleDeletePlot(plotIndex) {
+    const { plots } = this.state;
+    plots.splice(plotIndex, 1);
+    this.setState({plots});
+  }
 
+  renderIndividualPlot(type, index, extraProps) {
     const props = {
       data: this.props.data_points,
       key: index,
       ...extraProps,
     };
-    return <plot {...props}/>;
+    switch (type) {
+      case "line":
+        return React.cloneElement(<LinePlot />, props);
+        break;
+      default:
+        return React.cloneElement(<LinePlot />, props);
+    }
   }
 
   render() {
-    const { plots } = this.state;
+    const { plots, new_plot } = this.state;
     return (
       <div>
-        <h4>{plots.length > 1 ? "PLOTS" : "PLOT"}</h4>
-          {plots.map((value, index) => {
-            return this.renderIndividualPlot(
-              value.type,
-              index,
-              {referenceLines: this.getReferenceLines(value.xKey, value.yKeys), ...value}
-            ).bind(this);
-          })}
+        {plots.map((value, index) => {
+          const title = plots.length == 1 ? "REAL TIME PLOT" : `REAL TIME PLOT ${index+1}`;
+          return (
+            <div key={index}>
+              <h4>{title}</h4>
+
+              {<PlotToolbar plot={value}
+                            canDelete={plots.length !== 1} handleDeletePlot={this.handleDeletePlot.bind(null, index)}
+                            handlePlotChange={this.handlePlotChange.bind(null, index)}/>}
+
+              {this.renderIndividualPlot(
+                value.type,
+                index,
+                {referenceLines: this.getReferenceLines(value.xKey, value.yKeys), ...value}
+              )}
+
+              {(index+1) != plots.length && <Divider />}
+            </div>
+          )
+        })}
+        <hr style={{margin: '0.2em 0'}}/>
+        <div key="new">
+          <h4>ADD NEW PLOT</h4>
+          <PlotToolbar plot={new_plot}
+                       handlePlotChange={this.handleNewPlotChange}
+                       noMargin strongBackground
+                       canDelete={false}
+                       canAdd handleAddPlot={this.handleAddPlot} />
+        </div>
       </div>
     )
   }

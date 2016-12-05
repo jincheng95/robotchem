@@ -5,6 +5,8 @@ import IconButton from 'material-ui/IconButton';
 import LinearProgress from 'material-ui/LinearProgress';
 import Dashboard from 'material-ui/svg-icons/action/dashboard';
 
+import {Grid, Row, Col} from 'react-flexbox-grid';
+
 import Access from './access';
 
 const TitleBar = (props) => (
@@ -61,19 +63,27 @@ export default class Main extends Component {
     });
     const clonedChildren = React.Children.map( this.props.children, clonePropsFunction );
     return (
-      <div>
-        <TitleBar/>
-        {this.state.loading
-        ? <LinearProgress style={{backgroundColor: teal300}} color={cyan50}
-                        mode="indeterminate" />
-        : <LinearProgress style={{backgroundColor: teal300}} color={cyan50}
-                        value={0} mode="determinate"/>
-        }
-        {this.state.access_code
-          ? <div>{clonedChildren}</div>
-          : clonePropsFunction(<Access />)
-        }
-      </div>
+      <Grid style={{width: '100%'}}>
+        <Row>
+          <Col xs={12} sm={12} md={12} lg={12}>
+            <TitleBar/>
+            {this.state.loading
+            ? <LinearProgress style={{backgroundColor: teal300}} color={cyan50}
+                            mode="indeterminate" />
+            : <LinearProgress style={{backgroundColor: teal300}} color={cyan50}
+                            value={0} mode="determinate"/>
+            }
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={12} sm={12} md={12} lg={12}>
+            {this.state.access_code
+              ? <div>{clonedChildren}</div>
+              : clonePropsFunction(<Access />)
+            }
+          </Col>
+      </Row>
+      </Grid>
     );
   }
 }

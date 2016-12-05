@@ -66,11 +66,12 @@ export default class Run extends Component {
     this.state = {
       expanded: isEmpty(props.expanded) ? !props.run.is_finished : props.expanded,
       data_points: [],
+      autorefreshInt: null,
     };
     this.refresh = this.refresh.bind(this);
     this.onExpandChange = this.onExpandChange.bind(this);
-    this.renderStats = this.renderStats.bind(this);
     this.renderDetails = this.renderDetails.bind(this);
+    this.cancelAutorefresh = this.cancelAutorefresh.bind(this);
   }
 
   normalize(data_points) {
@@ -102,19 +103,32 @@ export default class Run extends Component {
     toggleLoading();
     axios.get(`/api/data/?access_code=${code}&run=${run.id}&since=${since}`)
       .then((response) => {
-        console.log(response.data);
         const concatenated = concat(data_points, response.data);
-        this.setState({data_points: this.normalize(concatenated)});
+        this.setState({ data_points: this.normalize(concatenated) });
         toggleLoading();
       })
       .catch((error) => {
+        console.log(error.response);
         toggleLoading();
       })
   }
-  componentDidMount() {
-    if(this.state.expanded) {
+  cancelAutorefresh() {
+    const {autorefreshInt} = this.state;
+    window.clearInterval(autorefreshInt);
+  }
+  componentWillReceiveProps() {
+    const {expanded, autorefreshInt} = this.state;
+    const {autorefresh} = this.props;
+    if( expanded && autorefresh && !autorefreshInt ) {
       this.refresh();
+      const int = window.setInterval(this.refresh, 5000);
+      this.setState({autorefreshInt: int});
+    } else if ( !autorefresh && !!autorefreshInt ) {
+      this.cancelAutorefresh();
     }
+  }
+  componentWillUnmount() {
+    this.cancelAutorefresh();
   }
   onExpandChange(expanded) {
     this.setState({expanded});
@@ -123,15 +137,6 @@ export default class Run extends Component {
     }
   }
 
-  renderStats() {
-    const {run} = this.props;
-    return (
-      <div>
-        <h4>REAL-TIME STATS</h4>
-        <RunOptions run={run} />
-      </div>
-    )
-  }
   renderDetails() {
     const {run} = this.props;
     return (
@@ -145,7 +150,6 @@ export default class Run extends Component {
     const { run } = this.props;
     const { expanded, data_points } = this.state;
     const { id, name, is_running, is_finished } = run;
-    const active = is_running || !is_finished;
     const cardTitleText = !!name ? name : `Run #${id}`;
     const cardSubtitleText = is_running
       ? 'Currently running...'
@@ -156,15 +160,11 @@ export default class Run extends Component {
         <CardTitle title={cardTitleText} subtitle={cardSubtitleText}
                    actAsExpander showExpandableButton />
         <CardText style={{marginTop: '-1em', marginBottom: '0'}}>
-          {active ? this.renderStats() : this.renderDetails()}
+          {this.renderDetails()}
         </CardText>
         <Divider />
         <CardText expandable>
           {data_points.length > 0 && <PlotContainer data_points={data_points} run={run} />}
-        </CardText>
-        <Divider />
-        <CardText expandable>
-          {active ? this.renderDetails() : this.renderStats()}
         </CardText>
       </Card>
     )

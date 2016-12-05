@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
-import findKey from 'lodash/findKey';
-import includes from 'lodash/includes';
 
 import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {simple_humanized_axes} from '../../utils/humanize_axes';
 import units from '../../utils/units';
+import round_to_2dp from '../../utils/round_to_2dp';
 
 const ToolTipLabel = (props) => (
   <div>
@@ -31,7 +30,7 @@ export default class SimpleTooltip extends Component {
       return (
         <MuiThemeProvider>
           <Paper zDepth={5} style={{maxWidth: '300px', padding: '0.5em', opacity: '0.75'}}>
-            <ToolTipLabel title={humanizedXLabel} value={`${label} ${xUnit}`} bold/>
+            <ToolTipLabel title={humanizedXLabel} value={`${round_to_2dp(label)} ${xUnit}`} bold/>
 
             <hr style={{margin: '0.3em 0.1em 0.3em 0.2em'}}/>
 
@@ -40,7 +39,7 @@ export default class SimpleTooltip extends Component {
               const humanizedYLabel = simple_humanized_axes[yLabel];
               const yUnit = units[yLabel];
               return (
-                <ToolTipLabel key={index} title={humanizedYLabel} value={`${payload.value} ${yUnit}`}/>
+                <ToolTipLabel key={index} title={humanizedYLabel} value={`${round_to_2dp(payload.value)} ${yUnit}`}/>
               )
             })}
           </Paper>

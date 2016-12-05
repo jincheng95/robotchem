@@ -25,7 +25,7 @@ SECRET_KEY = '$g+8eo+t$qts6t&gcp=%3$z-g*60p)67p=_w@8yejnx8we&ogh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ('chengj.in', 'ch-nettle.ch.ic.ac.uk',)
 
 
 # Application definition
