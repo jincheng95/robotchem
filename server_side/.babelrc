@@ -1,4 +1,4 @@
 {
-  "plugins": ["recharts"],
-  "presets": ["es2015", "react"]
+  "plugins": ["recharts", "transform-object-rest-spread", ],
+  "presets": ["es2015", "react", ]
 }
