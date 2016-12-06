@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import moment from 'moment';
 import includes from 'lodash/includes';
 import concat from 'lodash/concat';
+import isEmpty from 'lodash/isEmpty';
 
 import Divider from 'material-ui/Divider';
 
@@ -41,15 +42,21 @@ export default class PlotContainer extends Component {
     var refs = [];
     if( includes(yKeys, 'temp_ref') || includes(yKeys, 'temp_sample') ){
       refs = concat(refs, [
-        (<ReferenceLine key="start-temp" alwaysShow y={start_temp} label="Start Temperature" stroke="red" strokeDasharray="5 5"/>),
-        (<ReferenceLine key="target-temp" alwaysShow y={target_temp} label="End Temperature" stroke="red" strokeDasharray="5 5"/>),
+        (<ReferenceLine key="start-temp" alwaysShow y={start_temp} label="Start" stroke="red" strokeDasharray="5 5"/>),
+        (<ReferenceLine key="target-temp" alwaysShow y={target_temp} label="End" stroke="red" strokeDasharray="5 5"/>),
       ]);
     }
 
     if ( xKey == 'time_since' && !is_finished ) {
       const diff = moment().diff(data_points[0].measured_at, 'seconds');
       refs = concat(refs,
-        (<ReferenceLine key="now-relative" alwaysShow x={diff} label="Now" stroke="grey" strokeDasharray="3 3"/>)
+        (<ReferenceLine key="now-relative" x={diff} label="Now" stroke="grey" strokeDasharray="3 3"/>)
+      );
+    }
+    if ( xKey == 'time_of_day' && !is_finished ) {
+      const now = moment().unix();
+      refs = concat(refs,
+        (<ReferenceLine key="now-absolute" x={now} label="Now" stroke="grey" strokeDasharray="3 3"/>)
       );
     }
     return refs;
@@ -75,7 +82,7 @@ export default class PlotContainer extends Component {
       new_plot: {
         type: 'line',
         xKey: 'temp_sample',
-        yKeys: [],
+        yKeys: ['heat_diff',],
       },
     });
   }
@@ -124,7 +131,7 @@ export default class PlotContainer extends Component {
             </div>
           )
         })}
-        <hr style={{margin: '0.2em 0'}}/>
+        <hr style={{margin: '1em 0.1em'}}/>
         <div key="new">
           <h4>ADD NEW PLOT</h4>
           <PlotToolbar plot={new_plot}

@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
+import moment from 'moment';
 
 import {XAxis, YAxis, CartesianGrid, Line, LineChart, Tooltip, Legend, ResponsiveContainer, Brush} from 'recharts';
 import SimpleTooltip from './simpletooltip';
 import list_of_colors from '../../utils/list_of_colors';
 import humanized_axes from '../../utils/humanize_axes';
+import units from '../../utils/units';
 
 
 export default class LinePlot extends Component {
@@ -20,10 +22,11 @@ export default class LinePlot extends Component {
                      margin={{top: 20, right: 40, left: -5, bottom: 2}}>
 
             <XAxis dataKey={xKey} label={humanized_axes[xKey]}
-                   domain={['auto', 'auto']} tickCount={12}
+                   domain={['dataMin', 'auto']} tickCount={12} units={units[xKey]}
+                   type="number"
+                   tickFormatter={xKey == 'time_of_day' ? (datetime) => moment(datetime, 'X').format('H:mm:ss') : null}/>
+            <YAxis domain={['dataMin', 'auto']} tickCount={6}
                    type="number"/>
-            <YAxis domain={['auto', 'auto']} tickCount={6}
-                   type="number" />
 
             <CartesianGrid />
             <Tooltip content={<SimpleTooltip xLabel={xKey}/>}/>

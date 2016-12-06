@@ -2,6 +2,7 @@
 
 const units = {
   time_since: 's',
+  time_of_day: '',
 
   temp_ref: '°C',
   temp_sample: '°C',

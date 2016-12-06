@@ -6,13 +6,21 @@ import last from 'lodash/last';
 import concat from 'lodash/concat';
 
 import {Card, CardActions, CardTitle, CardText} from 'material-ui/Card';
+import Divider from 'material-ui/Divider';
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
+import RefreshIndicator from 'material-ui/RefreshIndicator';
+
+import Stop from 'material-ui/svg-icons/AV/stop';
+import CloudDownload from 'material-ui/svg-icons/file/cloud-download';
 import TrendingUp from 'material-ui/svg-icons/action/trending-up';
 import FastForward from 'material-ui/svg-icons/AV/fast-forward';
 import Hourglass from 'material-ui/svg-icons/action/hourglass-empty';
 import Email from 'material-ui/svg-icons/communication/email';
 import Time from 'material-ui/svg-icons/device/access-time';
-import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
+import {red500} from 'material-ui/styles/colors';
+
 import {Grid, Row, Col} from 'react-flexbox-grid';
 
 import PlotContainer from './plotcontainer';
@@ -67,11 +75,13 @@ export default class Run extends Component {
       expanded: isEmpty(props.expanded) ? !props.run.is_finished : props.expanded,
       data_points: [],
       autorefreshInt: null,
+      stopDialogOpen: false
     };
     this.refresh = this.refresh.bind(this);
     this.onExpandChange = this.onExpandChange.bind(this);
     this.renderDetails = this.renderDetails.bind(this);
     this.cancelAutorefresh = this.cancelAutorefresh.bind(this);
+    this.stopRun = this.stopRun.bind(this);
   }
 
   normalize(data_points) {
@@ -81,7 +91,9 @@ export default class Run extends Component {
     const oldest_point = sorted[0];
     var result = sorted.map((value, index) => {
       const new_value = value;
-      new_value.time_since = Math.abs(moment(value.measured_at).diff(oldest_point.measured_at, 'seconds'));
+      const measured_at = moment(value.measured_at);
+      new_value.time_since = Math.abs(measured_at.diff(oldest_point.measured_at, 'seconds'));
+      new_value.time_of_day = measured_at.unix();
       new_value.heat_diff = value.heat_sample - value.heat_ref;
       new_value.temp_average = (value.temp_sample + value.temp_ref) / 2;
       return new_value;
@@ -127,6 +139,9 @@ export default class Run extends Component {
       this.cancelAutorefresh();
     }
   }
+  componentDidMount() {
+    this.componentWillReceiveProps();
+  }
   componentWillUnmount() {
     this.cancelAutorefresh();
   }
@@ -135,6 +150,16 @@ export default class Run extends Component {
     if(expanded) {
       this.refresh();
     }
+  }
+
+  stopRun() {
+    const {code, toggleLoading, statusRefresh} = this.props;
+    toggleLoading();
+    axios.delete('/api/status/?access_code='+code)
+      .then((response) => {
+        toggleLoading();
+        statusRefresh();
+      })
   }
 
   renderDetails() {
@@ -148,8 +173,10 @@ export default class Run extends Component {
   }
   render() {
     const { run } = this.props;
-    const { expanded, data_points } = this.state;
+    const { expanded, data_points, stopDialogOpen } = this.state;
     const { id, name, is_running, is_finished } = run;
+    const is_active = is_running || (!is_finished);
+
     const cardTitleText = !!name ? name : `Run #${id}`;
     const cardSubtitleText = is_running
       ? 'Currently running...'
@@ -158,14 +185,43 @@ export default class Run extends Component {
     return (
       <Card expanded={expanded} onExpandChange={this.onExpandChange} zDepth={1} style={{marginBottom: '1em'}}>
         <CardTitle title={cardTitleText} subtitle={cardSubtitleText}
-                   actAsExpander showExpandableButton />
-        <CardText style={{marginTop: '-1em', marginBottom: '0'}}>
+                   actAsExpander={!is_active} showExpandableButton={!is_active} />
+        <CardText style={{marginTop: '-1.5em'}}>
           {this.renderDetails()}
         </CardText>
+        <CardActions style={{marginBottom: '1em', marginLeft: '0.6em'}}>
+          <RaisedButton href={`/download/${id}/?format=csv`} target="_blank"
+            label="Download As .csv" icon={<CloudDownload/>}/>
+          {is_active &&
+          <FlatButton onClick={()=>this.setState({stopDialogOpen: true})}
+            backgroundColor={red500} label="Stop" icon={<Stop/>} style={{color: 'white'}} />}
+        </CardActions>
         <Divider />
         <CardText expandable>
-          {data_points.length > 0 && <PlotContainer data_points={data_points} run={run} />}
+          {data_points.length > 0
+            ? <PlotContainer data_points={data_points} run={run} />
+            : <div style={{position: 'relative', height: '75px'}}>
+                <RefreshIndicator
+                  size={40}
+                  left={-20}
+                  top={28}
+                  status={'loading'}
+                  style={{marginLeft: '50%'}}
+                />
+                <p className="text-muted text-center">
+                  Measurements either hasn't been made, or data is still being retrived.
+                </p>
+              </div>}
         </CardText>
+
+        <Dialog title="Are you sure?" open={stopDialogOpen}
+                actions={[
+                  <FlatButton label="Cancel" onTouchTap={()=>this.setState({stopDialogOpen: false})}/>,
+                  <FlatButton label="Stop" onTouchTap={this.stopRun} secondary keyboardFocused />
+                ]}
+                onRequestClose={()=>this.setState({stopDialogOpen: false})}>
+          Once stopped, this run can never be resumed.
+        </Dialog>
       </Card>
     )
   }

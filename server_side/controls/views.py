@@ -3,12 +3,14 @@
 Jin Cheng, 02/12/16
 """
 
+import csv
 from datetime import datetime
 import dateutil.parser
 import re
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -63,18 +65,28 @@ class CalorimeterStatusAPI(APIView):
         return calorimeter
 
     def get(self, request, format=None):
+        """Get serialized JSON response containing calorimeter status."""
         calorimeter = self.get_object()
         serializer = CalorimeterSerializer(calorimeter)
         return Response(serializer.data)
 
     def put(self, request, format=None):
+        """Periodical updates from the device about its current temperatures when a job isn't running."""
         calorimeter = self.get_object()
         serializer = CalorimeterSerializer(calorimeter, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, format=None):
+        """A non-standard implementation of the DELETE HTTP request,
+        instructing the device to stop heating immediately."""
+        calorimeter = self.get_object()
+        calorimeter.stop_flag = True
+        calorimeter.save()
+        Run.objects.filter(is_finished=False).update(is_finished=True)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 class RunListAPI(APIView):
@@ -217,3 +229,38 @@ class DataPointListAPI(APIView):
             print(response['errors'])
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response(response)
+
+
+def DataDownloadView(request, run_id):
+
+    if request.method == 'POST':
+        return HttpResponseNotAllowed
+
+    try:
+        file_format = request.GET['format']
+    except KeyError:
+        file_format = 'csv'
+
+    if file_format == 'csv':
+        run = get_object_or_404(Run, id=run_id)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{0}.csv"'.format(run.name or 'Run #'+run_id)
+
+        data_points_by_measurement_time = DataPoint.objects.filter(run=run).order_by('measured_at')
+        writer = csv.writer(response)
+        writer.writerow(['Time', 'Temperature (sample)', 'Temperature (reference)',
+                         'Heat Output (sample)', 'Heat Output (reference)'])
+        time_origin = data_points_by_measurement_time[0].measured_at
+
+        for dp in data_points_by_measurement_time:
+            time_delta = dp.measured_at - time_origin
+            writer.writerow([
+                time_delta.total_seconds(),
+                dp.temp_sample,
+                dp.temp_ref,
+                dp.heat_sample,
+                dp.heat_ref,
+            ])
+        return response
+
+    return HttpResponseBadRequest

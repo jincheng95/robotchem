@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import moment from 'moment';
 
 import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -26,11 +27,12 @@ export default class SimpleTooltip extends Component {
       const {payload, label, xLabel} = this.props;
       const humanizedXLabel = simple_humanized_axes[xLabel];
       const xUnit = units[xLabel];
+      const displayXValue = xLabel == 'time_of_day' ? moment(label, 'X').format('h:mm:ss A') : `${round_to_2dp(label)} ${xUnit}`;
 
       return (
         <MuiThemeProvider>
           <Paper zDepth={5} style={{maxWidth: '300px', padding: '0.5em', opacity: '0.75'}}>
-            <ToolTipLabel title={humanizedXLabel} value={`${round_to_2dp(label)} ${xUnit}`} bold/>
+            <ToolTipLabel title={humanizedXLabel} value={displayXValue} bold/>
 
             <hr style={{margin: '0.3em 0.1em 0.3em 0.2em'}}/>
 

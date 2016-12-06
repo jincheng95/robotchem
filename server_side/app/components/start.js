@@ -14,10 +14,12 @@ import TwoColumnRow from './TwoColumnRow';
 export default class Start extends Component {
   constructor(props) {
     super(props);
+    const {current_sample_temp} = this.props.calorimeter;
+    var start_temp = current_sample_temp > 99 ? 99 : Math.round(props.calorimeter.current_sample_temp);
     this.state = {
       step: 0,
-      start_temp: Math.round(props.calorimeter.current_sample_temp),
-      target_temp: Math.round(props.calorimeter.current_sample_temp) + 1,
+      start_temp: start_temp,
+      target_temp: start_temp + 1,
       ramp_rate: 1,
       nickname: null,
       email: null,
@@ -174,9 +176,9 @@ export default class Start extends Component {
               <Step>
                 <StepLabel>Overview</StepLabel>
                 <StepContent>
-                  {!!nickname && nickname}
                   <Table>
                     <TableBody>
+                      {!!nickname && <TwoColumnRow title="Name" value={nickname}/>}
                       <TwoColumnRow title="Starting temperature" value={start_temp + "°C"}/>
                       <TwoColumnRow title="Target temperature" value={target_temp + "°C"}/>
                       <TwoColumnRow title="Power output" value={Math.round(ramp_rate * 100) + "%"}/>

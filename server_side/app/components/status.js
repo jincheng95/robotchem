@@ -150,6 +150,7 @@ export default class Status extends Component {
       activeOrStartRunActive: true,
       calibrateActive: false,
     };
+    this.refresh = this.refresh.bind(this);
     this.toggleAutorefresh = this.toggleAutorefresh.bind(this);
     this.setMenuItems = this.setMenuItems.bind(this);
     this.autorefresh = this.autorefresh.bind(this);
@@ -170,23 +171,23 @@ export default class Status extends Component {
       calibrateActive: calibrate,
     })
   }
+  refresh() {
+    this.props.toggleLoading();
+    axios.get('/api/status/?access_code=' + this.props.code)
+      .then((response) => {
+        this.props.changeCalorimeterStatus(response.data);
+        this.props.changeAccessCode(response.data.access_code);
+        this.props.toggleLoading();
+      })
+      .catch((error) => {
+        console.log(error.response);
+        this.props.toggleLoading();
+      })
+  }
   autorefresh() {
     if(this.state.autorefresh) {
-      const refresh = () => {
-        this.props.toggleLoading();
-        axios.get('/api/status/?access_code=' + this.props.code)
-          .then((response) => {
-            this.props.changeCalorimeterStatus(response.data);
-            this.props.changeAccessCode(response.data.access_code);
-            this.props.toggleLoading();
-          })
-          .catch((error) => {
-            console.log(error.response);
-            this.props.toggleLoading();
-          })
-      };
-      refresh();
-      const int = window.setInterval(refresh, 10000);
+      this.refresh();
+      const int = window.setInterval(this.refresh, 10000);
       this.setState({ autorefreshInt: int });
     }
     else {
@@ -204,6 +205,7 @@ export default class Status extends Component {
       node = <Run expanded={true}
                   run={this.props.calorimeter.has_active_runs}
                   autorefresh={this.state.autorefresh}
+                  statusRefresh={this.refresh}
                   {...this.props} />
     }
     return (
