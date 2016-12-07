@@ -14,7 +14,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 
 import humanized_axes, {simple_humanized_axes} from '../../utils/humanize_axes';
 
-export default class PlotToolbar extends React.PureComponent {
+export default class PlotToolbar extends Component {
 	constructor(props) {
 		super(props);
     this.handleXKeyChange = this.handleXKeyChange.bind(this);

@@ -4,14 +4,14 @@ import time
 import random
 import math
 
-URL = "http://127.0.0.1:8000/api/data/"
-# URL = "http://robotchem.chengj.in/api/data/"
+# URL = "http://127.0.0.1:8000/api/data/"
+URL = "http://robotchem.chengj.in/api/data/"
 
-RUN_ID = 18
+RUN_ID = 3
 
-START =99
+START = 7
 STOP = 100
-POWER = 1
+POWER = 0.5
 
 
 def pair_of_random_data(mu=random.random() * 100, sigma=random.random() * 0.8):

@@ -139,3 +139,11 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = local_settings.EMAIL_ADDRESS
 EMAIL_HOST_PASSWORD = local_settings.EMAIL_PASSWORD
 EMAIL_PORT = 587
+
+# Rest framework
+if not DEBUG:
+    REST_FRAMEWORK = {
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+        )
+    }
