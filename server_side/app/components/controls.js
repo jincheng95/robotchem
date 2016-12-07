@@ -13,16 +13,12 @@ import CircularProgress from 'material-ui/CircularProgress';
 import {cyan900} from 'material-ui/styles/colors';
 
 
-class Controls extends Component {
+class Controls extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     this.goTo = this.goTo.bind(this);
     this.isActiveURI = this.isActiveURI.bind(this);
     this.renderListItem = this.renderListItem.bind(this);
-  }
-
-  onChange(event, index) {
-    this.setState({value: index});
   }
 
   isActiveURI(uri) {
@@ -58,7 +54,8 @@ class Controls extends Component {
       marginTop: '0',
       paddingTop: '-0.5em',
     };
-    const {autorefresh, toggleAutorefresh, activeRun} = this.props;
+    const { autorefresh, toggleAutorefresh } = this.props;
+    const { activeRun } = this.props.calorimeter;
 
     return (
       <Paper zDepth={4} style={paperStyle}>

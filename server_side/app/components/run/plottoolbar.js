@@ -14,7 +14,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 
 import humanized_axes, {simple_humanized_axes} from '../../utils/humanize_axes';
 
-export default class PlotToolbar extends Component {
+export default class PlotToolbar extends React.PureComponent {
 	constructor(props) {
 		super(props);
     this.handleXKeyChange = this.handleXKeyChange.bind(this);
@@ -52,7 +52,7 @@ export default class PlotToolbar extends Component {
 
 	render() {
 		const {plot, noMargin, strongBackground, canDelete, canAdd, handleAddPlot, handleDeletePlot} = this.props;
-		const {type, xKey, yKeys} = plot;
+		const {xKey, yKeys} = plot;
 
     // Styles
     const dropDownStyle = {
@@ -105,7 +105,7 @@ export default class PlotToolbar extends Component {
 		return (
 		  <Toolbar style={toolbarStyle}>
         <ToolbarGroup key="y" firstChild={true}>
-          {yKeys.length < 5 && <Flatbutton label="Add Series" primary onClick={this.handleAddYKey}/>}
+          {yKeys.length < 5 && <Flatbutton label="Add Series" primary onTouchTap={this.handleAddYKey}/>}
           {yKeys.map((key, index) => {
             return (
               <div key={index}>
@@ -137,8 +137,8 @@ export default class PlotToolbar extends Component {
         {(canDelete || canAdd) &&
         <ToolbarGroup key="plot" lastChild={true}>
           <ToolbarSeparator/>
-          {canDelete && <RaisedButton icon={<Delete />} secondary onClick={handleDeletePlot}/>}
-          {canAdd && <RaisedButton icon={<NoteAdd />} primary onClick={handleAddPlot}/>}
+          {canDelete && <RaisedButton icon={<Delete />} secondary onTouchTap={handleDeletePlot}/>}
+          {canAdd && <RaisedButton icon={<NoteAdd />} primary onTouchTap={handleAddPlot}/>}
         </ToolbarGroup>}
       </Toolbar>
 		)

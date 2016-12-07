@@ -1,6 +1,7 @@
-
+var webpack = require('webpack');
 
 module.exports = {
+    devtool: 'eval',
     entry: './app/index.js',
     output: {
         filename: 'bundle.js',
@@ -14,4 +15,8 @@ module.exports = {
         ]
     },
 
+
+      plugins: [
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      ]
 };

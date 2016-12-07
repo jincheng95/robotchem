@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 
-import {Card, CardTitle, CardMedia, CardText, CardActions} from 'material-ui/Card';
+import {Card, CardTitle, CardText, CardActions} from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
@@ -10,11 +10,11 @@ import Loading from './loading';
 
 import {Grid, Row, Col} from 'react-flexbox-grid';
 
-export default class Access extends Component {
+
+export default class Access extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      access_code: '',
       aboutDialogOpen: false,
       accessCodeRequired: true,
       accessCodeRejected: false,
@@ -28,9 +28,14 @@ export default class Access extends Component {
     this.setState({aboutDialogOpen: !this.state.aboutDialogOpen});
   }
 
+  componentDidMount() {
+    if(!!this.props.code) {
+      this.handleCodeSubmitted();
+    }
+  }
   handleCodeSubmitted() {
     const { changeAccessCode, changeCalorimeterStatus, toggleLoading } = this.props;
-    this.setState({accessCodeRejected: false});
+    this.setState( {accessCodeRejected: false} );
     toggleLoading();
     const code = this.state.access_code;
     axios.get('/api/status/?access_code=' + code)
@@ -50,22 +55,29 @@ export default class Access extends Component {
   }
 
   render() {
+    const {code, isLoading, changeAccessCode} = this.props;
+    if( code && isLoading ) {
+      return (
+        <Refreshing size={70} message="One moment please..."/>
+      )
+    }
+
     const dialogActions = [
       <FlatButton label="OK" onTouchTap={this.toggleDialog} />
     ];
-
     const enterAccessCode = (
-      <div>
-          <TextField type="password" value={this.state.access_code} id="access-code-field"
-                     style={{width: '70%'}}
+      <div style={{minWidth: '80%', marginLeft: '10%', marginRight: '10%'}}>
+          <TextField value={this.state.access_code} id="access-code-field"
+                     style={{width: '100%'}}
                      errorText={this.state.accessCodeRejected ? "Wrong access code! Please try again." : ""}
-                     onChange={(event) => this.setState({access_code: event.target.value})}/>
-          <RaisedButton onClick={this.handleCodeSubmitted}
-            label="Go!" primary={true} style={{width: '70%'}}/>
+                     onChange={ (event) => changeAccessCode(event.target.value) }/>
+          <RaisedButton onTouchTap={this.handleCodeSubmitted}
+            label="Go!" primary={true} style={{width: '100%'}}/>
         </div>
     );
+
     const main = (
-      <Card style={{padding: '3em 3em 1em 3em', marginTop: '2em'}}>
+      <Card style={{padding: '1em', marginTop: '2em'}}>
         <CardTitle title="Please enter your access code to continue."
                     subtitle="For security reasons, we must verify that you have the permission to control this device.">
         </CardTitle>
@@ -74,7 +86,7 @@ export default class Access extends Component {
         </CardText>
         <CardActions style={{marginLeft: '-0.75em'}}>
           <br/>
-          <FlatButton label="About" onClick={this.toggleDialog} />
+          <FlatButton label="About" onTouchTap={this.toggleDialog} />
         </CardActions>
 
         <Dialog open={this.state.aboutDialogOpen}
@@ -91,11 +103,7 @@ export default class Access extends Component {
         <Grid>
           <Row>
             <Col xs={12}>
-              <Row center="xs sm md lg">
-                <Col xs={12} sm={11} md={9} lg={8}>
-                  {main}
-                </Col>
-              </Row>
+              {main}
             </Col>
           </Row>
         </Grid>

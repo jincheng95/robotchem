@@ -8,7 +8,7 @@ import humanized_axes from '../../utils/humanize_axes';
 import units from '../../utils/units';
 
 
-export default class LinePlot extends Component {
+export default class LinePlot extends React.PureComponent {
   constructor(props) {
     super(props);
   }

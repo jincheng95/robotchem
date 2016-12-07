@@ -22,8 +22,8 @@ export default class Start extends Component {
       start_temp: start_temp,
       target_temp: start_temp + 1,
       ramp_rate: 1,
-      nickname: null,
-      email: null,
+      nickname: "",
+      email: "",
       showInvalidEmailMessage: false,
       isLoading: false,
     };

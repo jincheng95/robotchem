@@ -70,9 +70,9 @@ export default class PlotContainer extends Component {
     this.setState({plots});
   }
   handleNewPlotChange(key, value) {
-    const {new_plot} = this.state;
-    new_plot[key] = value;
-    this.setState({new_plot});
+    const { new_plot } = this.state;
+    const changed_new_plot = {...new_plot, key: value};
+    this.setState({changed_new_plot});
   }
   handleAddPlot() {
     const { plots, new_plot } = this.state;

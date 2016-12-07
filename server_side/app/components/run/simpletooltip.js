@@ -19,7 +19,7 @@ const ToolTipLabel = (props) => (
   </div>
 );
 
-export default class SimpleTooltip extends Component {
+export default class SimpleTooltip extends React.PureComponent {
   render() {
     const {active} = this.props;
 

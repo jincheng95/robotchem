@@ -70,7 +70,7 @@ const RunOptions = (props) => {
 };
 
 
-export default class Run extends Component {
+export default class Run extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -201,6 +201,7 @@ export default class Run extends Component {
         <CardText style={{marginTop: '-1.5em'}}>
           {this.renderDetails()}
         </CardText>
+
         <CardActions style={{marginBottom: '1em', marginLeft: '0.6em'}}>
           {data_point_count > 0 && <RaisedButton href={`/download/${id}/?format=csv`} target="_blank"
             label="Download As .csv" icon={<CloudDownload/>}/>}
@@ -210,7 +211,9 @@ export default class Run extends Component {
           <FlatButton onTouchTap={()=>this.setState({stopDialogOpen: true})}
             backgroundColor={red500} label="Stop" icon={<Stop/>} style={{color: 'white'}} />}
         </CardActions>
+
         <Divider />
+
         <CardText expandable>
           {(data_points.length > 0 && has_retrieved_from_server) &&
             <PlotContainer data_points={data_points} run={run} is_active={is_active}/>}

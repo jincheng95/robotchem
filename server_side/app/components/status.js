@@ -10,6 +10,8 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Controls from './controls';
 
 
+
+
 function PiDetails(props) {
   const { calorimeter } = props;
   const { name, serial, last_comm_time, current_ref_temp, current_sample_temp, is_active, has_active_runs } = calorimeter;
@@ -124,7 +126,6 @@ export default class Status extends Component {
               </Col>
               <Col xs={6} sm={5} md={4} lg={4} style={{margin: '1em 0 0 0', zIndex: '5', transform: 'translateX(1em) scale(1.025, 1.025)', }}>
                 <Controls {...this.props}
-                          activeRun={this.props.calorimeter.has_active_runs}
                           toggleAutorefresh={this.toggleAutorefresh} autorefresh={this.state.autorefresh}
                 />
               </Col>

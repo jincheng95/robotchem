@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import isEmpty from 'lodash/isEmpty';
 import AppBar from 'material-ui/AppBar';
 import {teal300, cyan50} from 'material-ui/styles/colors';
 import IconButton from 'material-ui/IconButton';
@@ -8,6 +9,7 @@ import Dashboard from 'material-ui/svg-icons/action/dashboard';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 
 import Access from './access';
+import Refreshing from './refreshing';
 
 const TitleBar = (props) => (
   <AppBar title="RoboFlux"
@@ -20,21 +22,21 @@ export default class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      access_code: '123456',
-      calorimeter: {
-        access_code: "123456",
-        creation_time: "2016-12-02T23:17:28.683866Z",
-        current_ref_temp: 20.12,
-        current_sample_temp: 20.30,
-        id: 1,
-        is_active: false,
-        last_comm_time: "2016-12-02T23:17:27Z",
-        last_changed_time: "2016-12-03T00:00:48.462929Z",
-        name: "RPI3",
-        serial: "2323423y40hi993240934"
-      },
-      // access_code: '',
-      // calorimeter: null,
+      // access_code: '123456',
+      // calorimeter: {
+      //   access_code: "123456",
+      //   creation_time: "2016-12-02T23:17:28.683866Z",
+      //   current_ref_temp: 20.12,
+      //   current_sample_temp: 20.30,
+      //   id: 1,
+      //   is_active: false,
+      //   last_comm_time: "2016-12-02T23:17:27Z",
+      //   last_changed_time: "2016-12-03T00:00:48.462929Z",
+      //   name: "RPI3",
+      //   serial: "2323423y40hi993240934"
+      // },
+      access_code: window.localStorage.getItem('access_code') || '',
+      calorimeter: null,
       loading: false,
       accessCodeEntered: false,
     };
@@ -45,6 +47,7 @@ export default class Main extends Component {
 
   changeAccessCode(code) {
     this.setState({access_code: code, accessCodeEntered: true});
+    window.localStorage.setItem('access_code', code);
   }
   changeCalorimeterStatus(data) {
     this.setState({calorimeter: data});
@@ -54,7 +57,7 @@ export default class Main extends Component {
   }
 
   render() {
-    const clonePropsFunction = (child) => React.cloneElement(child, {
+    const clonePropsFunction = (element) => React.cloneElement(element, {
         changeAccessCode: this.changeAccessCode,
         changeCalorimeterStatus: this.changeCalorimeterStatus,
         code: this.state.access_code,
@@ -62,6 +65,7 @@ export default class Main extends Component {
         calorimeter: this.state.calorimeter,
     });
     const clonedChildren = React.Children.map( this.props.children, clonePropsFunction );
+    const hasCalorimeterInfo = !isEmpty(this.state.calorimeter);
     return (
       <Grid style={{width: '100%'}}>
         <Row>
@@ -77,10 +81,9 @@ export default class Main extends Component {
         </Row>
         <Row>
           <Col xs={12} sm={12} md={12} lg={12}>
-            {this.state.access_code
+            {hasCalorimeterInfo
               ? <div>{clonedChildren}</div>
-              : clonePropsFunction(<Access />)
-            }
+              : clonePropsFunction(<Access isLoading={this.state.isLoading}/>) }
           </Col>
       </Row>
       </Grid>

@@ -4,8 +4,8 @@ var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 
 module.exports = {
+	devtool: 'cheap-module-source-map',
 	entry: [
-		'babel-polyfill',
 		'./app/index.js'
 	],
 	output: {
@@ -28,13 +28,14 @@ module.exports = {
 				NODE_ENV: '"production"'
 			}
 		}),
-		new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
+		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 		new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false,
 				screw_ie8: true,
 				drop_console: true,
-				drop_debugger: true
+				drop_debugger: true,
+				comments: false,
 			}
 		}),
 		new webpack.optimize.OccurenceOrderPlugin(),
