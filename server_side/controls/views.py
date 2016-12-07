@@ -20,7 +20,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 
 from .serializers import CalorimeterSerializer, RunSerializer, DataPointSerializer
 from .models import Calorimeter, Run, DataPoint
-from rfsite.local_settings import EMAIL_ADDRESS, EMAIL_PASSWORD
+from rfsite.settings import DEBUG
 
 
 def IndexView(request):
@@ -37,11 +37,12 @@ class DeviceAccessPermission(permissions.BasePermission):
     Permission check done with every HTTP request.
 
     Should be implemented with all API points to prevent abuse.
-    Comment out implementations of this permission class in testing, as entering this code several times
-        can get extremely tedious.
     """
 
     def has_object_permission(self, request, view, obj):
+        if DEBUG:
+            return True
+
         if request.method == 'GET':
             try:
                 access_code = request.GET['access_code']
@@ -54,17 +55,20 @@ class DeviceAccessPermission(permissions.BasePermission):
                 return False
         return access_code == obj.access_code
 
+    def has_permission(self, request, view):
+        return self.has_object_permission(request, view, obj=Calorimeter.objects.get(pk=1))
+
 
 class CalorimeterStatusAPI(APIView):
     """
     Gives or updates JSONified data about the status of a single calorimeter.
     """
-    # permission_classes = (DeviceAccessPermission, )
+    permission_classes = (DeviceAccessPermission, )
 
     def get_object(self):
         # for now, fix this to always return one single calorimeter.
         calorimeter = Calorimeter.objects.get(id=1)
-        # self.check_object_permissions(self.request, calorimeter)
+        self.check_object_permissions(self.request, calorimeter)
         return calorimeter
 
     def get(self, request, format=None):
@@ -96,7 +100,7 @@ class RunListAPI(APIView):
     """
     Gives a list of all runs conducted by a calorimeter, or create a new run to be started immediately.
     """
-    # permission_classes = (DeviceAccessPermission, )
+    permission_classes = (DeviceAccessPermission, )
 
     def get(self, request, format=None, **kwargs):
         runs = Run.objects.filter(**kwargs).order_by('-creation_time')
@@ -147,7 +151,7 @@ class DataPointListAPI(APIView):
     Gives a list of all data points for a specific run measured after a specified time.
     """
 
-    # permission_classes = (DeviceAccessPermission, )
+    permission_classes = (DeviceAccessPermission, )
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication,)
 
     def get(self, request, format=None):
@@ -208,19 +212,21 @@ class DataPointListAPI(APIView):
 
         if not run.is_running and not run.is_finished and last_sample_temp >= run.start_temp:
             run.is_running = True
-            run.started_at = timezone.now()
+            run.start_time = timezone.now()
         if not run.is_finished and run.is_running and last_sample_temp >= run.target_temp:
             run.is_running = False
             run.is_finished = True
-            run.finished_at = timezone.now()
-            context = {
-                'run_name': run.name or "Run #{0}".format(run.id),
-                'run_url': 'http://robotchem.chengj.in/history/3/',
-                'access_code': run.calorimeter.access_code,
-            }
-            body = render_to_string('run_completion_email_body.txt', context)
-            subject = render_to_string('run_completion_email_title.txt', context)
-            send_mail(subject, body, 'jinscheng@gmail.com', [run.email], fail_silently=True)
+            run.finish_time = timezone.now()
+
+            if run.email:
+                context = {
+                    'run_name': run.name or "Run #{0}".format(run.id),
+                    'run_url': 'http://robotchem.chengj.in/history/3/',
+                    'access_code': run.calorimeter.access_code,
+                }
+                body = render_to_string('run_completion_email_body.txt', context)
+                subject = render_to_string('run_completion_email_title.txt', context)
+                send_mail(subject, body, 'jinscheng@gmail.com', [run.email], fail_silently=True)
 
         # If a stop flag is set in the database (instructed by user on browser page),
         # send stop flag to device and reset this flag
@@ -229,7 +235,7 @@ class DataPointListAPI(APIView):
         response['stop_flag'] = stop_flag
         if stop_flag:
             run.is_running, run.is_finished, run.finish_time = False, True, timezone.now()
-        calorimeter.stop_flag = False
+            calorimeter.stop_flag = False
 
         # Change this calorimeter's last communication time and temperatures
         # so that we can determine whether it's actively connected to the server
