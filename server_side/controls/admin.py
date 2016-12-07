@@ -10,6 +10,7 @@ class CalorimeterAdmin(admin.ModelAdmin):
 class DataPointInline(admin.TabularInline):
     model = DataPoint
     extra = 1
+    max_num = 15
 
 
 @admin.register(Run)

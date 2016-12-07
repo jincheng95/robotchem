@@ -35,9 +35,9 @@ export default class Access extends Component {
     const code = this.state.access_code;
     axios.get('/api/status/?access_code=' + code)
       .then((response) => {
+        toggleLoading();
         changeCalorimeterStatus(response.data);
         changeAccessCode(code);
-        toggleLoading();
       })
       .catch((error) => {
         toggleLoading();

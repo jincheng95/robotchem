@@ -109,13 +109,14 @@ export default class PlotContainer extends Component {
 
   render() {
     const { plots, new_plot } = this.state;
+    var title = this.props.is_active ? "Real Time Plot" : "Plot";
     return (
       <div>
         {plots.map((value, index) => {
-          const title = plots.length == 1 ? "REAL TIME PLOT" : `REAL TIME PLOT ${index+1}`;
+          const displayedTitle = plots.length == 1 ? title : `${title} ${index+1}`;
           return (
             <div key={index}>
-              <h4>{title}</h4>
+              <h4>{displayedTitle}</h4>
 
               {<PlotToolbar plot={value}
                             canDelete={plots.length !== 1} handleDeletePlot={this.handleDeletePlot.bind(null, index)}
@@ -134,6 +135,8 @@ export default class PlotContainer extends Component {
         <hr style={{margin: '1em 0.1em'}}/>
         <div key="new">
           <h4>ADD NEW PLOT</h4>
+          {plots.length > 2 &&
+          <p className="text-primary">Due to the amount of data, having more plots may impact your performance negatively.</p>}
           <PlotToolbar plot={new_plot}
                        handlePlotChange={this.handleNewPlotChange}
                        noMargin strongBackground

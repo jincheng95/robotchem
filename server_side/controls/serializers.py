@@ -61,12 +61,15 @@ class DataPointSerializer(serializers.ModelSerializer):
 
 class RunSerializer(serializers.ModelSerializer):
     calorimeter = serializers.PrimaryKeyRelatedField(queryset=Calorimeter.objects.all(), validators=[])
-    # data_points = DataPointSerializer(read_only=True, many=True, source='datapoint_set')
+    data_point_count = serializers.SerializerMethodField('count_data_points')
 
     class Meta:
         model = Run
-        fields = ('id', 'name', 'creation_time', 'start_time',
+        fields = ('id', 'name', 'creation_time', 'start_time', 'finish_time',
                   'is_running', 'is_finished', 'email',
                   'start_temp', 'target_temp', 'ramp_rate',
-                  'calorimeter',
+                  'calorimeter', 'data_point_count',
                   )
+
+    def count_data_points(self, instance):
+        return instance.datapoint_set.count()

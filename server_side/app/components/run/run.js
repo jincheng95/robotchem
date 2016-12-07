@@ -10,7 +10,7 @@ import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
-import RefreshIndicator from 'material-ui/RefreshIndicator';
+import Refreshing from '../refreshing';
 
 import Stop from 'material-ui/svg-icons/AV/stop';
 import CloudDownload from 'material-ui/svg-icons/file/cloud-download';
@@ -19,6 +19,7 @@ import FastForward from 'material-ui/svg-icons/AV/fast-forward';
 import Hourglass from 'material-ui/svg-icons/action/hourglass-empty';
 import Email from 'material-ui/svg-icons/communication/email';
 import Time from 'material-ui/svg-icons/device/access-time';
+import MoreVert from 'material-ui/svg-icons/navigation/more-vert';
 import {red500} from 'material-ui/styles/colors';
 
 import {Grid, Row, Col} from 'react-flexbox-grid';
@@ -46,9 +47,10 @@ const StatColumn = (props) => {
 };
 
 const RunOptions = (props) => {
-  const { id, name, creation_time, start_time, is_running, is_finished,
+  const { id, name, creation_time, start_time, is_running, is_finished, finish_time,
         start_temp, target_temp, ramp_rate, calorimeter, email } = props.run;
-  const duration = is_running ? `Started ${moment().diff(moment(start_time))} ago` : 'Waiting...';
+  const duration = is_running ? `Started ${moment(start_time).fromNow()}`
+    : is_finished ? `Stopped ${moment(finish_time).fromNow()}` : 'Waiting...';
   return (
     <div className="row">
       <div className="col-xs-6 col-sm-6 col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
@@ -72,10 +74,11 @@ export default class Run extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: isEmpty(props.expanded) ? !props.run.is_finished : props.expanded,
+      expanded: props.expanded || false,
       data_points: [],
       autorefreshInt: null,
-      stopDialogOpen: false
+      stopDialogOpen: false,
+      has_retrieved_from_server: false,
     };
     this.refresh = this.refresh.bind(this);
     this.onExpandChange = this.onExpandChange.bind(this);
@@ -115,9 +118,10 @@ export default class Run extends Component {
     toggleLoading();
     axios.get(`/api/data/?access_code=${code}&run=${run.id}&since=${since}`)
       .then((response) => {
-        const concatenated = concat(data_points, response.data);
-        this.setState({ data_points: this.normalize(concatenated) });
         toggleLoading();
+        const concatenated = concat(data_points, response.data);
+        this.setState({ data_points: this.normalize(concatenated), has_retrieved_from_server: true });
+
       })
       .catch((error) => {
         console.log(error.response);
@@ -129,13 +133,14 @@ export default class Run extends Component {
     window.clearInterval(autorefreshInt);
   }
   componentWillReceiveProps() {
-    const {expanded, autorefreshInt} = this.state;
-    const {autorefresh} = this.props;
-    if( expanded && autorefresh && !autorefreshInt ) {
+    const { expanded, autorefreshInt } = this.state;
+    const { autorefresh } = this.props;
+    const { is_running, is_finished } = this.props.run;
+    if( expanded && autorefresh && !autorefreshInt && (!is_finished || is_running) ) {
       this.refresh();
       const int = window.setInterval(this.refresh, 5000);
       this.setState({autorefreshInt: int});
-    } else if ( !autorefresh && !!autorefreshInt ) {
+    } else if ( !autorefresh ) {
       this.cancelAutorefresh();
     }
   }
@@ -143,10 +148,12 @@ export default class Run extends Component {
     this.componentWillReceiveProps();
   }
   componentWillUnmount() {
-    this.cancelAutorefresh();
+    if(!!this.state.autorefreshInt) {
+      this.cancelAutorefresh();
+    }
   }
   onExpandChange(expanded) {
-    this.setState({expanded});
+    this.setState({expanded: !this.state.expanded});
     if(expanded) {
       this.refresh();
     }
@@ -156,10 +163,15 @@ export default class Run extends Component {
     const {code, toggleLoading, statusRefresh} = this.props;
     toggleLoading();
     axios.delete('/api/status/?access_code='+code)
-      .then((response) => {
+        .then((response) => {
+          toggleLoading();
+          statusRefresh();
+        })
+      .catch((error) => {
         toggleLoading();
-        statusRefresh();
-      })
+        console.log(error.response);
+      });
+    this.setState({stopDialogOpen: false});
   }
 
   renderDetails() {
@@ -173,8 +185,8 @@ export default class Run extends Component {
   }
   render() {
     const { run } = this.props;
-    const { expanded, data_points, stopDialogOpen } = this.state;
-    const { id, name, is_running, is_finished } = run;
+    const { expanded, data_points, stopDialogOpen, has_retrieved_from_server } = this.state;
+    const { id, name, is_running, is_finished, data_point_count } = run;
     const is_active = is_running || (!is_finished);
 
     const cardTitleText = !!name ? name : `Run #${id}`;
@@ -190,38 +202,36 @@ export default class Run extends Component {
           {this.renderDetails()}
         </CardText>
         <CardActions style={{marginBottom: '1em', marginLeft: '0.6em'}}>
-          <RaisedButton href={`/download/${id}/?format=csv`} target="_blank"
-            label="Download As .csv" icon={<CloudDownload/>}/>
+          {data_point_count > 0 && <RaisedButton href={`/download/${id}/?format=csv`} target="_blank"
+            label="Download As .csv" icon={<CloudDownload/>}/>}
+          {!is_active && <RaisedButton onTouchTap={this.onExpandChange}
+            label={expanded ? "Hide Data" : "View Data"} icon={<MoreVert/>} /> }
           {is_active &&
-          <FlatButton onClick={()=>this.setState({stopDialogOpen: true})}
+          <FlatButton onTouchTap={()=>this.setState({stopDialogOpen: true})}
             backgroundColor={red500} label="Stop" icon={<Stop/>} style={{color: 'white'}} />}
         </CardActions>
         <Divider />
         <CardText expandable>
-          {data_points.length > 0
-            ? <PlotContainer data_points={data_points} run={run} />
-            : <div style={{position: 'relative', height: '75px'}}>
-                <RefreshIndicator
-                  size={40}
-                  left={-20}
-                  top={28}
-                  status={'loading'}
-                  style={{marginLeft: '50%'}}
-                />
-                <p className="text-muted text-center">
-                  Measurements either hasn't been made, or data is still being retrived.
-                </p>
-              </div>}
+          {(data_points.length > 0 && has_retrieved_from_server) &&
+            <PlotContainer data_points={data_points} run={run} is_active={is_active}/>}
+          {(data_points.length == 0 && has_retrieved_from_server && is_active) &&
+            <Refreshing size={50}
+                        message="No measurements have been recorded. Data will be shown as they are retrieved."/>}
+          {(data_points.length == 0 && !has_retrieved_from_server &&
+            <Refreshing size={50}
+                        message="Measurements are being retrieved. One moment please..."/>)}
+          {(data_points.length == 0 && has_retrieved_from_server && !is_active) &&
+            <p className="text-primary text-center">There are no measurements available.</p>}
         </CardText>
 
-        <Dialog title="Are you sure?" open={stopDialogOpen}
+        {is_active && <Dialog title="Are you sure?" open={stopDialogOpen}
                 actions={[
                   <FlatButton label="Cancel" onTouchTap={()=>this.setState({stopDialogOpen: false})}/>,
                   <FlatButton label="Stop" onTouchTap={this.stopRun} secondary keyboardFocused />
                 ]}
                 onRequestClose={()=>this.setState({stopDialogOpen: false})}>
           Once stopped, this run can never be resumed.
-        </Dialog>
+        </Dialog>}
       </Card>
     )
   }

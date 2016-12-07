@@ -10,6 +10,7 @@ import {Table, TableBody} from 'material-ui/Table';
 
 import validateEmail from '../utils/validate_email';
 import TwoColumnRow from './TwoColumnRow';
+import Refreshing from './refreshing';
 
 export default class Start extends Component {
   constructor(props) {
@@ -24,6 +25,7 @@ export default class Start extends Component {
       nickname: null,
       email: null,
       showInvalidEmailMessage: false,
+      isLoading: false,
     };
     this.handleNext = this.handleNext.bind(this);
     this.handlePrev = this.handlePrev.bind(this);
@@ -67,9 +69,10 @@ export default class Start extends Component {
   }
   submit() {
     const {start_temp, target_temp, ramp_rate, nickname, email} = this.state;
-    const {calorimeter, code, toggleLoading} = this.props;
+    const {calorimeter, code, toggleLoading, statusRefresh} = this.props;
     const {id} = calorimeter;
     toggleLoading();
+    this.setState({isLoading: true});
     axios.post('/api/runs/?access_code=' + code, {
       calorimeter: id,
       start_temp,
@@ -79,7 +82,7 @@ export default class Start extends Component {
       email,
     }).then((response) => {
       toggleLoading();
-      console.log(response.data);
+      statusRefresh();
     }).catch((error) => {
       toggleLoading();
       console.log(error.response);
@@ -87,7 +90,7 @@ export default class Start extends Component {
   }
 
   renderStepActions(renderedStep) {
-    const {step} = this.state;
+    const { step } = this.state;
     var label;
     if(step === 3){
       label = "Start Run";
@@ -121,6 +124,12 @@ export default class Start extends Component {
   }
 
   render() {
+    if(this.state.isLoading) {
+      return (
+        <Refreshing size={50} message="Submitting... One moment please."/>
+      )
+    }
+
     const {step, start_temp, target_temp, ramp_rate, nickname, email, showInvalidEmailMessage} = this.state;
 
     return (

@@ -11,6 +11,8 @@ import re
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -18,6 +20,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 
 from .serializers import CalorimeterSerializer, RunSerializer, DataPointSerializer
 from .models import Calorimeter, Run, DataPoint
+from rfsite.local_settings import EMAIL_ADDRESS, EMAIL_PASSWORD
 
 
 def IndexView(request):
@@ -85,7 +88,7 @@ class CalorimeterStatusAPI(APIView):
         calorimeter = self.get_object()
         calorimeter.stop_flag = True
         calorimeter.save()
-        Run.objects.filter(is_finished=False).update(is_finished=True)
+        Run.objects.filter(is_finished=False).update(is_finished=True, finish_time=timezone.now())
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
@@ -96,7 +99,7 @@ class RunListAPI(APIView):
     # permission_classes = (DeviceAccessPermission, )
 
     def get(self, request, format=None, **kwargs):
-        runs = Run.objects.filter(**kwargs)
+        runs = Run.objects.filter(**kwargs).order_by('-creation_time')
         serializer = RunSerializer(runs, many=True)
         return Response(serializer.data)
 
@@ -203,16 +206,29 @@ class DataPointListAPI(APIView):
         last_sample_temp = last_data_point['temp_sample']
         run = Run.objects.get(id=last_data_point['run'])
 
-        if not run.is_running and not run.is_finished and last_sample_temp > run.start_temp:
+        if not run.is_running and not run.is_finished and last_sample_temp >= run.start_temp:
             run.is_running = True
-        if not run.is_finished and run.is_running and last_sample_temp > run.target_temp:
+            run.started_at = timezone.now()
+        if not run.is_finished and run.is_running and last_sample_temp >= run.target_temp:
             run.is_running = False
             run.is_finished = True
+            run.finished_at = timezone.now()
+            context = {
+                'run_name': run.name or "Run #{0}".format(run.id),
+                'run_url': 'http://chengj.in/robotchem/history/3/',
+                'access_code': run.calorimeter.access_code,
+            }
+            body = render_to_string('run_completion_email_body.txt', context)
+            subject = render_to_string('run_completion_email_title.txt', context)
+            send_mail(subject, body, 'jinscheng@gmail.com', [run.email], fail_silently=True)
 
         # If a stop flag is set in the database (instructed by user on browser page),
         # send stop flag to device and reset this flag
         calorimeter = run.calorimeter
-        response['stop_flag'] = calorimeter.stop_flag
+        stop_flag = calorimeter.stop_flag
+        response['stop_flag'] = stop_flag
+        if stop_flag:
+            run.is_running, run.is_finished, run.finish_time = False, True, timezone.now()
         calorimeter.stop_flag = False
 
         # Change this calorimeter's last communication time and temperatures
@@ -226,7 +242,6 @@ class DataPointListAPI(APIView):
         run.save()
 
         if response['errors']:
-            print(response['errors'])
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response(response)
 

@@ -5,9 +5,9 @@ import random
 import math
 
 URL = "http://127.0.0.1:8000/api/data/"
-START = 5
-POWER = 0.4
-RUN_ID = 5
+START = 17
+POWER = 4
+RUN_ID = 17
 
 
 def pair_of_random_data(mu=random.random() * 100, sigma=random.random() * 0.8):
@@ -19,7 +19,7 @@ if __name__ == '__main__':
         payload = []
         for i in range(6):
             temps = pair_of_random_data(START)
-            heat = math.cos(temps[0]), math.atanh(temps[1])
+            heat = math.cos(temps[0]), math.tanh(temps[1])
             data_point = {
                 'measured_at': datetime.datetime.now().isoformat(),
                 'temp_ref': temps[0],
@@ -35,4 +35,4 @@ if __name__ == '__main__':
 
         r = requests.post(URL, json=payload)
         print(r)
-        time.sleep(0.1)
+        time.sleep(1)
