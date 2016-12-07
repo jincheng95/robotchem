@@ -3,7 +3,9 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.decorators.csrf import csrf_exempt
+
 from controls.views import IndexView, CalorimeterStatusAPI, RunListAPI, DataPointListAPI, DataDownloadView
+from rfsite.settings import DEBUG
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -21,4 +23,7 @@ urlpatterns = [
     # matches anything, so put this last
     url(r'^', IndexView),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+if DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

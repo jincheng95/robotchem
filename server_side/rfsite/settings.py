@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-from . import local_settings
+from . import local_settings, production_settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,7 +27,10 @@ SECRET_KEY = '$g+8eo+t$qts6t&gcp=%3$z-g*60p)67p=_w@8yejnx8we&ogh'
 DEBUG = True
 
 
-ALLOWED_HOSTS = local_settings.ALLOWED_HOSTS
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = local_settings.ALLOWED_HOSTS
 
 
 # Application definition
@@ -77,12 +80,15 @@ WSGI_APPLICATION = 'rfsite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = production_settings.DATABASES
 
 
 # Password validation
@@ -122,8 +128,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static')
-
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
+if not DEBUG:
+    STATIC_ROOT = '/var/www/robotchem/static/'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

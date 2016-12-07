@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { withRouter } from 'react-router';
+import withRouter from 'react-router/lib/withRouter';
 
 import Paper from 'material-ui/Paper';
 import {List, ListItem} from 'material-ui/List';
@@ -9,7 +9,6 @@ import Toggle from 'material-ui/Toggle';
 import History from 'material-ui/svg-icons/action/history';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import Settings from 'material-ui/svg-icons/action/settings';
-import TrendingUp from 'material-ui/svg-icons/action/trending-up';
 import CircularProgress from 'material-ui/CircularProgress';
 import {cyan900} from 'material-ui/styles/colors';
 

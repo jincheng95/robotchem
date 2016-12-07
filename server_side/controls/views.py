@@ -215,7 +215,7 @@ class DataPointListAPI(APIView):
             run.finished_at = timezone.now()
             context = {
                 'run_name': run.name or "Run #{0}".format(run.id),
-                'run_url': 'http://chengj.in/robotchem/history/3/',
+                'run_url': 'http://robotchem.chengj.in/history/3/',
                 'access_code': run.calorimeter.access_code,
             }
             body = render_to_string('run_completion_email_body.txt', context)
