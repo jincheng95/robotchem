@@ -136,11 +136,11 @@ export default class Run extends React.PureComponent {
     const { expanded, autorefreshInt } = this.state;
     const { autorefresh } = this.props;
     const { is_running, is_finished } = this.props.run;
-    if( expanded && autorefresh && !autorefreshInt && (!is_finished || is_running) ) {
+    if( expanded && !autorefreshInt && (!is_finished || is_running) ) {
       this.refresh();
       const int = window.setInterval(this.refresh, 5000);
       this.setState({autorefreshInt: int});
-    } else if ( !autorefresh ) {
+    } else if ( !autorefresh && autorefreshInt ) {
       this.cancelAutorefresh();
     }
   }

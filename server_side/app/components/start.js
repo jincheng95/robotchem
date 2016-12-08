@@ -59,7 +59,7 @@ export default class Start extends Component {
   }
   handleNext() {
     const {email, step} = this.state;
-    if( step === 2 && email !== null && !validateEmail(email) ){
+    if( step === 2 && email != "" && !validateEmail(email) ){
       this.setState({showInvalidEmailMessage: true});
     } else if ( step === 3 ){
       this.submit();

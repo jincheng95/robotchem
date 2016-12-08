@@ -39,8 +39,8 @@ class Run(object):
     def start(self):
         if self.is_ready():
             self.ramp()
-        else:
-            self.heat_or_cool_to_start_temp()
+        # else:
+            # self.heat_or_cool_to_start_temp()
 
     def ramp(self):
         """
