@@ -44,7 +44,12 @@ WEB_API_ACTIVE_INTERVAL = 5
 WEB_API_MIN_UPLOAD_LENGTH = 5
 
 # Web API comms access code
-ACCESS_CODE = "tuckfrump"
+# Change this in local_settings.py in production
+# settings.py is publicly viewable through GitHub but local_settings.py is ignored by Git
+try:
+    from local_settings import ACCESS_CODE
+except ImportError:
+    ACCESS_CODE = "SUPER_SECRET_PASSWORD"
 
 """
 LOOP TIME INTERVAL SETTINGS
