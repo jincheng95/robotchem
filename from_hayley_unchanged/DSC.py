@@ -139,9 +139,9 @@ def run_calorimetry():
     Runs a full DCS cycle
     '''
 
-    GPIO.output(20,GPIO.LOW)        # LED green (standby) off
-    GPIO.output(21,GPIO.LOW)        # LED blue (getting to start temp) off
-    GPIO.output(16,GPIO.HIGH)           # LED red (heating) on
+    GPIO.output(20, GPIO.LOW)        # LED green (standby) off
+    GPIO.output(21, GPIO.LOW)        # LED blue (getting to start temp) off
+    GPIO.output(16, GPIO.HIGH)           # LED red (heating) on
 
     t0 = time.time()            # start timer
     pause_time = 1/(10*rate)        # seconds delay to chose rate

@@ -8,6 +8,9 @@ Change the variables in this file to specify:
 Jin Cheng, 12/12/16
 """
 
+"""
+GENERAL SETTINGS
+"""
 # Set this to True in code development,
 # False in testing and presentation
 DEBUG = True
@@ -19,9 +22,17 @@ PID_PARAMS = {
     'D': 0.003,
 }
 
+# Measured, calibrated maximum rate (degrees Celsius per second)
+MAX_RAMP_RATE = 1.0
+RAMP_SETPOINT_INCREMENT = 0.1
 
+
+"""
+WEB API SETTINGS
+"""
 # Web API Address
-WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
+# WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
+WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
 WEB_API_STATUS_ADDRESS = WEB_API_BASE_ADDRESS + "status/"
 WEB_API_DATA_ADDRESS = WEB_API_BASE_ADDRESS + "data/"
 
@@ -29,14 +40,22 @@ WEB_API_DATA_ADDRESS = WEB_API_BASE_ADDRESS + "data/"
 WEB_API_IDLE_INTERVAL = 10
 WEB_API_ACTIVE_INTERVAL = 5
 
+# Minimum number of measurements that justifies sending a HTTP request
+WEB_API_MIN_UPLOAD_LENGTH = 5
+
 # Web API comms access code
 ACCESS_CODE = "tuckfrump"
 
-
+"""
+LOOP TIME INTERVAL SETTINGS
+"""
 # Main loop interval, in seconds
 # This is the increment between calculations of PID-controlled PWM when a job is active
 MAIN_LOOP_INTERVAL = 0.5
 
+"""
+TEMPERATURE SENSOR SETTINGS
+"""
 # Temperature sensor IDs
 TEMP_SENSOR_BASE_DIR = "/sys/bus/w1/devices/"
 TEMP_SENSOR_ID_REF = "3b-6cdc038848fb"
@@ -51,16 +70,26 @@ TEMP_READ_TIME_INTERVAL = 0.2
 TEMP_TOLERANCE = 1
 
 
+"""
+CURRENT READING SETTINGS
+"""
+# Max voltage supplied to the MOSFET
+MAX_VOLTAGE = 3.3
+
+
+"""
+PIN NUMBER SETTINGS
+"""
 # Various PINS
 # All pin numbers are for the BCM Board numbering system
 # LHS = left hand side (Sample)
 # RHS = right hand side (Reference)
 
-CURRENT_SENSOR_REF = 14  # LHS
-CURRENT_SENSOR_SAMPLE = 3  # RHS
+CURRENT_SENSOR_REF_PIN = 14  # LHS
+CURRENT_SENSOR_SAMPLE_PIN = 3  # RHS
 
-HEATER_REF = 12  # PWM, MOSFET, LHS
-HEATER_SAMPLE = 13  # PWM, MOSFET, RHS
+HEATER_REF_PIN = 12  # PWM, MOSFET, LHS
+HEATER_SAMPLE_PIN = 13  # PWM, MOSFET, RHS
 
 RED = 16
 BLUE = 21

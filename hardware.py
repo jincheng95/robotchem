@@ -9,7 +9,8 @@ Jin Cheng & Hayley Weir 08/12/16:
 
 Hayley Weir 11/12/16:
     GPIO controls,
-    initialisation and cleanup function,
+    initialisation function,
+    hardware components testing
 
 Jin Cheng 12/12/16:
     function cleanup and asynchronisation, introduced wrappers
@@ -22,6 +23,7 @@ import os
 import subprocess
 import time
 import settings
+from utils import clamp
 
 if not settings.DEBUG:
     import RPi.GPIO as GPIO
@@ -38,7 +40,7 @@ class PID(object):
     while the set point can be updated after class construction and at any point in time.
     """
 
-    def __init__(self, init_val, Kp=None, Ki=None, Kd=None):
+    def __init__(self, init_val, Kp=None, Ki=None, Kd=None, set_point=None):
         """
         Class constructor.
 
@@ -48,7 +50,7 @@ class PID(object):
         :param Kd: custom PID derivative factor.
         """
         self.init_val = float(init_val)
-        self.set_point = None
+        self.set_point = set_point
         self.last_error, self.proportional, self.integral, self.derivative = 0., 0., 0., 0.
 
         # if not specified in object construction, use the PID params in settings.py
@@ -97,9 +99,19 @@ class PID(object):
                "SP={3} IV={4}>".format(self.Kp, self.Ki, self.Kd, self.set_point, self.init_val)
 
 
+async def _change_heater_pwm(pid_object, queue, temperature, pwm_object):
+    """An asynchronous queue consumer to change PWM output.
+    if a setpoint is in the queue, the PWM will be changed on the specified pin number."""
+    while True:
+        set_point = await queue.get()
+        pid_object.set_setpoint(set_point)
+        duty_cycle = clamp(pid_object.update(temperature))
+        pwm_object.ChangeDutyCycle(duty_cycle)
+
+
 
 HAS_INITIALZED_MODPROBE = False
-
+debug_temp = 0
 
 async def _read_temp(identifier):
     """
@@ -110,8 +122,10 @@ async def _read_temp(identifier):
 
     # if debug, return some random value for testing
     if settings.DEBUG:
+        global debug_temp
+        debug_temp += 0.2
         await asyncio.sleep(random.random() * 0.1) # simulate slow I/O
-        return random.gauss(25, 1.5)
+        return random.gauss(debug_temp, 0.5)
 
     global HAS_INITIALZED_MODPROBE
     if not HAS_INITIALZED_MODPROBE:
@@ -171,21 +185,61 @@ async def read_temp_sample():
     return await _read_temp(settings.TEMP_SENSOR_ID_SAMPLE)
 
 
+async def read_current_sample():
+    return 0
+
+async def read_current_ref():
+    return 0
+
+
+async def measure_all(loop):
+    """A convenience function to measure all readings with one concurrent Future object.
+
+    :param loop: the main event loop.
+    :returns: a tuple containing reference cell temp, sample cell temp, reference heater current, sample heater current.
+    """
+    _temp_ref, _temp_sample, _current_ref, _current_sample = await asyncio.gather(
+        asyncio.ensure_future(read_temp_ref()),
+        asyncio.ensure_future(read_temp_sample()),
+        asyncio.ensure_future(read_current_ref()),
+        asyncio.ensure_future(read_current_sample()),
+        loop=loop)
+    return _temp_ref, _temp_sample, _current_ref, _current_sample
+
+
 def initialize():
     """
     Initial setup for GPIO board.
     Make all GPIO output pins set up as outputs.
     Start standby LED color (green).
+
+    :returns A tuple of reference, sample PWM objects
     """
 
     if settings.DEBUG:
-        return
+        print('GPIO board is all set up!')
+
+        class FakePWM:
+            """A fake PWM class with fake pwm-changing functionality for debugging."""
+            def __init__(self, pin, frequency):
+                self.pin = pin
+                self.frequency = frequency
+
+            def start(self, *args, **kwargs):
+                pass
+
+            def ChangeDutyCycle(self, duty_cycle):
+                print('Changed duty cycle on PIN {0} to {1}%'.format(self.pin, duty_cycle))
+
+        return FakePWM(settings.HEATER_REF_PIN, 1), FakePWM(settings.HEATER_SAMPLE_PIN, 1)
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setup([settings.RED, settings.BLUE, settings.GREEN,
-                settings.CURRENT_SENSOR_REF, settings.CURRENT_SENSOR_SAMPLE,
-                settings.HEATER_REF, settings.HEATER_SAMPLE], GPIO.OUT)
+                settings.CURRENT_SENSOR_REF_PIN, settings.CURRENT_SENSOR_SAMPLE_PIN,
+                settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN], GPIO.OUT)
     GPIO.output(settings.GREEN, GPIO.HIGH)
+
+    return GPIO.PWM(settings.HEATER_REF_PIN, 1), GPIO.PWM(settings.HEATER_SAMPLE_PIN, 1)
 
 
 def indicate_starting_up():
@@ -194,6 +248,7 @@ def indicate_starting_up():
     """
 
     if settings.DEBUG:
+        print('The Green LED has been switched on.')
         return
 
     GPIO.output((settings.GREEN, settings.RED), GPIO.LOW)
@@ -206,6 +261,7 @@ def indicate_heating():
     """
 
     if settings.DEBUG:
+        print('The Red LED has been switched on.')
         return
 
     GPIO.output((settings.GREEN, settings.BLUE), GPIO.LOW)
@@ -218,6 +274,7 @@ def cleanup():
     """
 
     if settings.DEBUG:
+        print('GPIO board is cleaned up!')
         return
 
     GPIO.output(settings.GREEN, GPIO.LOW)
