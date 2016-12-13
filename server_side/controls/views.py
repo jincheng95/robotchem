@@ -187,8 +187,15 @@ class DataPointListAPI(APIView):
         The stop flag, if true, should instruct the device to immediately stop heating or cooling.
         The error list will be empty if no error is found.
         """
-        data_points = request.data
+        try:
+            data_points = request.data['data']
+            run_id = request.data['run']
+        except KeyError:
+            print('1')
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         if not isinstance(data_points, list):
+            print('2')
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         response = {
@@ -208,7 +215,8 @@ class DataPointListAPI(APIView):
         # so that the device does not need to send multiple HTTP requests
         last_data_point = data_points[-1]
         last_sample_temp = last_data_point['temp_sample']
-        run = Run.objects.get(id=last_data_point['run'])
+        run = Run.objects.get(id=run_id)
+        response['is_ready'] = run.is_ready
 
         if not run.is_running and not run.is_finished and last_sample_temp >= run.start_temp:
             run.is_running = True
@@ -248,6 +256,7 @@ class DataPointListAPI(APIView):
         run.save()
 
         if response['errors']:
+            print(response['errors'])
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response(response)
 
