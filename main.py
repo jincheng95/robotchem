@@ -118,7 +118,16 @@ async def active(loop, active_job):
 
 
 async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
-    """Gets the temperatures to starting temp as quickly as possible."""
+    """
+    Gets the temperatures to starting temp as quickly as possible.
+
+    :param loop: the main event loop.
+    :param pid_ref: the PID object for the reference cell. This is spawned in the `active` coroutine.
+    :param pid_sample: the PID object for the sample cell. This is spawned in the `active` coroutine.
+    :param network_queue: the NetworkQueue object with which this function spawns a consumer thread
+    that transmits the data in the queue and produces data items in the queue.
+    :param run_id: unique numeric ID from web API of this particular run.
+    """
 
     # Make available the heater PWM objects, then asynchronously measure temperatures
     global heater_ref, heater_sample
@@ -180,6 +189,15 @@ async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
 
 
 async def run_calorimetry(loop, active_job, network_queue, run_id):
+    """An async function that starts the heat ramp until the end temp is reached at the rate of choice.
+    Periodically and transmit currents and temperatures to web API.
+
+    :param loop: the main event loop
+    :param active_job: the active job dict object from the web API
+    :param network_queue: the NetworkQueue object with which this function spawns a consumer thread
+    that transmits the data in the queue and produces data items in the queue.
+    :param run_id: unique numeric ID from web API of this particular run.
+    """
 
     # Get heater PWM objects
     global heater_ref, heater_sample
@@ -244,6 +262,7 @@ if __name__ == '__main__':
     # enable verbose mode if in development
     if settings.DEBUG:
         loop.set_debug(enabled=True)
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
         logging.getLogger('asyncio').setLevel(logging.DEBUG)
 
     try:
