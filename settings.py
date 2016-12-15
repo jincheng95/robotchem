@@ -67,7 +67,7 @@ TEMPERATURE SENSOR SETTINGS
 TEMP_SENSOR_BASE_DIR = "/sys/bus/w1/devices/"
 TEMP_SENSOR_ID_REF = "3b-6cdc038848fb"
 TEMP_SENSOR_ID_SAMPLE = "3b-0cdc0388554f"
-TEMP_SENSOR_ID_APPENDIX = "/w1_slave"
+TEMP_SENSOR_ID_APPENDIX = "w1_slave"
 
 # Temperature read time interval
 # This is used during an active calorimetry job, during the main PID calculating loop

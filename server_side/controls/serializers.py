@@ -22,6 +22,7 @@ class CalorimeterSerializer(serializers.ModelSerializer):
                   'last_changed_time', 'last_comm_time',
                   'is_active', 'has_active_runs',
                   )
+        read_only_fields = ('access_code', )
 
     def __init__(self, *args, **kwargs):
         super(CalorimeterSerializer, self).__init__(*args, **kwargs)
