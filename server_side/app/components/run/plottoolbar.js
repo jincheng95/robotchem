@@ -1,18 +1,16 @@
-import React, {Component} from 'react';
-import forEach from 'lodash/forEach';
-import xor from 'lodash/xor';
-import keys from 'lodash/keys';
-
-import NoteAdd from 'material-ui/svg-icons/action/note-add';
-import Delete from 'material-ui/svg-icons/action/delete';
-import MenuItem from 'material-ui/MenuItem';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import RaisedButton from 'material-ui/RaisedButton';
-import Flatbutton from 'material-ui/FlatButton';
-import Divider from 'material-ui/Divider';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-
-import humanized_axes, {simple_humanized_axes} from '../../utils/humanize_axes';
+import React, {Component} from "react";
+import forEach from "lodash/forEach";
+import xor from "lodash/xor";
+import keys from "lodash/keys";
+import NoteAdd from "material-ui/svg-icons/action/note-add";
+import Delete from "material-ui/svg-icons/action/delete";
+import MenuItem from "material-ui/MenuItem";
+import DropDownMenu from "material-ui/DropDownMenu";
+import RaisedButton from "material-ui/RaisedButton";
+import Flatbutton from "material-ui/FlatButton";
+import Divider from "material-ui/Divider";
+import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from "material-ui/Toolbar";
+import humanized_axes, {simple_humanized_axes} from "../../utils/humanize_axes";
 
 export default class PlotToolbar extends Component {
 	constructor(props) {

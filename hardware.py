@@ -9,6 +9,7 @@ Jin Cheng & Hayley Weir 08/12/16:
 
 Hayley Weir 11/12/16:
     GPIO controls,
+    LED controls,
     initialisation function,
     hardware components testing
 
@@ -22,6 +23,7 @@ import asyncio
 import os
 import subprocess
 import time
+
 import settings
 from utils import clamp
 
@@ -277,5 +279,4 @@ def cleanup():
         print('GPIO board is cleaned up!')
         return
 
-    GPIO.output(settings.GREEN, GPIO.LOW)
     GPIO.cleanup()

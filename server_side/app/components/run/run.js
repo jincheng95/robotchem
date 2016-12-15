@@ -92,7 +92,7 @@ export default class Run extends React.PureComponent {
       return new Date(prev.measured_at) - new Date(next.measured_at)
     });
     const oldest_point = sorted[0];
-    var result = sorted.map((value, index) => {
+    return sorted.map((value) => {
       const new_value = value;
       const measured_at = moment(value.measured_at);
       new_value.time_since = Math.abs(measured_at.diff(oldest_point.measured_at, 'seconds'));
@@ -101,7 +101,6 @@ export default class Run extends React.PureComponent {
       new_value.temp_average = (value.temp_sample + value.temp_ref) / 2;
       return new_value;
     });
-    return result;
   }
 
   refresh() {

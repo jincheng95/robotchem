@@ -16,13 +16,14 @@ Jin Cheng, 12/12/16:
 """
 
 import asyncio
-import aiohttp
 import datetime
 
-from hardware import (read_temp_ref, read_temp_sample, read_current_ref, read_current_sample, measure_all, PID,
+import aiohttp
+
+import settings
+from hardware import (read_temp_ref, read_temp_sample, measure_all, PID,
                       initialize, indicate_heating, indicate_starting_up, cleanup)
 from utils import fetch, clamp, roughly_equal, batch_upload, SampleNotInsertedError, StopHeatingError, NetworkQueue
-import settings
 
 if settings.DEBUG:
     import logging
@@ -92,24 +93,20 @@ async def active(loop, active_job):
 
     # Create a network data queue
     network_queue = NetworkQueue()
-
-    # Instantiate new PID objects and get cells to reach start temperature
+    # Instantiate new PID objects
     pid_ref, pid_sample = PID(temp_ref, set_point=start_temp), PID(temp_sample, set_point=start_temp)
-    loop.call_soon(indicate_starting_up)
 
-    async def get_ready_wrapper():
-        try:
-            return await get_ready(loop, pid_ref, pid_sample, network_queue, run_id)
-        except SampleNotInsertedError:
-            get_ready_wrapper()
-    await get_ready_wrapper()
-
-    # When control is yielded back from get_ready, start_temp has been reached
-    loop.call_soon(indicate_heating)
     try:
+        # Get cells to reach start temperature
+        loop.call_soon(indicate_starting_up)
+        await get_ready(loop, pid_ref, pid_sample, network_queue, run_id)
+
+        # When control is yielded back from get_ready, start_temp has been reached
+        loop.call_soon(indicate_heating)
         await run_calorimetry(loop, active_job, network_queue, run_id)
+
+    # when instructed to stop heating, clean up and return to idle function
     except StopHeatingError:
-        # when instructed to stop heating, clean up and return to idle function
         cleanup()
         return
 
@@ -122,12 +119,15 @@ async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
     heater_ref.start(0), heater_sample.start(0)
 
     last_time = loop.time()
+    sample_inserted = False
     while True:
         # Measure all data
         temp_ref, temp_sample, current_ref, current_sample = await measure_all(loop)
 
         # if start temp is reached, give back control to whichever coroutine that called it
-        if roughly_equal(temp_ref, temp_sample, pid_ref.set_point, tolerence=settings.TEMP_TOLERANCE):
+        # but if sample hasn't been inserted, keep holding at start temp and keep running this loop
+        if roughly_equal(temp_ref, temp_sample, pid_ref.set_point, tolerence=settings.TEMP_TOLERANCE) \
+                and sample_inserted:
             break
 
         # Set set_point straight to start_temp to heat as quickly as possible
@@ -144,12 +144,13 @@ async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
         delta_time = now - last_time
         last_time = now
 
-        # calculate power, record current time and send payload to network comms queue
+        # calculate power, record current time
         voltage_ref = settings.MAX_VOLTAGE * duty_cycle_ref / 100
         voltage_sample = settings.MAX_VOLTAGE * duty_cycle_sample / 100
         heat_ref = voltage_ref * current_ref * delta_time
         heat_sample = voltage_sample * current_sample * delta_time
 
+        # Send payload to network comms queue
         payload = {
             'run': run_id,
             'measured_at': datetime.datetime.now().isoformat(sep='T'),
@@ -159,7 +160,14 @@ async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
             'heat_sample': heat_sample,
         }
         await network_queue.put(payload)
-        await batch_upload(loop, network_queue, run_id)
+
+        # Watch web API response for whether user has put in the sample
+        try:
+            await batch_upload(loop, network_queue, run_id)
+        except SampleNotInsertedError:
+            pass
+        else:
+            sample_inserted = True
 
         # Sleep for a set amount of time, then rerun the PWM calculations
         await asyncio.sleep(settings.MAIN_LOOP_INTERVAL)
@@ -169,6 +177,7 @@ async def run_calorimetry(loop, active_job, network_queue, run_id):
 
     # Get heater PWM objects
     global heater_ref, heater_sample
+    heater_ref.start(0), heater_sample.start(0)
 
     # Make local variables based on job params
     start_temp, end_temp, rate = (active_job['start_temp'], active_job['target_temp'],
@@ -220,22 +229,20 @@ async def run_calorimetry(loop, active_job, network_queue, run_id):
 
 
 if __name__ == '__main__':
+    # initialize the GPIO boards and set output pins to output mode
+    heater_ref, heater_sample = initialize()
+
+    # asynchronous main event loop
+    loop = asyncio.get_event_loop()
+
+    # enable verbose mode if in development
+    if settings.DEBUG:
+        loop.set_debug(enabled=True)
+        logging.getLogger('asyncio').setLevel(logging.DEBUG)
+
     try:
-        # initialize the GPIO boards and set output pins to output mode
-        heater_ref, heater_sample = initialize()
-
-        # asynchronous main event loop
-        loop = asyncio.get_event_loop()
-
-        # enable verbose mode if in development
-        if settings.DEBUG:
-            loop.set_debug(enabled=True)
-            logging.getLogger('asyncio').setLevel(logging.DEBUG)
-
-        # start idle loop
+        # start and run main event loop
         asyncio.ensure_future(idle(loop), loop=loop)
-
-        # run forever and ever, and ever...
         loop.run_forever()
 
     finally:
@@ -243,3 +250,5 @@ if __name__ == '__main__':
         # it is important to clear all outputs on the GPIO board
         # so that the system does not keep heating up.
         cleanup()
+        loop.stop()
+        loop.close()

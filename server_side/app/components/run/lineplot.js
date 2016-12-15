@@ -1,11 +1,10 @@
-import React, {Component} from 'react';
-import moment from 'moment';
-
-import {XAxis, YAxis, CartesianGrid, Line, LineChart, Tooltip, Legend, ResponsiveContainer, Brush} from 'recharts';
-import SimpleTooltip from './simpletooltip';
-import list_of_colors from '../../utils/list_of_colors';
-import humanized_axes from '../../utils/humanize_axes';
-import units from '../../utils/units';
+import React from "react";
+import moment from "moment";
+import {XAxis, YAxis, CartesianGrid, Line, LineChart, Tooltip, Legend, ResponsiveContainer, Brush} from "recharts";
+import SimpleTooltip from "./simpletooltip";
+import list_of_colors from "../../utils/list_of_colors";
+import humanized_axes from "../../utils/humanize_axes";
+import units from "../../utils/units";
 
 
 export default class LinePlot extends React.PureComponent {

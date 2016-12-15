@@ -4,23 +4,23 @@ Jin Cheng, 02/12/16
 """
 
 import csv
-from datetime import datetime
-import dateutil.parser
 import re
+from datetime import datetime
 
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+import dateutil.parser
 from django.core.mail import send_mail
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from django.utils import timezone
 from rest_framework import status, permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .serializers import CalorimeterSerializer, RunSerializer, DataPointSerializer
-from .models import Calorimeter, Run, DataPoint
 from rfsite.settings import DEBUG
+from .models import Calorimeter, Run, DataPoint
+from .serializers import CalorimeterSerializer, RunSerializer, DataPointSerializer
 
 
 def IndexView(request):
@@ -173,6 +173,20 @@ class DataPointListAPI(APIView):
         data_points = DataPoint.objects.filter(**kwargs)
         serializer = DataPointSerializer(data_points, many=True)
         return Response(serializer.data)
+
+    def put(self, request, format=None):
+        """Marks a run as having its sample inserted."""
+        try:
+            run_id = request.data['run']
+            run = Run.objects.get(id=run_id)
+        except KeyError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Run.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        run.is_ready = True
+        run.save()
+        return Response(RunSerializer(run).data)
 
     def post(self, request, format=None):
         """

@@ -1,14 +1,11 @@
-import React, {Component} from 'react';
-import moment from 'moment';
-import includes from 'lodash/includes';
-import concat from 'lodash/concat';
-import isEmpty from 'lodash/isEmpty';
-
-import Divider from 'material-ui/Divider';
-
-import LinePlot from './lineplot';
-import PlotToolbar from './plottoolbar';
-import {ReferenceLine} from 'recharts';
+import React, {Component} from "react";
+import moment from "moment";
+import includes from "lodash/includes";
+import concat from "lodash/concat";
+import Divider from "material-ui/Divider";
+import LinePlot from "./lineplot";
+import PlotToolbar from "./plottoolbar";
+import {ReferenceLine} from "recharts";
 
 export default class PlotContainer extends Component {
   constructor(props) {
@@ -29,7 +26,7 @@ export default class PlotContainer extends Component {
     };
     this.getReferenceLines = this.getReferenceLines.bind(this);
     this.handlePlotChange = this.handlePlotChange.bind(this);
-    this.handleNewPlotChange = this.handleNewPlotChange.bind(this)
+    this.handleNewPlotChange = this.handleNewPlotChange.bind(this);
     this.renderIndividualPlot = this.renderIndividualPlot.bind(this);
     this.handleAddPlot = this.handleAddPlot.bind(this);
     this.handleDeletePlot = this.handleDeletePlot.bind(this);
