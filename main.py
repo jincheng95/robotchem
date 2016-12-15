@@ -236,7 +236,7 @@ async def run_calorimetry(loop, active_job, network_queue, run_id):
 
 if __name__ == '__main__':
     # initialize the GPIO boards and set output pins to output mode
-    heater_ref, heater_sample = initialize()
+    heater_ref, heater_sample, adc = initialize()
 
     # asynchronous main event loop
     loop = asyncio.get_event_loop()

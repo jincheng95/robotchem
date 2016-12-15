@@ -28,6 +28,7 @@ import settings
 from utils import clamp
 
 if not settings.DEBUG:
+    import Adafruit_ADS1x15
     import RPi.GPIO as GPIO
 else:
     import random
@@ -187,11 +188,28 @@ async def read_temp_sample():
     return await _read_temp(settings.TEMP_SENSOR_ID_SAMPLE)
 
 
-async def read_current_sample():
-    return 0
+async def _read_adc(channel, gain=1, scale=(1/185000.0)):
+    """
+    Reads measurement at a ADC channel with a specified GAIN.
+    Converts the measurement mV into current in amps with a scaling factor.
+
+    :param channel: channel number on the ADC device
+    :param gain: factor of gain in ADC. No gain by default.
+    :param scale: scale factor of the final output, by default converts mV into current in ampere.
+    :return: ADC measurement.
+    """
+    global adc
+    return adc.read_adc(channel, gain) * scale
+
 
 async def read_current_ref():
-    return 0
+    """An async wrapper function for reading realtime current at the reference."""
+    return await _read_adc(settings.CURRENT_SENSOR_REF_CHANNEL)
+
+
+async def read_current_sample():
+    """An async wrapper function for reading realtime current at the sample."""
+    return await _read_adc(settings.CURRENT_SENSOR_SAMPLE_CHANNEL)
 
 
 async def measure_all(loop):
@@ -210,8 +228,7 @@ async def measure_all(loop):
 
 
 def initialize():
-    """
-    Initial setup for GPIO board.
+    """Initial setup for GPIO board.
     Make all GPIO output pins set up as outputs.
     Start standby LED color (green).
 
@@ -226,22 +243,33 @@ def initialize():
             def __init__(self, pin, frequency):
                 self.pin = pin
                 self.frequency = frequency
-
             def start(self, *args, **kwargs):
                 pass
-
+            def stop(self, *args, **kwargs):
+                pass
             def ChangeDutyCycle(self, duty_cycle):
                 print('Changed duty cycle on PIN {0} to {1}%'.format(self.pin, duty_cycle))
 
-        return FakePWM(settings.HEATER_REF_PIN, 1), FakePWM(settings.HEATER_SAMPLE_PIN, 1)
+
+        class FakeADC:
+            """A fake ADC voltage / current reader."""
+            def __init__(self):
+                pass
+            def read_adc(self, channel, gain):
+                return random.gauss(25, 2.0) * gain
+
+        return FakePWM(settings.HEATER_REF_PIN, 1), FakePWM(settings.HEATER_SAMPLE_PIN, 1), FakeADC()
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setup([settings.RED, settings.BLUE, settings.GREEN,
-                settings.CURRENT_SENSOR_REF_PIN, settings.CURRENT_SENSOR_SAMPLE_PIN,
                 settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN], GPIO.OUT)
     GPIO.output(settings.GREEN, GPIO.HIGH)
 
-    return GPIO.PWM(settings.HEATER_REF_PIN, 1), GPIO.PWM(settings.HEATER_SAMPLE_PIN, 1)
+    heater_pwm_ref = GPIO.PWM(settings.HEATER_REF_PIN, 1)
+    heater_pwm_sample = GPIO.PWM(settings.HEATER_SAMPLE_PIN, 1)
+    adc_object = Adafruit_ADS1x15.ADS1115()
+    return heater_pwm_ref, heater_pwm_sample, adc_object
+
 
 
 def indicate_starting_up():
