@@ -17,6 +17,7 @@ Jin Cheng, 12/12/16:
 
 import asyncio
 import datetime
+import os, sys, inspect
 
 import aiohttp
 
@@ -27,6 +28,11 @@ from utils import fetch, clamp, roughly_equal, batch_upload, SampleNotInsertedEr
 
 if settings.DEBUG:
     import logging
+
+
+ROOT_DIR = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
 
 async def idle(loop):

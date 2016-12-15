@@ -8,12 +8,14 @@ Change the variables in this file to specify:
 Jin Cheng, 12/12/16
 """
 
+
 """
 GENERAL SETTINGS
 """
 # Set this to True in code development,
 # False in testing and presentation
 DEBUG = True
+
 
 # PID controller settings
 PID_PARAMS = {
