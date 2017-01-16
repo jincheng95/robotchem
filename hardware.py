@@ -188,7 +188,7 @@ async def read_temp_sample():
     return await _read_temp(settings.TEMP_SENSOR_ID_SAMPLE)
 
 
-async def _read_adc(channel, gain=1, scale=(1/185000.0)):
+async def _read_adc(channel, adc_object, gain=1, scale=(1/185000.0)):
     """
     Reads measurement at a ADC channel with a specified GAIN.
     Converts the measurement mV into current in amps with a scaling factor.
@@ -198,31 +198,32 @@ async def _read_adc(channel, gain=1, scale=(1/185000.0)):
     :param scale: scale factor of the final output, by default converts mV into current in ampere.
     :return: ADC measurement.
     """
-    global adc
-    return adc.read_adc(channel, gain) * scale
+    return adc_object.read_adc(channel, gain) * scale
 
 
-async def read_current_ref():
+async def read_current_ref(adc_object, *args, **kwargs):
     """An async wrapper function for reading realtime current at the reference."""
-    return await _read_adc(settings.CURRENT_SENSOR_REF_CHANNEL)
+    return await _read_adc(settings.CURRENT_SENSOR_REF_CHANNEL, adc_object, *args, **kwargs)
 
 
-async def read_current_sample():
+async def read_current_sample(adc_object, *args, **kwargs):
     """An async wrapper function for reading realtime current at the sample."""
-    return await _read_adc(settings.CURRENT_SENSOR_SAMPLE_CHANNEL)
+    return await _read_adc(settings.CURRENT_SENSOR_SAMPLE_CHANNEL, adc_object, *args, **kwargs)
 
 
-async def measure_all(loop):
+async def measure_all(loop, adc_object):
     """A convenience function to measure all readings with one concurrent Future object.
 
     :param loop: the main event loop.
+    :param adc_object: the adc object representing the Analogue-to-Digital converter bytes reader
+    from the Adafruit library.
     :returns: a tuple containing reference cell temp, sample cell temp, reference heater current, sample heater current.
     """
     _temp_ref, _temp_sample, _current_ref, _current_sample = await asyncio.gather(
         asyncio.ensure_future(read_temp_ref()),
         asyncio.ensure_future(read_temp_sample()),
-        asyncio.ensure_future(read_current_ref()),
-        asyncio.ensure_future(read_current_sample()),
+        asyncio.ensure_future(read_current_ref(adc_object)),
+        asyncio.ensure_future(read_current_sample(adc_object)),
         loop=loop)
     return _temp_ref, _temp_sample, _current_ref, _current_sample
 

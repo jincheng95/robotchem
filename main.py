@@ -129,7 +129,7 @@ async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
     """
 
     # Make available the heater PWM objects, then asynchronously measure temperatures
-    global heater_ref, heater_sample
+    global heater_ref, heater_sample, adc
     heater_ref.start(0), heater_sample.start(0)
 
     last_time = loop.time()
@@ -199,7 +199,7 @@ async def run_calorimetry(loop, active_job, network_queue, run_id):
     """
 
     # Get heater PWM objects
-    global heater_ref, heater_sample
+    global heater_ref, heater_sample, adc
     heater_ref.start(0), heater_sample.start(0)
 
     # Make local variables based on job params
