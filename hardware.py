@@ -27,7 +27,7 @@ import time
 import settings
 from utils import clamp
 
-if not settings.DEBUG:
+if not settings.SIMULATE_HARDWARE:
     import Adafruit_ADS1x15
     import RPi.GPIO as GPIO
 else:
@@ -124,7 +124,7 @@ async def _read_temp(identifier):
     """
 
     # if debug, return some random value for testing
-    if settings.DEBUG:
+    if settings.SIMULATE_HARDWARE:
         global debug_temp
         debug_temp += 0.2
         await asyncio.sleep(random.random() * 0.1) # simulate slow I/O
@@ -235,7 +235,7 @@ def initialize():
     :returns A tuple of reference, sample PWM objects
     """
 
-    if settings.DEBUG:
+    if settings.SIMULATE_HARDWARE:
         print('GPIO board is all set up!')
 
         class FakePWM:
@@ -277,7 +277,7 @@ def indicate_starting_up():
     Indicate the device is heating to start_temp by turning on/off LED lights.
     """
 
-    if settings.DEBUG:
+    if settings.SIMULATE_HARDWARE:
         print('The Green LED has been switched on.')
         return
 
@@ -290,7 +290,7 @@ def indicate_heating():
     Indicate the device is heating in an active calorimetry by turning on/off LED lights.
     """
 
-    if settings.DEBUG:
+    if settings.SIMULATE_HARDWARE:
         print('The Red LED has been switched on.')
         return
 
@@ -303,7 +303,7 @@ def cleanup():
     Cleans up the whole GPIO board. Use when exception is raised.
     """
 
-    if settings.DEBUG:
+    if settings.SIMULATE_HARDWARE:
         print('GPIO board is cleaned up!')
         return
 

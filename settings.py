@@ -15,6 +15,7 @@ GENERAL SETTINGS
 # Set this to True in code development,
 # False in testing and presentation
 DEBUG = True
+SIMULATE_HARDWARE = False
 
 
 # PID controller settings
@@ -33,8 +34,10 @@ RAMP_SETPOINT_INCREMENT = 0.1
 WEB API SETTINGS
 """
 # Web API Address
-# WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
-WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
+if DEBUG:
+    WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
+else:
+    WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
 WEB_API_STATUS_ADDRESS = WEB_API_BASE_ADDRESS + "status/"
 WEB_API_DATA_ADDRESS = WEB_API_BASE_ADDRESS + "data/"
 
@@ -51,7 +54,7 @@ WEB_API_MIN_UPLOAD_LENGTH = 5
 try:
     from local_settings import ACCESS_CODE
 except ImportError:
-    ACCESS_CODE = "SUPER_SECRET_PASSWORD"
+    ACCESS_CODE = ""
 
 """
 LOOP TIME INTERVAL SETTINGS

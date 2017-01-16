@@ -28,9 +28,6 @@ from hardware import (read_temp_ref, read_temp_sample, measure_all, PID,
                       initialize, indicate_heating, indicate_starting_up, cleanup)
 from utils import fetch, clamp, roughly_equal, batch_upload, SampleNotInsertedError, StopHeatingError, NetworkQueue
 
-if settings.DEBUG:
-    import logging
-
 
 ROOT_DIR = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
 if ROOT_DIR not in sys.path:
@@ -264,8 +261,6 @@ if __name__ == '__main__':
     # enable verbose mode if in development
     if settings.DEBUG:
         loop.set_debug(enabled=True)
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-        logging.getLogger('asyncio').setLevel(logging.DEBUG)
 
     try:
         # start and run main event loop
