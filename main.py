@@ -176,12 +176,7 @@ async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
         await network_queue.put(payload)
 
         # Watch web API response for whether user has put in the sample
-        try:
-            await batch_upload(loop, network_queue, run_id)
-        except SampleNotInsertedError:
-            pass
-        else:
-            sample_inserted = True
+        sample_inserted = await batch_upload(loop, network_queue, run_id)
 
         # Sleep for a set amount of time, then rerun the PWM calculations
         await asyncio.sleep(settings.MAIN_LOOP_INTERVAL)

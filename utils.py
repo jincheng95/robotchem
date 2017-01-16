@@ -118,8 +118,7 @@ async def batch_upload(loop, network_queue, run_id):
             # Check for stop heating and sample inserted flags from the web API
             if response.get('stop_flag'):
                 raise StopHeatingError
-            elif not response.get('is_ready'):
-                raise SampleNotInsertedError
+            return response.get('is_ready')
         else:
             break
 
