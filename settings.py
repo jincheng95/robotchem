@@ -20,9 +20,9 @@ SIMULATE_HARDWARE = False
 
 # PID controller settings
 PID_PARAMS = {
-    'P': 50.,
-    'I': 6.9,
-    'D': 0.003,
+    'P': 3.,
+    'I': 0.6,
+    'D': 0.,
 }
 
 # Measured, calibrated maximum rate (degrees Celsius per second)
