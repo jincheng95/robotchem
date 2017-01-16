@@ -57,8 +57,14 @@ async def fetch(session, method, url, payload, timeout=settings.WEB_API_ACTIVE_I
                     print(await resp.text())
                 # if an HTTP error code is returned, stop heating
                 if resp.status >= 400:
+                    if settings.DEBUG:
+                        print(await resp.text())
                     raise StopHeatingError
-                return await resp.json()
+
+                json = await resp.json()
+                if settings.DEBUG:
+                    print('{0} {1}'.format(method, url))
+                return json
 
     # if server connection times out, stop heating
     except asyncio.TimeoutError:
