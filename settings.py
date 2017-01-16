@@ -34,10 +34,13 @@ RAMP_SETPOINT_INCREMENT = 0.1
 WEB API SETTINGS
 """
 # Web API Address
-if DEBUG:
-    WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
-else:
-    WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
+try:
+    from local_settings import WEB_API_BASE_ADDRESS
+except ImportError:
+    if DEBUG:
+        WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
+    else:
+        WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
 WEB_API_STATUS_ADDRESS = WEB_API_BASE_ADDRESS + "status/"
 WEB_API_DATA_ADDRESS = WEB_API_BASE_ADDRESS + "data/"
 
