@@ -161,7 +161,7 @@ export default class Run extends React.PureComponent {
   stopRun() {
     const {code, toggleLoading, statusRefresh} = this.props;
     toggleLoading();
-    axios.delete('/api/status/?access_code='+code)
+    axios.delete('/api/status/?access_code=' + code)
         .then((response) => {
           toggleLoading();
           statusRefresh();

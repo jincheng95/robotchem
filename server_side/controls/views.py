@@ -43,7 +43,7 @@ class DeviceAccessPermission(permissions.BasePermission):
         if DEBUG:
             return True
 
-        if request.method == 'GET':
+        if request.method in ['GET', 'DELETE']:
             try:
                 access_code = request.GET['access_code']
             except KeyError:
