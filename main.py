@@ -136,7 +136,7 @@ async def get_ready(loop, pid_ref, pid_sample, network_queue, run_id):
     sample_inserted = False
     while True:
         # Measure all data
-        temp_ref, temp_sample, current_ref, current_sample = await measure_all(loop)
+        temp_ref, temp_sample, current_ref, current_sample = await measure_all(loop, adc)
 
         # if start temp is reached, give back control to whichever coroutine that called it
         # but if sample hasn't been inserted, keep holding at start temp and keep running this loop
@@ -214,7 +214,7 @@ async def run_calorimetry(loop, active_job, network_queue, run_id):
     last_time = loop.time()
     set_point = start_temp
     while True:
-        temp_ref, temp_sample, current_ref, current_sample = await measure_all(loop)
+        temp_ref, temp_sample, current_ref, current_sample = await measure_all(loop, adc)
 
         # calculate PID-controlled PWM and change duty cycle accordingly
         duty_cycle_ref = clamp(pid_ref.update(temp_ref))
