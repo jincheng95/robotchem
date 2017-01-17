@@ -151,6 +151,6 @@ def roughly_equal(*args, tolerence=1e-02):
     :return: Whether the arguments are roughly equal to each other.
     """
     for _prev, _next in combinations(args, r=2):
-        if abs(_prev - _next) <= tolerence:
+        if abs(_prev - _next) >= float(tolerence):
             return False
     return True
