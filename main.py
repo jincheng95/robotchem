@@ -85,7 +85,7 @@ async def idle(loop):
     asyncio.ensure_future(idle(loop), loop=loop)
 
 
-async def active(_loop, active_job, **calorimter_data):
+async def active(_loop, active_job, **calorimeter_data):
     """
     An asynchronous coroutine run periodically during an active calorimetry job.
     Contains logic about the set point, heating to start temp as quickly as possible, and uploading measurements.
@@ -103,16 +103,16 @@ async def active(_loop, active_job, **calorimter_data):
     start_temp, run_id = active_job['start_temp'], active_job['id']
 
     # Create a network data queue
-    active_loop_interval = calorimter_data.get('active_loop_interval') or settings.WEB_API_ACTIVE_INTERVAL
-    min_upload_length = calorimter_data.get('web_api_min_upload_length') or settings.WEB_API_MIN_UPLOAD_LENGTH
+    active_loop_interval = calorimeter_data.get('active_loop_interval') or settings.WEB_API_ACTIVE_INTERVAL
+    min_upload_length = calorimeter_data.get('web_api_min_upload_length') or settings.WEB_API_MIN_UPLOAD_LENGTH
     network_queue = NetworkQueue(threshold_time=active_loop_interval, threshold_qsize=min_upload_length)
 
     # Instantiate new PID objects
     pid_init_kwargs = {
         'set_point': start_temp,
-        'Kp': calorimter_data.get('K_p'),
-        'Ki': calorimter_data.get('K_i'),
-        'Kd': calorimter_data.get('K_d'),
+        'Kp': calorimeter_data.get('K_p'),
+        'Ki': calorimeter_data.get('K_i'),
+        'Kd': calorimeter_data.get('K_d'),
     }
     pid_ref, pid_sample = PID(temp_ref, **pid_init_kwargs), PID(temp_sample, **pid_init_kwargs)
 
@@ -127,7 +127,8 @@ async def active(_loop, active_job, **calorimter_data):
 
     # when instructed to stop heating, clean up and return to idle function
     except StopHeatingError:
-        cleanup()
+        global heater_ref, heater_sample
+        cleanup(heater_ref, heater_sample)
         return
 
 
@@ -273,8 +274,6 @@ if __name__ == '__main__':
     # enable verbose mode if in development
     if settings.DEBUG:
         loop.set_debug(enabled=True)
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-        logging.getLogger('asyncio').setLevel(logging.DEBUG)
 
     try:
         # start and run main event loop

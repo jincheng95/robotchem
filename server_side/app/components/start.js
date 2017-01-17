@@ -141,10 +141,8 @@ export default class Start extends Component {
                 <StepLabel>Select start and end temperatures</StepLabel>
                 <StepContent>
                   <h4>Starting at {start_temp} &deg;C.</h4>
-                  <p>An explanation of start temperature, etc. sdfsdfdsfdsfas3oihrp82y34p82ihios</p>
                   <Slider value={start_temp / 100} onChange={this.changeStartTemp}/>
                   <h4>Finishing at {target_temp} &deg;C.</h4>
-                  <p>An explanation of target temperature, etc. i3h29hufnd0i23h98phqw9ifn</p>
                   <Slider value={target_temp / 100} onChange={this.changeTargetTemp}/>
                   {this.renderStepActions(0)}
                 </StepContent>

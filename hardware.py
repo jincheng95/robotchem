@@ -284,8 +284,8 @@ def indicate_starting_up():
         print('The Green LED has been switched on.')
         return
 
-    GPIO.output((settings.GREEN, settings.RED), GPIO.LOW)
-    GPIO.output(settings.BLUE, GPIO.HIGH)
+    GPIO.output(settings.BLUE, GPIO.LOW)
+    GPIO.output((settings.GREEN, settings.RED), GPIO.HIGH)
 
 
 def indicate_heating():
@@ -301,7 +301,7 @@ def indicate_heating():
     GPIO.output(settings.RED, GPIO.HIGH)
 
 
-def cleanup(wipe=False):
+def cleanup(*heaters, wipe=False):
     """
     Cleans up the whole GPIO board. Use when exception is raised.
     """
@@ -316,8 +316,12 @@ def cleanup(wipe=False):
     else:
         # switch off all outputs (including heaters which are the most dangerous)
         all_output_pins = (settings.GREEN, settings.BLUE, settings.RED,
-                           settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN)
+                           settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN,
+                           )
         GPIO.output(all_output_pins, GPIO.LOW)
+
+        for heater in heaters:
+            heater.ChangeDutyCycle(0)
 
         # Turn on power indicator
         GPIO.output(settings.GREEN, GPIO.HIGH)
