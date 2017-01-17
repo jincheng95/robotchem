@@ -73,7 +73,8 @@ export default class Start extends Component {
     const {id} = calorimeter;
     toggleLoading();
     this.setState({isLoading: true});
-    axios.post('/api/runs/?access_code=' + code, {
+    axios.post('/api/runs/', {
+      access_code: code,
       calorimeter: id,
       start_temp,
       target_temp,
