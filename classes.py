@@ -71,9 +71,9 @@ class Run(object):
 
         return measurement
 
-    async def upload_queue(self, _loop):
+    async def upload_queue(self, _loop, **kwargs):
         """Checks if the network queue has crossed the threshold to upload data."""
-        self.is_ready = await batch_upload(_loop, self)
+        self.is_ready = await batch_upload(_loop, self, **kwargs)
         return self.is_ready
 
     def batch_setpoint(self, setpoint):

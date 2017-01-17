@@ -189,6 +189,13 @@ async def run_calorimetry(_loop, run):
             if settings.DEBUG:
                 print("*********************************"
                       "The setpoint has been increased to {setpoint}".format(setpoint=set_point))
+
+        # check if temp has stabilised near the end temp and change its status accordingly
+        if (not run.is_finished) and run.check_stabilization(run.target_temp, duration=50):
+            run.is_finished = True
+            # upload this status and rest of the data
+            await run.upload_queue(_loop, override_threshold=True)
+            raise StopHeatingError
         await asyncio.sleep(run.interval)
 
 

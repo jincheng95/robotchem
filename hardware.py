@@ -271,12 +271,14 @@ def initialize(board_only=False):
     GPIO.output(settings.GREEN, GPIO.HIGH)
 
     if board_only:
-        return
+        GPIO.setup(settings.GREEN, GPIO.OUT)
+        GPIO.output(settings.GREEN, GPIO.HIGH)
 
-    heater_pwm_ref = GPIO.PWM(settings.HEATER_REF_PIN, 1)
-    heater_pwm_sample = GPIO.PWM(settings.HEATER_SAMPLE_PIN, 1)
-    adc_object = Adafruit_ADS1x15.ADS1115()
-    return heater_pwm_ref, heater_pwm_sample, adc_object
+    else:
+        heater_pwm_ref = GPIO.PWM(settings.HEATER_REF_PIN, 1)
+        heater_pwm_sample = GPIO.PWM(settings.HEATER_SAMPLE_PIN, 1)
+        adc_object = Adafruit_ADS1x15.ADS1115()
+        return heater_pwm_ref, heater_pwm_sample, adc_object
 
 
 async def flash_LED(*pins, period=0.15):
