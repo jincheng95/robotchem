@@ -127,7 +127,7 @@ async def _read_temp(identifier):
     """
 
     # if debug, return some random value for testing
-    if settings.DEBUG:
+    if settings.FAKE_HARDWARE:
         global debug_temp
         debug_temp += 0.2
         await asyncio.sleep(random.random() * 0.1) # simulate slow I/O
@@ -231,7 +231,7 @@ async def measure_all(loop, adc_object):
     return _temp_ref, _temp_sample, _current_ref, _current_sample
 
 
-def initialize():
+def initialize(board_only=False):
     """Initial setup for GPIO board.
     Make all GPIO output pins set up as outputs.
     Start standby LED color (green).
@@ -239,7 +239,7 @@ def initialize():
     :returns A tuple of reference, sample PWM objects
     """
 
-    if settings.DEBUG:
+    if settings.FAKE_HARDWARE:
         print('GPIO board is all set up!')
 
         class FakePWM:
@@ -269,6 +269,9 @@ def initialize():
                 settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN], GPIO.OUT)
     GPIO.output(settings.GREEN, GPIO.HIGH)
 
+    if board_only:
+        return
+
     heater_pwm_ref = GPIO.PWM(settings.HEATER_REF_PIN, 1)
     heater_pwm_sample = GPIO.PWM(settings.HEATER_SAMPLE_PIN, 1)
     adc_object = Adafruit_ADS1x15.ADS1115()
@@ -280,7 +283,7 @@ def indicate_starting_up():
     Indicate the device is heating to start_temp by turning on/off LED lights.
     """
 
-    if settings.DEBUG:
+    if settings.FAKE_HARDWARE:
         print('The Green LED has been switched on.')
         return
 
@@ -293,7 +296,7 @@ def indicate_heating():
     Indicate the device is heating in an active calorimetry by turning on/off LED lights.
     """
 
-    if settings.DEBUG:
+    if settings.FAKE_HARDWARE:
         print('The Red LED has been switched on.')
         return
 
@@ -306,7 +309,7 @@ def cleanup(*heaters, wipe=False):
     Cleans up the whole GPIO board. Use when exception is raised.
     """
 
-    if settings.DEBUG:
+    if settings.FAKE_HARDWARE:
         print('GPIO board is cleaned up!')
         return
 
@@ -322,6 +325,7 @@ def cleanup(*heaters, wipe=False):
 
         for heater in heaters:
             heater.ChangeDutyCycle(0)
+            heater.stop()
 
         # Turn on power indicator
         GPIO.output(settings.GREEN, GPIO.HIGH)

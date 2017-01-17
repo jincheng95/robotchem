@@ -17,7 +17,8 @@ GENERAL SETTINGS
 """
 # Set this to True in code development,
 # False in testing and presentation
-DEBUG = False
+DEBUG = True
+FAKE_HARDWARE = False
 
 
 # PID controller settings
@@ -77,6 +78,7 @@ TEMP_READ_TIME_INTERVAL = 0.2
 
 # The difference between temperature values for them to be considered 'practically equal'
 TEMP_TOLERANCE = 1
+TEMP_STABILISATION_MIN_DURATION = 20
 
 
 """
@@ -94,7 +96,7 @@ PIN NUMBER SETTINGS
 # LHS = left hand side (Sample)
 # RHS = right hand side (Reference)
 
-CURRENT_SENSOR_REF_CHANNEL = 1 # ADC channel number
+CURRENT_SENSOR_REF_CHANNEL = 1  # ADC channel number
 CURRENT_SENSOR_SAMPLE_CHANNEL = 3  # ADC channel number
 
 HEATER_REF_PIN = 12  # PWM, MOSFET, LHS
