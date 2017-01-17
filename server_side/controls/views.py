@@ -43,7 +43,7 @@ class DeviceAccessPermission(permissions.BasePermission):
         if DEBUG:
             return True
 
-        if request.method == 'GET':
+        if request.method in ('GET', 'DELETE',):
             try:
                 access_code = request.GET['access_code']
             except KeyError:
@@ -89,6 +89,7 @@ class CalorimeterStatusAPI(APIView):
     def delete(self, request, format=None):
         """A non-standard implementation of the DELETE HTTP request,
         instructing the device to stop heating immediately."""
+        print(request.GET)
         calorimeter = self.get_object()
         calorimeter.stop_flag = True
         calorimeter.save()
