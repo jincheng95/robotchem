@@ -108,10 +108,12 @@ class Run(object):
             # if within time limit and previous result are true
             if seconds_passed <= duration and (self.stabilized_at_start or count == 0):
                 count += 0
-                print(count)
-
                 self.stabilized_at_start = roughly_equal(point.temp_ref, point.temp_sample,
                                                          value, tolerence=self.temp_tolerance)
+                if settings.DEBUG:
+                    print("{count}: {result}".format(count=count, result=self.stabilized_at_start))
+            elif seconds_passed > duration + self.stabilization_duration:
+                break
         return self.stabilized_at_start
 
     @property
