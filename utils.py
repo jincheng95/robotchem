@@ -70,6 +70,11 @@ class NetworkQueue(asyncio.Queue):
         self.threshold_qsize = kwargs.pop('threshold_qsize') or settings.WEB_API_MIN_UPLOAD_LENGTH
         super(NetworkQueue, self).__init__(*args, **kwargs)
 
+    def put(self, *args, **kwargs):
+        if settings.DEBUG:
+            print("Network queue size: {0}".format(self.qsize() + 1))
+        return super(NetworkQueue, self).put(*args, **kwargs)
+
 
 async def batch_upload(loop, network_queue, run_id):
     """An asynchronous function that uploads payloads by consuming from the network queue

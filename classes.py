@@ -59,7 +59,7 @@ class Run(object):
         self.data_points.append(measurement)
 
         # send its json representation into the upload queue
-        self.network_queue.put(measurement.jsonify())
+        await self.network_queue.put(measurement.jsonify())
 
         # batch update pid values
         pids = self.PID_ref, self.PID_sample

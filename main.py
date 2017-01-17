@@ -159,7 +159,7 @@ async def get_ready(_loop, run):
             break
 
         # Watch web API response for whether user has put in the sample
-        run.is_ready = await batch_upload(_loop, run.network_queue, run.id)
+        run.is_ready = await run.upload_queue(_loop)
 
         # Sleep for a set amount of time, then rerun the PWM calculations
         await asyncio.sleep(run.interval)
