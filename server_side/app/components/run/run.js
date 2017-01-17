@@ -187,12 +187,11 @@ export default class Run extends React.PureComponent {
         .then((response) => {
           toggleLoading();
           statusRefresh();
-          this.setState({is_ready_checkbox_loading: false});
         })
         .catch((error) => {
           toggleLoading();
           console.log(error);
-          this.setState({is_ready_checkbox_loading: true});
+          this.setState({is_ready_checkbox_loading: false});
         })
   }
 
