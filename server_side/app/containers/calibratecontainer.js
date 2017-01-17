@@ -63,6 +63,16 @@ export default class CalibrateContainer extends Component {
           {renderTextField('K_d', 'Derivative Factor')}
           <br/><br/>
 
+          <h3>Temperature Stabilization</h3>
+          {renderTextField('max_ramp_rate', 'Linear ramp rate max.')}
+          <br/>
+          {renderTextField('temp_tolerance_range', 'Temperature comparison tolerance')}
+          <br/>
+          {renderTextField('temp_tolerance_duration', 'Temperature stabilisation duration')}
+          <p className="text-muted">Time duration in seconds, in which temperature is held constant and considered to be 'stable'.</p>
+          <br/>
+
+
           <h3>Device Refresh Intervals</h3>
           <p>
             The interval entered here is a minimum value.
