@@ -17,7 +17,7 @@ class Run(object):
 
     def __init__(self, run_id, start_temp, target_temp, ramp_rate,
                  PID_ref, PID_sample, interval, min_upload_length, stabilization_duration,
-                 temp_tolerance=0.5):
+                 temp_tolerance=1):
         self.id = run_id
         self.start_temp = start_temp
         self.target_temp = target_temp
@@ -93,6 +93,9 @@ class Run(object):
         # first, a quick check to see if very last measurement is very out of start temp range
         last_data_point = self.data_points[-1]
         if not roughly_equal(last_data_point.temp_ref, last_data_point.temp_sample, value, tolerence=5):
+            if settings.DEBUG:
+                print('The run has not stabilised at {v} from a rough check on the last set of '
+                      'temperature measurement.'.format(v=value))
             return self.stabilized_at_start
 
         count = 0
@@ -105,6 +108,7 @@ class Run(object):
             # if within time limit and previous result are true
             if seconds_passed <= duration and (self.stabilized_at_start or count == 0):
                 count += 0
+                print(count)
 
                 self.stabilized_at_start = roughly_equal(point.temp_ref, point.temp_sample,
                                                          value, tolerence=self.temp_tolerance)

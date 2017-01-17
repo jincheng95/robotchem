@@ -78,7 +78,7 @@ TEMP_READ_TIME_INTERVAL = 0.2
 
 # The difference between temperature values for them to be considered 'practically equal'
 TEMP_TOLERANCE = 1
-TEMP_STABILISATION_MIN_DURATION = 20
+TEMP_STABILISATION_MIN_DURATION = 15
 
 
 """

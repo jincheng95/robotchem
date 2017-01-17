@@ -317,6 +317,7 @@ def indicate_heating(_loop):
     GPIO.output((settings.GREEN, settings.BLUE), GPIO.LOW)
     asyncio.ensure_future(flash_LED(settings.RED), loop=_loop)
 
+
 def cleanup(*heaters, wipe=False):
     """
     Cleans up the whole GPIO board. Use when exception is raised.
