@@ -28,8 +28,8 @@ PID_PARAMS = {
     'D': 0.,
 }
 
-# Measured, calibrated maximum rate (degrees Celsius per second)
-MAX_RAMP_RATE = 1.0
+# Measured, calibrated maximum rate (degrees Celsius)
+MAX_RAMP_RATE = 0.5
 
 
 """

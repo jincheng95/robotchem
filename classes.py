@@ -79,7 +79,11 @@ class Run(object):
         self.is_ready = await batch_upload(_loop, self)
         return self.is_ready
 
-    def check_stabilization(self, value, duration=None):
+    def batch_setpoint(self, setpoint):
+        for pid in (self.PID_sample, self.PID_ref):
+            pid.set_point(setpoint)
+
+    def check_stabilization(self, value, duration=None, tolerance_factor=1):
         """
         Check if the temperatures of the last measurements are within range of the value.
         The measurements must be made within a specified amount of time ago and
@@ -92,7 +96,7 @@ class Run(object):
 
         # first, a quick check to see if very last measurement is very out of start temp range
         last_data_point = self.data_points[-1]
-        if not roughly_equal(last_data_point.temp_ref, last_data_point.temp_sample, value, tolerence=5):
+        if not roughly_equal(last_data_point.temp_ref, last_data_point.temp_sample, value, tolerence=3):
             if settings.DEBUG:
                 print('The run has not stabilised at {v} from a rough check on the last set of '
                       'temperature measurement.'.format(v=value))
@@ -109,7 +113,7 @@ class Run(object):
             if seconds_passed <= duration and (self.stabilized_at_start or count == 0):
                 count += 0
                 self.stabilized_at_start = roughly_equal(point.temp_ref, point.temp_sample,
-                                                         value, tolerence=self.temp_tolerance)
+                                                         value, tolerence=self.temp_tolerance * tolerance_factor)
                 if settings.DEBUG:
                     print("{count}: {result}".format(count=count, result=self.stabilized_at_start))
             elif seconds_passed > duration + self.stabilization_duration:

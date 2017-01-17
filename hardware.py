@@ -279,16 +279,16 @@ def initialize(board_only=False):
     return heater_pwm_ref, heater_pwm_sample, adc_object
 
 
-async def flash_LED(*pins, period=0.5):
+async def flash_LED(*pins, period=0.15):
     """
     A coroutine that routinely flashes the LEDs.
     :param pins: pin numbers of LED bulbs
     :param period: the LED will flash every x seconds
     """
     while True:
-        GPIO.output(pins, GPIO.HIGH)
-        await asyncio.sleep(period)
         GPIO.output(pins, GPIO.LOW)
+        await asyncio.sleep(period)
+        GPIO.output(pins, GPIO.HIGH)
         await asyncio.sleep(period)
 
 

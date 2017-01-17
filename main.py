@@ -182,8 +182,9 @@ async def run_calorimetry(_loop, run):
         await run.upload_queue(_loop)
 
         # if current temps are more or less the desired set point, increment the ramp
-        if run.check_stabilization(set_point, duration=2) and set_point < run.target_temp:
+        if run.check_stabilization(set_point, duration=2, tolerance_factor=1.25) and set_point < run.target_temp:
             set_point += run.real_ramp_rate
+            run.batch_setpoint(set_point)
 
             if settings.DEBUG:
                 print("*********************************"
