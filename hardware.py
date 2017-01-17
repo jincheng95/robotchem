@@ -331,15 +331,15 @@ def cleanup(*heaters, wipe=False):
         heater.ChangeDutyCycle(0)
         heater.stop()
 
+    # switch off all outputs (including heaters which are the most dangerous)
+    all_output_pins = (settings.GREEN, settings.BLUE, settings.RED,
+                       settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN,
+                       )
+    GPIO.output(all_output_pins, GPIO.LOW)
+
+    # Turn on power indicator
+    GPIO.output(settings.GREEN, GPIO.HIGH)
+
     if wipe:
         # at the end of event loop, use raspberry pi native hardware cleanup
         GPIO.cleanup()
-    else:
-        # switch off all outputs (including heaters which are the most dangerous)
-        all_output_pins = (settings.GREEN, settings.BLUE, settings.RED,
-                           settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN,
-                           )
-        GPIO.output(all_output_pins, GPIO.LOW)
-
-        # Turn on power indicator
-        GPIO.output(settings.GREEN, GPIO.HIGH)

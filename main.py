@@ -134,7 +134,6 @@ async def active(_loop, **calorimeter_data):
     # when instructed to stop heating, clean up and return to idle function
     except StopHeatingError:
         cleanup(run.heater_sample, run.heater_ref, wipe=True)
-        initialize(board_only=True)
         return
 
 
