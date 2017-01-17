@@ -92,7 +92,8 @@ class CalorimeterStatusAPI(APIView):
         calorimeter = self.get_object()
         calorimeter.stop_flag = True
         calorimeter.save()
-        Run.objects.filter(is_finished=False).update(is_finished=True, is_running=False, finish_time=timezone.now())
+        Run.objects.filter(is_finished=False).update(finish_time=timezone.now())
+        Run.objects.filter(calorimeter=calorimeter).update(is_finished=True, is_running=False)
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
