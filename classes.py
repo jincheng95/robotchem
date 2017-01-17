@@ -81,7 +81,7 @@ class Run(object):
 
     def batch_setpoint(self, setpoint):
         for pid in (self.PID_sample, self.PID_ref):
-            pid.set_point(setpoint)
+            pid.set_setpoint(setpoint)
 
     def check_stabilization(self, value, duration=None, tolerance_factor=1):
         """
