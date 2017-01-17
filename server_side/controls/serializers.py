@@ -20,6 +20,7 @@ class CalorimeterSerializer(serializers.ModelSerializer):
         fields = ('id', 'serial', 'access_code', 'name', 'creation_time',
                   'current_sample_temp', 'current_ref_temp',
                   'K_p', 'K_i', 'K_d', 'idle_loop_interval',
+                  'max_ramp_rate', 'temp_tolerance_range', 'temp_tolerance_duration',
                   'active_loop_interval', 'web_api_min_upload_length',
                   'last_changed_time', 'last_comm_time',
                   'is_active', 'has_active_runs',
