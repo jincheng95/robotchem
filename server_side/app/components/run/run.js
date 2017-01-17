@@ -13,6 +13,7 @@ import Dialog from 'material-ui/Dialog';
 import Refreshing from '../refreshing';
 
 import Stop from 'material-ui/svg-icons/AV/stop';
+import TrendingFlat from 'material-ui/svg-icons/action/trending-flat';
 import CloudDownload from 'material-ui/svg-icons/file/cloud-download';
 import TrendingUp from 'material-ui/svg-icons/action/trending-up';
 import FastForward from 'material-ui/svg-icons/AV/fast-forward';
@@ -79,12 +80,14 @@ export default class Run extends React.PureComponent {
       autorefreshInt: null,
       stopDialogOpen: false,
       has_retrieved_from_server: false,
+      is_ready_checkbox_loading: false,
     };
     this.refresh = this.refresh.bind(this);
     this.onExpandChange = this.onExpandChange.bind(this);
     this.renderDetails = this.renderDetails.bind(this);
     this.cancelAutorefresh = this.cancelAutorefresh.bind(this);
     this.stopRun = this.stopRun.bind(this);
+    this.onIsReadyChecked = this.onIsReadyChecked.bind(this);
   }
 
   normalize(data_points) {
@@ -161,7 +164,7 @@ export default class Run extends React.PureComponent {
   stopRun() {
     const {code, toggleLoading, statusRefresh} = this.props;
     toggleLoading();
-    axios.delete('/api/status/?access_code=' + code)
+    axios.delete('/api/status/?access_code='+code)
         .then((response) => {
           toggleLoading();
           statusRefresh();
@@ -171,6 +174,22 @@ export default class Run extends React.PureComponent {
         console.log(error.response);
       });
     this.setState({stopDialogOpen: false});
+  }
+  onIsReadyChecked() {
+    const {code, toggleLoading, statusRefresh, run} = this.props;
+    toggleLoading();
+    this.setState({is_ready_checkbox_loading: true});
+    axios.put('/api/data/', {access_code: code, run: run.id})
+        .then((response) => {
+          toggleLoading();
+          statusRefresh();
+          this.setState({is_ready_checkbox_loading: false});
+        })
+        .catch((error) => {
+          toggleLoading();
+          console.log(error);
+          this.setState({is_ready_checkbox_loading: true});
+        })
   }
 
   renderDetails() {
@@ -184,8 +203,8 @@ export default class Run extends React.PureComponent {
   }
   render() {
     const { run } = this.props;
-    const { expanded, data_points, stopDialogOpen, has_retrieved_from_server } = this.state;
-    const { id, name, is_running, is_finished, data_point_count } = run;
+    const { expanded, data_points, stopDialogOpen, has_retrieved_from_server, is_ready_checkbox_loading } = this.state;
+    const { id, name, is_running, is_ready, is_finished, data_point_count } = run;
     const is_active = is_running || (!is_finished);
 
     const cardTitleText = !!name ? name : `Run #${id}`;
@@ -209,6 +228,11 @@ export default class Run extends React.PureComponent {
           {is_active &&
           <FlatButton onTouchTap={()=>this.setState({stopDialogOpen: true})}
             backgroundColor={red500} label="Stop" icon={<Stop/>} style={{color: 'white'}} />}
+          {is_active &&
+          <FlatButton label={is_ready ? "Heating" : "Hold"} icon={is_ready ? <TrendingUp/> : <TrendingFlat/>}
+                    disabled={is_ready_checkbox_loading}
+                    onTouchTap={this.onIsReadyChecked}
+          />}
         </CardActions>
 
         <Divider />

@@ -43,7 +43,7 @@ class DeviceAccessPermission(permissions.BasePermission):
         if DEBUG:
             return True
 
-        if request.method in ['GET', 'DELETE']:
+        if request.method == 'GET':
             try:
                 access_code = request.GET['access_code']
             except KeyError:
@@ -175,7 +175,8 @@ class DataPointListAPI(APIView):
         return Response(serializer.data)
 
     def put(self, request, format=None):
-        """Marks a run as having its sample inserted."""
+        """Toggles a run's `is_ready` param,
+        which indicates whether it has an inserted sample and should heat beyond the start temp."""
         try:
             run_id = request.data['run']
             run = Run.objects.get(id=run_id)
@@ -184,7 +185,7 @@ class DataPointListAPI(APIView):
         except Run.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        run.is_ready = True
+        run.is_ready = not run.is_ready
         run.save()
         return Response(RunSerializer(run).data)
 

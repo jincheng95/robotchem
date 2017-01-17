@@ -16,7 +16,7 @@ export default class Start extends Component {
   constructor(props) {
     super(props);
     const {current_sample_temp} = this.props.calorimeter;
-    const start_temp = current_sample_temp > 99 ? 99 : Math.round(props.calorimeter.current_sample_temp);
+    var start_temp = current_sample_temp > 99 ? 99 : Math.round(props.calorimeter.current_sample_temp);
     this.state = {
       step: 0,
       start_temp: start_temp,
@@ -44,7 +44,7 @@ export default class Start extends Component {
     this.setState({start_temp});
   }
   changeTargetTemp(event, val) {
-    let temp = val * 100;
+    var temp = val * 100;
     if(temp < this.state.start_temp || (temp - this.state.start_temp) < 1){
       temp = this.state.start_temp + 1;
     }

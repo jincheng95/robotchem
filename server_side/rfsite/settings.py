@@ -25,9 +25,9 @@ SECRET_KEY = '$g+8eo+t$qts6t&gcp=%3$z-g*60p)67p=_w@8yejnx8we&ogh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 try:
-    from .production_settings import DEBUG
+    from .local_settings import DEBUG
 except ImportError:
-    DEBUG = True
+    DEBUG = False
 
 
 if DEBUG:

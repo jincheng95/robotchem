@@ -20,6 +20,14 @@ class Calorimeter(models.Model):
     current_sample_temp = models.FloatField(null=True, blank=True)
     current_ref_temp = models.FloatField(null=True, blank=True)
 
+    K_p = models.FloatField("PID Proportionality Factor", default=5., blank=True)
+    K_i = models.FloatField("PID Integral Factor", default=1., blank=True)
+    K_d = models.FloatField("PID Derivative Factor", default=0.0003, blank=True)
+    idle_loop_interval = models.FloatField("Web API Refresh Rate when no jobs are running", default=10., blank=True)
+    active_loop_interval = models.FloatField("Web API / PID Calculation Refresh Rate with job running", default=5.)
+    web_api_min_upload_length = models.IntegerField("Minimum number of data points to collect before uploading",
+                                                    default=5)
+
     last_changed_time = models.DateTimeField(auto_now=True, blank=True)
     last_comm_time = models.DateTimeField('Time of Last Communication From Device')
 
