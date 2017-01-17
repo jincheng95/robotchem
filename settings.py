@@ -17,7 +17,7 @@ GENERAL SETTINGS
 """
 # Set this to True in code development,
 # False in testing and presentation
-DEBUG = True
+DEBUG = False
 
 
 # PID controller settings
@@ -35,8 +35,8 @@ MAX_RAMP_RATE = 1.0
 WEB API SETTINGS
 """
 # Web API Address
-# WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
-WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
+WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
+# WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
 WEB_API_STATUS_ADDRESS = WEB_API_BASE_ADDRESS + "status/"
 WEB_API_DATA_ADDRESS = WEB_API_BASE_ADDRESS + "data/"
 
@@ -67,8 +67,8 @@ TEMPERATURE SENSOR SETTINGS
 """
 # Temperature sensor IDs
 TEMP_SENSOR_BASE_DIR = "/sys/bus/w1/devices/"
-TEMP_SENSOR_ID_REF = "3b-6cdc038848fb"
-TEMP_SENSOR_ID_SAMPLE = "3b-0cdc0388554f"
+TEMP_SENSOR_ID_SAMPLE = "3b-6cdc038848fb"
+TEMP_SENSOR_ID_REF = "3b-0cdc0388554f"
 TEMP_SENSOR_ID_APPENDIX = "w1_slave"
 
 # Temperature read time interval
