@@ -141,6 +141,7 @@ async def get_ready(_loop, pid_ref, pid_sample, network_queue, run_id, interval)
     :param network_queue: the NetworkQueue object with which this function spawns a consumer thread
     that transmits the data in the queue and produces data items in the queue.
     :param run_id: unique numeric ID from web API of this particular run.
+    :param interval: (minimum) time interval between each cycle of PID calculation.
     """
 
     # Make available the heater PWM objects, then asynchronously measure temperatures
@@ -206,6 +207,7 @@ async def run_calorimetry(_loop, active_job, network_queue, run_id, interval):
     :param network_queue: the NetworkQueue object with which this function spawns a consumer thread
     that transmits the data in the queue and produces data items in the queue.
     :param run_id: unique numeric ID from web API of this particular run.
+    :param interval: (minimum) time interval between each cycle of PID calculation.
     """
 
     # Get heater PWM objects
