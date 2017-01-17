@@ -19,7 +19,8 @@ Jin Cheng 12/12/16:
     documentation
 
 Jin Cheng 17/01/17:
-    allow customisation of PID params from the web interface
+    allow customisation of PID params from the web interface,
+    the flashing LED function
 """
 
 import asyncio
@@ -278,31 +279,43 @@ def initialize(board_only=False):
     return heater_pwm_ref, heater_pwm_sample, adc_object
 
 
+async def flash_LED(*pins, period=0.5):
+    """
+    A coroutine that routinely flashes the LEDs.
+    :param pins: pin numbers of LED bulbs
+    :param period: the LED will flash every x seconds
+    """
+    while True:
+        GPIO.output(pins, GPIO.HIGH)
+        await asyncio.sleep(period)
+        GPIO.output(pins, GPIO.LOW)
+        await asyncio.sleep(period)
+
+
 def indicate_starting_up():
     """
     Indicate the device is heating to start_temp by turning on/off LED lights.
     """
 
     if settings.FAKE_HARDWARE:
-        print('The Green LED has been switched on.')
+        print('The red LED has been switched on.')
         return
 
-    GPIO.output(settings.BLUE, GPIO.LOW)
-    GPIO.output((settings.GREEN, settings.RED), GPIO.HIGH)
+    GPIO.output((settings.BLUE, settings.GREEN), GPIO.LOW)
+    GPIO.output(settings.RED, GPIO.HIGH)
 
 
-def indicate_heating():
+def indicate_heating(_loop):
     """
     Indicate the device is heating in an active calorimetry by turning on/off LED lights.
     """
 
     if settings.FAKE_HARDWARE:
-        print('The Red LED has been switched on.')
+        print('The Red LED is now flashing!.')
         return
 
     GPIO.output((settings.GREEN, settings.BLUE), GPIO.LOW)
-    GPIO.output(settings.RED, GPIO.HIGH)
-
+    asyncio.ensure_future(flash_LED(settings.RED), _loop)
 
 def cleanup(*heaters, wipe=False):
     """

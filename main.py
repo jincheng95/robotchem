@@ -17,7 +17,10 @@ Jin Cheng, 12/12/16:
 
 Jin Cheng, 16/01/17:
     Several debugging changes to simplify calibration,
-    Allow customisation of PID params, loop interval, maximum ramp rate from web interface
+    Allow customisation of PID params, loop interval, maximum ramp rate from web interface.
+
+Jin Cheng, 17/01/17
+    Major refactor of common flow logic code into classes.
 """
 
 import asyncio
@@ -80,13 +83,18 @@ async def idle(loop):
             # pass the active run information to the active function,
             # wait for the active run to finish
             # and return control to the idle function.
-            await active(loop, active_run, **data)
+
+            if settings.DEBUG:
+                print('****************************************'
+                      '\nThe main event loop has entered the ACTIVE LOOP.')
+
+            await active(loop, **data)
 
     # Run itself again
     asyncio.ensure_future(idle(loop), loop=loop)
 
 
-async def active(_loop, active_job, **calorimeter_data):
+async def active(_loop, **calorimeter_data):
     """
     An asynchronous coroutine run periodically during an active calorimetry job.
     Contains logic about the set point, heating to start temp as quickly as possible, and uploading measurements.
@@ -101,7 +109,6 @@ async def active(_loop, active_job, **calorimeter_data):
     temp_ref, temp_sample = await asyncio.gather(asyncio.ensure_future(read_temp_ref()),
                                                  asyncio.ensure_future(read_temp_sample()),
                                                  loop=_loop)
-    start_temp, run_id = active_job['start_temp'], active_job['id']
 
     # Get a representation of this DSC run
     run = Run.from_web_resp(calorimeter_data, temp_ref, temp_sample)
@@ -109,16 +116,24 @@ async def active(_loop, active_job, **calorimeter_data):
     try:
         # Get cells to reach start temperature
         _loop.call_soon(indicate_starting_up)
+
+        if settings.DEBUG:
+            print('****************************************'
+                  '\nThe main event loop has entered the GET READY LOOP.')
+
         await get_ready(_loop, run)
 
         # When control is yielded back from get_ready, start_temp has been reached
-        _loop.call_soon(indicate_heating)
+        _loop.call_soon(indicate_heating, _loop)
+
+        if settings.DEBUG:
+            print('****************************************'
+                  '\nThe main event loop has entered the LINEAR RAMP LOOP.')
         await run_calorimetry(_loop, run)
 
     # when instructed to stop heating, clean up and return to idle function
     except StopHeatingError:
         cleanup(wipe=True)
-        heater_ref, heater_sample, adc = initialize()
         return
 
 
@@ -157,16 +172,6 @@ async def run_calorimetry(_loop, run):
     :param _loop: the main event loop
     :param run: the object representing the run params.
     """
-
-
-    # # Make local variables based on job params
-    # start_temp, end_temp, rate = (active_job['start_temp'], active_job['target_temp'],
-    #                               active_job['ramp_rate'] * settings.MAX_RAMP_RATE,
-    #                               )
-    #
-    # # Instantiate new PID objects
-    # pid_ref, pid_sample = (PID(await read_temp_ref(), set_point=start_temp),
-    #                        PID(await read_temp_sample(), set_point=start_temp))
 
     run.last_time = _loop.time()
     set_point = run.start_temp

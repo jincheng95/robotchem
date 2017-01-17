@@ -84,10 +84,6 @@ async def batch_upload(loop, network_queue, run_id):
     :exception StopHeatingError: When this error is raised, any async function that calls it
     must give control back to the idle loop and stop heating.
     Raised if a 'stop_flag' field returns True from the web API response.
-
-    :exception SampleNotInsertedError: Indicates that the user has not put the sample in the cell,
-    the heating functions should hold the set point at instructed start temp for a calorimetry job
-    when this error occurs.
     """
 
     while True:

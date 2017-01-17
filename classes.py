@@ -5,7 +5,6 @@ Has some similarities to the database models on the web backend.
 Jin Cheng, 17/01/17
 """
 import datetime
-import time
 
 from hardware import measure_all, PID, initialize
 from utils import NetworkQueue, clamp, roughly_equal, batch_upload
@@ -77,7 +76,8 @@ class Run(object):
 
     async def upload_queue(self, _loop):
         """Checks if the network queue has crossed the threshold to upload data."""
-        return await batch_upload(_loop, self.network_queue, self.id)
+        self.is_ready = await batch_upload(_loop, self.network_queue, self.id)
+        return self.is_ready
 
     def check_stabilization(self, value, duration=None):
         """
@@ -174,5 +174,5 @@ class DataPoint(object):
         heat_ref = voltage_ref * current_ref * delta_time
         heat_sample = voltage_sample * current_sample * delta_time
 
-        return cls.__init__(run, datetime.datetime.now(),
-                            temp_ref, temp_sample, heat_ref, heat_sample)
+        return cls(run, datetime.datetime.now(),
+                   temp_ref, temp_sample, heat_ref, heat_sample)

@@ -61,9 +61,12 @@ class Run(models.Model):
     creation_time = models.DateTimeField('Creation Date', auto_now_add=True)
     start_time = models.DateTimeField('Start Time', blank=True, null=True)
     finish_time = models.DateTimeField('Finish Time', blank=True, null=True)
+
+    stabilized_at_start = models.BooleanField('Temp Has Stabilized at Start Temp', blank=True, default=False)
     is_ready = models.BooleanField('Is Ready to Start?', blank=True, default=False)
     is_running = models.BooleanField('Is currently running?', blank=True, default=False)
     is_finished = models.BooleanField('Has finished running?', blank=True, default=False)
+
     email = models.EmailField('Notification Email Address', blank=True, null=True)
 
     def __repr__(self):
