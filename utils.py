@@ -66,8 +66,8 @@ class NetworkQueue(asyncio.Queue):
     """A Queue object with additional attribute to store last time an item was retrieved and processed."""
     def __init__(self, *args, **kwargs):
         self.last_time = time.time()
-        self.threshold_time = kwargs.get('threshold_time') or settings.WEB_API_ACTIVE_INTERVAL
-        self.threshold_qsize = kwargs.get('threshold_qsize') or settings.WEB_API_MIN_UPLOAD_LENGTH
+        self.threshold_time = kwargs.pop('threshold_time') or settings.WEB_API_ACTIVE_INTERVAL
+        self.threshold_qsize = kwargs.pop('threshold_qsize') or settings.WEB_API_MIN_UPLOAD_LENGTH
         super(NetworkQueue, self).__init__(*args, **kwargs)
 
 

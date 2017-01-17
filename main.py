@@ -32,7 +32,7 @@ import settings
 from hardware import (read_temp_ref, read_temp_sample, measure_all, PID,
                       initialize, indicate_heating, indicate_starting_up, cleanup)
 from utils import fetch, clamp, roughly_equal, batch_upload, StopHeatingError, NetworkQueue
-
+import logging
 
 # For some reason, relative imports on the raspberry pi do not work unless the following is included
 ROOT_DIR = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
