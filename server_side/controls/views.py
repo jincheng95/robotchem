@@ -89,11 +89,10 @@ class CalorimeterStatusAPI(APIView):
     def delete(self, request, format=None):
         """A non-standard implementation of the DELETE HTTP request,
         instructing the device to stop heating immediately."""
-        print(request.GET)
         calorimeter = self.get_object()
         calorimeter.stop_flag = True
         calorimeter.save()
-        Run.objects.filter(is_finished=False).update(is_finished=True, finish_time=timezone.now())
+        Run.objects.filter(is_finished=False).update(is_finished=True, is_running=False, finish_time=timezone.now())
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
