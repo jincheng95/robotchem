@@ -37,11 +37,11 @@ export default class Access extends React.PureComponent {
     const { code, changeAccessCode, changeCalorimeterStatus, toggleLoading } = this.props;
     this.setState( {accessCodeRejected: false} );
     toggleLoading();
+    changeAccessCode(code);
     axios.get('/api/status/?access_code=' + code)
       .then((response) => {
         toggleLoading();
         changeCalorimeterStatus(response.data);
-        changeAccessCode(code);
       })
       .catch((error) => {
         toggleLoading();
