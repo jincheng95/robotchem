@@ -76,7 +76,7 @@ class Run(object):
 
     async def upload_queue(self, _loop):
         """Checks if the network queue has crossed the threshold to upload data."""
-        self.is_ready = await batch_upload(_loop, self.network_queue, self.id)
+        self.is_ready = await batch_upload(_loop, self)
         return self.is_ready
 
     def check_stabilization(self, value, duration=None):
