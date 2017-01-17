@@ -186,7 +186,10 @@ class DataPointListAPI(APIView):
         except Run.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        run.is_ready = not run.is_ready
+        if run.stabilized_at_start:
+            run.is_ready = not run.is_ready
+        else:
+            run.is_ready = False
         run.save()
         return Response(RunSerializer(run).data)
 
