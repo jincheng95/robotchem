@@ -21,12 +21,6 @@ class StopHeatingError(BaseException):
     pass
 
 
-class SampleNotInsertedError(BaseException):
-    """An exception, when raised, should indicate user has not inserted the sample,
-    and should not start the formal calorimetry heat ramp yet."""
-    pass
-
-
 async def fetch(session, method, url, payload, timeout=settings.WEB_API_ACTIVE_INTERVAL, **kwargs):
     """
     An asynchronous HTTP request function sending JSON data,
@@ -72,6 +66,8 @@ class NetworkQueue(asyncio.Queue):
     """A Queue object with additional attribute to store last time an item was retrieved and processed."""
     def __init__(self, *args, **kwargs):
         self.last_time = time.time()
+        self.threshold_time = kwargs.get('threshold_time') or settings.WEB_API_ACTIVE_INTERVAL
+        self.threshold_qsize = kwargs.get('threshold_qsize') or settings.WEB_API_MIN_UPLOAD_LENGTH
         super(NetworkQueue, self).__init__(*args, **kwargs)
 
 
@@ -95,9 +91,10 @@ async def batch_upload(loop, network_queue, run_id):
     """
 
     while True:
-        # Only make HTTP requests above certain time and item number thresholds
-        if network_queue.qsize() >= settings.WEB_API_MIN_UPLOAD_LENGTH \
-                and (time.time() - network_queue.last_time) >= settings.WEB_API_ACTIVE_INTERVAL:
+        # Only make HTTP requests above certain item number threshold
+        # and after a set amount of time since last upload
+        if network_queue.qsize() >= network_queue.threshold_qsize \
+                and (time.time() - network_queue.last_time) >= network_queue.threshold_time:
 
             # collect all items in the queue
             data = await asyncio.gather(

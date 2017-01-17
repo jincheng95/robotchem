@@ -17,6 +17,9 @@ Jin Cheng 12/12/16:
     function cleanup and asynchronisation, introduced wrappers
     the asynchronous PWM control queue
     documentation
+
+Jin Cheng 17/01/17:
+    allow customisation of PID params from the web interface
 """
 
 import asyncio
@@ -27,7 +30,7 @@ import time
 import settings
 from utils import clamp
 
-if not settings.SIMULATE_HARDWARE:
+if not settings.DEBUG:
     import Adafruit_ADS1x15
     import RPi.GPIO as GPIO
 else:
@@ -124,7 +127,7 @@ async def _read_temp(identifier):
     """
 
     # if debug, return some random value for testing
-    if settings.SIMULATE_HARDWARE:
+    if settings.DEBUG:
         global debug_temp
         debug_temp += 0.2
         await asyncio.sleep(random.random() * 0.1) # simulate slow I/O
@@ -236,7 +239,7 @@ def initialize():
     :returns A tuple of reference, sample PWM objects
     """
 
-    if settings.SIMULATE_HARDWARE:
+    if settings.DEBUG:
         print('GPIO board is all set up!')
 
         class FakePWM:
@@ -272,13 +275,12 @@ def initialize():
     return heater_pwm_ref, heater_pwm_sample, adc_object
 
 
-
 def indicate_starting_up():
     """
     Indicate the device is heating to start_temp by turning on/off LED lights.
     """
 
-    if settings.SIMULATE_HARDWARE:
+    if settings.DEBUG:
         print('The Green LED has been switched on.')
         return
 
@@ -291,7 +293,7 @@ def indicate_heating():
     Indicate the device is heating in an active calorimetry by turning on/off LED lights.
     """
 
-    if settings.SIMULATE_HARDWARE:
+    if settings.DEBUG:
         print('The Red LED has been switched on.')
         return
 
@@ -299,13 +301,23 @@ def indicate_heating():
     GPIO.output(settings.RED, GPIO.HIGH)
 
 
-def cleanup():
+def cleanup(wipe=False):
     """
     Cleans up the whole GPIO board. Use when exception is raised.
     """
 
-    if settings.SIMULATE_HARDWARE:
+    if settings.DEBUG:
         print('GPIO board is cleaned up!')
         return
 
-    GPIO.cleanup()
+    if wipe:
+        # at the end of event loop, use raspberry pi native hardware cleanup
+        GPIO.cleanup()
+    else:
+        # switch off all outputs (including heaters which are the most dangerous)
+        all_output_pins = (settings.GREEN, settings.BLUE, settings.RED,
+                           settings.HEATER_REF_PIN, settings.HEATER_SAMPLE_PIN)
+        GPIO.output(all_output_pins, GPIO.LOW)
+
+        # Turn on power indicator
+        GPIO.output(settings.GREEN, GPIO.HIGH)

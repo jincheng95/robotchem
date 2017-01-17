@@ -5,6 +5,9 @@ Change the variables in this file to specify:
 3. website URL or IP address to which data is sent,
 4. time intervals to measure and send data
 
+Some parameters can be controlled by the website's Calibrate page,
+and the corresponding params listed here are defaults in case web connection fails.
+
 Jin Cheng, 12/12/16
 """
 
@@ -15,7 +18,6 @@ GENERAL SETTINGS
 # Set this to True in code development,
 # False in testing and presentation
 DEBUG = True
-SIMULATE_HARDWARE = False
 
 
 # PID controller settings
@@ -27,20 +29,14 @@ PID_PARAMS = {
 
 # Measured, calibrated maximum rate (degrees Celsius per second)
 MAX_RAMP_RATE = 1.0
-RAMP_SETPOINT_INCREMENT = 0.1
 
 
 """
 WEB API SETTINGS
 """
 # Web API Address
-try:
-    from local_settings import WEB_API_BASE_ADDRESS
-except ImportError:
-    if DEBUG:
-        WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
-    else:
-        WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
+# WEB_API_BASE_ADDRESS = "http://robotchem.chengj.in/api/"
+WEB_API_BASE_ADDRESS = "http://127.0.0.1:8000/api/"
 WEB_API_STATUS_ADDRESS = WEB_API_BASE_ADDRESS + "status/"
 WEB_API_DATA_ADDRESS = WEB_API_BASE_ADDRESS + "data/"
 
@@ -57,7 +53,7 @@ WEB_API_MIN_UPLOAD_LENGTH = 5
 try:
     from local_settings import ACCESS_CODE
 except ImportError:
-    ACCESS_CODE = ""
+    ACCESS_CODE = "SUPER_SECRET_PASSWORD"
 
 """
 LOOP TIME INTERVAL SETTINGS
