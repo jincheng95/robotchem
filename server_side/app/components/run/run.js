@@ -10,6 +10,7 @@ import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
+import Snackbar from 'material-ui/Snackbar';
 import Refreshing from '../refreshing';
 
 import Stop from 'material-ui/svg-icons/AV/stop';
@@ -81,6 +82,7 @@ export default class Run extends React.PureComponent {
       stopDialogOpen: false,
       has_retrieved_from_server: false,
       is_ready_checkbox_loading: false,
+      show_is_ready_notification: false,
     };
     this.refresh = this.refresh.bind(this);
     this.onExpandChange = this.onExpandChange.bind(this);
@@ -134,16 +136,18 @@ export default class Run extends React.PureComponent {
     const {autorefreshInt} = this.state;
     window.clearInterval(autorefreshInt);
   }
-  componentWillReceiveProps() {
+  componentWillReceiveProps(prev, next) {
     const { expanded, autorefreshInt } = this.state;
     const { autorefresh } = this.props;
-    const { is_running, is_finished } = this.props.run;
+    const { is_running, is_finished, show_is_ready_notification } = this.props.run;
     if( expanded && !autorefreshInt && (!is_finished || is_running) ) {
       this.refresh();
       const int = window.setInterval(this.refresh, 5000);
       this.setState({autorefreshInt: int});
     } else if ( !autorefresh && autorefreshInt ) {
       this.cancelAutorefresh();
+    } else if ( !prev.run.stabilized_at_start && next.run.stabilized_at_start && !show_is_ready_notification) {
+      this.setState({show_is_ready_notification: true});
     }
   }
   componentDidMount() {
@@ -203,7 +207,8 @@ export default class Run extends React.PureComponent {
   }
   render() {
     const { run } = this.props;
-    const { expanded, data_points, stopDialogOpen, has_retrieved_from_server, is_ready_checkbox_loading } = this.state;
+    const { expanded, data_points, stopDialogOpen, has_retrieved_from_server,
+      is_ready_checkbox_loading, show_is_ready_notification } = this.state;
     const { id, name, is_running, is_ready, is_finished, data_point_count, stabilized_at_start } = run;
     const is_active = is_running || (!is_finished);
 
@@ -229,10 +234,12 @@ export default class Run extends React.PureComponent {
           <FlatButton onTouchTap={()=>this.setState({stopDialogOpen: true})}
             backgroundColor={red500} label="Stop" icon={<Stop/>} style={{color: 'white'}} />}
           {stabilized_at_start &&
-          <FlatButton label={is_ready ? "Heating" : "Hold"} icon={is_ready ? <TrendingUp/> : <TrendingFlat/>}
-                    disabled={is_ready_checkbox_loading}
-                    onTouchTap={this.onIsReadyChecked}
-          />}
+            <div className="float-right">
+              <RaisedButton primary label={"Begin Heating"} icon={is_ready ? <TrendingUp/> : <TrendingFlat/>}
+                        disabled={is_ready_checkbox_loading}
+                        onTouchTap={this.onIsReadyChecked}
+              />
+            </div>}
         </CardActions>
 
         <Divider />
@@ -258,6 +265,9 @@ export default class Run extends React.PureComponent {
                 onRequestClose={()=>this.setState({stopDialogOpen: false})}>
           Once stopped, this run can never be resumed.
         </Dialog>}
+        <Snackbar open={show_is_ready_notification}
+                  message={`The calorimeter has reached your specified starting temperature.
+                  Insert your sample and click the "Begin Heating" button to continue.`}/>
       </Card>
     )
   }
