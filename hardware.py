@@ -30,7 +30,7 @@ import time
 import settings
 from utils import clamp
 
-if not settings.DEBUG:
+if not settings.FAKE_HARDWARE:
     import Adafruit_ADS1x15
     import RPi.GPIO as GPIO
 else:

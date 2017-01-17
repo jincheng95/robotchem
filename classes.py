@@ -60,7 +60,7 @@ class Run(object):
         self.data_points.append(measurement)
 
         # send its json representation into the upload queue
-        self.network_queue.put(measurement.jsonify())
+        await self.network_queue.put(measurement.jsonify())
 
         # batch update pid values
         pids = self.PID_ref, self.PID_sample
@@ -174,5 +174,5 @@ class DataPoint(object):
         heat_ref = voltage_ref * current_ref * delta_time
         heat_sample = voltage_sample * current_sample * delta_time
 
-        return cls.__init__(run, datetime.datetime.now(),
-                            temp_ref, temp_sample, heat_ref, heat_sample)
+        return cls(run, datetime.datetime.now(),
+                   temp_ref, temp_sample, heat_ref, heat_sample)
