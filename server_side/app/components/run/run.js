@@ -204,7 +204,7 @@ export default class Run extends React.PureComponent {
   render() {
     const { run } = this.props;
     const { expanded, data_points, stopDialogOpen, has_retrieved_from_server, is_ready_checkbox_loading } = this.state;
-    const { id, name, is_running, is_ready, is_finished, data_point_count } = run;
+    const { id, name, is_running, is_ready, is_finished, data_point_count, stabilized_at_start } = run;
     const is_active = is_running || (!is_finished);
 
     const cardTitleText = !!name ? name : `Run #${id}`;
@@ -228,7 +228,7 @@ export default class Run extends React.PureComponent {
           {is_active &&
           <FlatButton onTouchTap={()=>this.setState({stopDialogOpen: true})}
             backgroundColor={red500} label="Stop" icon={<Stop/>} style={{color: 'white'}} />}
-          {is_active &&
+          {stabilized_at_start &&
           <FlatButton label={is_ready ? "Heating" : "Hold"} icon={is_ready ? <TrendingUp/> : <TrendingFlat/>}
                     disabled={is_ready_checkbox_loading}
                     onTouchTap={this.onIsReadyChecked}

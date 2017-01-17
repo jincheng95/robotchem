@@ -62,15 +62,12 @@ class Run(object):
         await self.network_queue.put(measurement.jsonify())
 
         # batch update pid values
-        pids = self.PID_ref, self.PID_sample
-        temps = measurement.temp_ref, measurement.temp_sample
-        duty_cycles = self.duty_cycle_ref, self.duty_cycle_sample
+        self.duty_cycle_ref = clamp(self.PID_ref.update(measurement.temp_ref))
+        self.duty_cycle_sample = clamp(self.PID_sample.update(measurement.temp_sample))
 
         # batch change duty cycles based on calculated outputs
-        heaters = self.heater_ref, self.heater_sample
-        for pid, temp, duty_cycle, heater in zip(pids, temps, duty_cycles, heaters):
-            duty_cycle = clamp(pid.update(temp))
-            _loop.call_soon(heater.ChangeDutyCycle, duty_cycle)
+        _loop.call_soon(self.heater_ref.ChangeDutyCycle, self.duty_cycle_ref)
+        _loop.call_soon(self.heater_sample.ChangeDutyCycle, self.duty_cycle_sample)
 
         return measurement
 

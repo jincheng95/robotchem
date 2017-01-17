@@ -206,12 +206,13 @@ class DataPointListAPI(APIView):
         try:
             data_points = request.data['data']
             run_id = request.data['run']
+            stabilized = request.data['stabilized_at_start']
+            is_finished = request.data['is_finished']
+
         except KeyError:
-            print('1')
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if not isinstance(data_points, list):
-            print('2')
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         response = {
@@ -231,13 +232,15 @@ class DataPointListAPI(APIView):
         # so that the device does not need to send multiple HTTP requests
         last_data_point = data_points[-1]
         last_sample_temp = last_data_point['temp_sample']
+
         run = Run.objects.get(id=run_id)
+        run.stabilized_at_start = stabilized
         response['is_ready'] = run.is_ready
 
         if not run.is_running and not run.is_finished and last_sample_temp >= run.start_temp:
             run.is_running = True
             run.start_time = timezone.now()
-        if not run.is_finished and run.is_running and last_sample_temp >= run.target_temp:
+        if not run.is_finished and run.is_running and is_finished:
             run.is_running = False
             run.is_finished = True
             run.finish_time = timezone.now()
@@ -272,7 +275,6 @@ class DataPointListAPI(APIView):
         run.save()
 
         if response['errors']:
-            print(response['errors'])
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response(response)
 

@@ -66,12 +66,14 @@ export default class Access extends React.PureComponent {
     ];
     const enterAccessCode = (
       <div style={{minWidth: '80%', marginLeft: '10%', marginRight: '10%'}}>
+        <form onSubmit={this.handleCodeSubmitted}>
           <TextField value={this.state.access_code} id="access-code-field"
-                     style={{width: '100%'}} autoFocus
+                     style={{width: '100%'}} autoFocus onEnter={this.handleCodeSubmitted}
                      errorText={this.state.accessCodeRejected ? "Wrong access code! Please try again." : ""}
                      onChange={ (event) => changeAccessCode(event.target.value) }/>
-          <RaisedButton onTouchTap={this.handleCodeSubmitted}
+          <RaisedButton onTouchTap={this.handleCodeSubmitted} type="submit"
             label="Go!" primary={true} style={{width: '100%'}}/>
+          </form>
         </div>
     );
 
