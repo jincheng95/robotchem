@@ -134,6 +134,7 @@ async def active(_loop, **calorimeter_data):
     # when instructed to stop heating, clean up and return to idle function
     except StopHeatingError:
         cleanup(wipe=True)
+        initialize(board_only=True)
         return
 
 
@@ -183,6 +184,10 @@ async def run_calorimetry(_loop, run):
         # if current temps are more or less the desired set point, increment the ramp
         if run.check_stabilization(set_point, duration=2) and set_point < run.target_temp:
             set_point += run.real_ramp_rate
+
+            if settings.DEBUG:
+                print("*********************************"
+                      "The setpoint has been increased to {setpoint}".format(setpoint=set_point))
         await asyncio.sleep(run.interval)
 
 
