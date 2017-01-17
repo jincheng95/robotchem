@@ -55,13 +55,13 @@ class Controls extends React.PureComponent {
       paddingTop: '-0.5em',
     };
     const { autorefresh, toggleAutorefresh } = this.props;
-    const { activeRun } = this.props.calorimeter;
+    const { has_active_runs } = this.props.calorimeter;
 
     return (
       <Paper zDepth={4} style={paperStyle}>
         <List>
-          {!! activeRun
-            ? this.renderListItem(!!activeRun.name ? activeRun.name : `Run #${activeRun.id}`,
+          {!! has_active_runs
+            ? this.renderListItem(!!has_active_runs.name ? has_active_runs.name : `Run #${has_active_runs.id}`,
                                   '/', <CircularProgress size={30}/>)
             : this.renderListItem("New Run", "/", <AddCircle />)
           }

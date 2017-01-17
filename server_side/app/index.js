@@ -41,6 +41,7 @@ const App = () => (
 
 axios.defaults.headers.common['X-CSRFToken'] = window.csrf_token;
 axios.defaults.headers.post['X-CSRFToken'] = window.csrf_token;
+axios.defaults.headers.put['X-CSRFToken'] = window.csrf_token;
 
 
 ReactDOM.render(
