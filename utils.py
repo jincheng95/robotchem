@@ -9,7 +9,6 @@ import json
 import time
 from itertools import combinations
 
-import aiohttp
 import async_timeout
 
 import settings
@@ -74,56 +73,6 @@ class NetworkQueue(asyncio.Queue):
         if settings.DEBUG:
             print("Network queue size: {0}".format(self.qsize() + 1))
         return super(NetworkQueue, self).put(*args, **kwargs)
-
-
-async def batch_upload(loop, run, override_threshold=False):
-    """An asynchronous function that uploads payloads by consuming from the network queue
-    only when a specified amount of time has passed from time of last processing
-    and when a specified number of items exist in the queue.
-    The asynchronous process breaks otherwise.
-
-    :param loop: the main event loop
-    :param run: the run object representing params, data and settings of the run
-    :param override_threshold: whether to ignore the qsize and delta_time limits on sending data
-
-    :exception StopHeatingError: When this error is raised, any async function that calls it
-    must give control back to the idle loop and stop heating.
-    Raised if a 'stop_flag' field returns True from the web API response.
-    """
-
-    while True:
-        # Only make HTTP requests above certain item number threshold
-        # and after a set amount of time since last upload
-        q = run.network_queue
-        if override_threshold or (q.qsize() >= q.threshold_qsize and (time.time() - q.last_time) >= q.threshold_time):
-
-            # collect all items in the queue
-            data = await asyncio.gather(
-                *[asyncio.ensure_future(q.get()) for _ in range(q.qsize())],
-                loop=loop
-            )
-
-            # make the request and clear the local waiting list
-            payload = {
-                'data': data,
-                'run': run.id,
-                'stabilized_at_start': run.stabilized_at_start,
-                'is_finished': run.is_finished,
-            }
-            async with aiohttp.ClientSession(loop=loop) as session:
-                response = await fetch(session, 'POST', settings.WEB_API_DATA_ADDRESS, payload=payload)
-            if settings.DEBUG:
-                print(response)
-
-            # reset network queue last processed time
-            q.last_time = time.time()
-
-            # Check for stop heating and sample inserted flags from the web API
-            if response.get('stop_flag'):
-                raise StopHeatingError
-            return response.get('is_ready')
-        else:
-            break
 
 
 def clamp(number, min_number=0, max_number=100):

@@ -4,11 +4,15 @@ Has some similarities to the database models on the web backend.
 
 Jin Cheng, 17/01/17
 """
+import asyncio
 import datetime
+import time
 
-from hardware import measure_all, PID, initialize
-from utils import NetworkQueue, clamp, roughly_equal, batch_upload
+import aiohttp
+
 import settings
+from hardware import measure_all, PID, initialize
+from utils import NetworkQueue, clamp, roughly_equal, fetch, StopHeatingError
 
 
 class Run(object):
@@ -17,7 +21,31 @@ class Run(object):
 
     def __init__(self, run_id, start_temp, target_temp, ramp_rate,
                  PID_ref, PID_sample, interval, min_upload_length, stabilization_duration,
-                 temp_tolerance=1):
+                 temp_tolerance):
+        """
+        Generic init method that initiates the class.
+        :type run_id: int
+        :param run_id: Run ID from the web server response.
+        :type start_temp: float
+        :param start_temp: Starting temperature specified by the user on the web interface.
+        :type target_temp: float
+        :param target_temp: Target temperature specified by the user on the web interface.
+        :type ramp_rate: float
+        :param ramp_rate: Ramp rate (0 - 1), as fraction of max rate, specified by the user on the web interface.
+        :type PID_ref: hardware.PID
+        :param PID_ref: PID object for the reference heater
+        :type PID_sample: hardware.PID
+        :param PID_sample: PID object for the sample heater
+        :type interval: float
+        :param interval: Main event PID calculation refresh interval.
+        :type min_upload_length: int
+        :param min_upload_length: Minimum number of measurements in batches when uploading data.
+        :type stabilization_duration: float
+        :param stabilization_duration: Minimum duration, in seconds, that temperature must stabilise before moving on.
+        :type temp_tolerance: float
+        :param temp_tolerance: Maximum difference between two temperature readings, in degrees Celsius,
+        for them to be considered equivalent.
+        """
         self.id = run_id
         self.start_temp = start_temp
         self.target_temp = target_temp
@@ -45,7 +73,9 @@ class Run(object):
     async def make_measurement(self, _loop):
         """
         Make a new measurement asynchronously and store it to the series of measurements related to this run.
-        :param loop: The main event loop.
+        :type _loop: asyncio.EventLoop
+        :param _loop: The main event loop.
+        :rtype: classes.DataPoint
         :return: The DataPoint object, containing all measurements made and measurement time.
         """
 
@@ -71,51 +101,118 @@ class Run(object):
 
         return measurement
 
-    async def upload_queue(self, _loop, **kwargs):
-        """Checks if the network queue has crossed the threshold to upload data."""
-        self.is_ready = await batch_upload(_loop, self, **kwargs)
-        return self.is_ready
+    async def queue_upload(self, _loop, override_threshold=None):
+        """An asynchronous function that uploads payloads by consuming from the network queue
+        only when a specified amount of time has passed from time of last processing
+        and when a specified number of items exist in the queue.
+        The asynchronous process breaks otherwise.
+
+        :type _loop: asyncio.EventLoop
+        :param _loop: the main event loop
+        :type override_threshold: bool
+        :param override_threshold: whether qsize and delta time constraints for batch uploading should be overrode
+        :rtype: bool
+        :returns: if sample has been inserted and formal temp ramp can begin
+
+        :exception StopHeatingError: When this error is raised, any async function that calls it
+        must give control back to the idle loop and stop heating.
+        Raised if a 'stop_flag' field returns True from the web API response.
+        """
+        while True:
+            # Only make HTTP requests above certain item number threshold
+            # and after a set amount of time since last upload
+            q, qsize = self.network_queue, self.network_queue.qsize()
+
+            if override_threshold or (
+                    qsize() >= q.threshold_qsize and (time.time() - q.last_time) >= q.threshold_time):
+
+                # collect all items in the queue
+                data = await asyncio.gather(
+                    *[asyncio.ensure_future(q.get()) for _ in range(q.qsize())],
+                    loop=_loop
+                )
+
+                # make the request and clear the local waiting list
+                payload = {
+                    'data': data,
+                    'run': self.id,
+                    'stabilized_at_start': self.stabilized_at_start,
+                    'is_finished': self.is_finished,
+                }
+                async with aiohttp.ClientSession(loop=_loop) as session:
+                    response = await fetch(session, 'POST', settings.WEB_API_DATA_ADDRESS, payload=payload)
+                if settings.DEBUG:
+                    print(response)
+
+                # reset network queue last processed time
+                q.last_time = time.time()
+
+                # Check for stop heating and sample inserted flags from the web API
+                if response.get('stop_flag'):
+                    raise StopHeatingError
+                self.is_ready = response.get('is_ready')
+                return self.is_ready
+            else:
+                break
 
     def batch_setpoint(self, setpoint):
+        """
+        Changes the set point for both PID objects related to the run's sample and reference cells.
+        :type setpoint: int
+        :param setpoint: temperature in Celsius.
+        """
+        setpoint = clamp(setpoint, 0, self.target_temp)
         for pid in (self.PID_sample, self.PID_ref):
             pid.set_setpoint(setpoint)
 
-    def check_stabilization(self, value, duration=None, tolerance_factor=1):
+    def check_stabilization(self, value, duration=None, tolerance=None):
         """
         Check if the temperatures of the last measurements are within range of the value.
         The measurements must be made within a specified amount of time ago and
         the temperature comparison tolerance is also customisable.
-        :return: Whether stabilisation at start temperature has been achieved.
+        :param value: value around which to determine if temperatures have stabilised
+        :param duration: value with which to override this object's stabilisation duration constraint,
+        `self.stabilization_duration`
+        :param tolerance: value with which to override this object's temperature tolerance,
+        `self.temp_tolerance`
+        :return: Whether stabilisation at the specified temperature has been achieved.
         """
-        self.stabilized_at_start = False
+        has_stabilized = False
+
+        # return False if no measurements have been made
         if len(self.data_points) == 0:
-            return self.stabilized_at_start
+            return False
 
         # first, a quick check to see if very last measurement is very out of start temp range
+        # hopefully this reduces computation time
         last_data_point = self.data_points[-1]
         if not roughly_equal(last_data_point.temp_ref, last_data_point.temp_sample, value, tolerence=3):
             if settings.DEBUG:
                 print('The run has not stabilised at {v} from a rough check on the last set of '
                       'temperature measurement.'.format(v=value))
-            return self.stabilized_at_start
+            return has_stabilized
 
-        count = 0
+        # if last measurement within range of 3, check series of recently made values
+        has_stabilized = True
         duration = duration or self.stabilization_duration
+        tolerance = tolerance or self.temp_tolerance
 
         # check if temps in recent measurements reached within a certain range around start_temp
         now = datetime.datetime.now()
         for point in reversed(self.data_points):
             seconds_passed = (now - point.measured_at).total_seconds()
-            # if within time limit and previous result are true
-            if seconds_passed <= duration and (self.stabilized_at_start or count == 0):
-                count += 0
-                self.stabilized_at_start = roughly_equal(point.temp_ref, point.temp_sample,
-                                                         value, tolerence=self.temp_tolerance * tolerance_factor)
+
+            # if within time limit
+            if seconds_passed <= duration:
+                has_stabilized = has_stabilized and \
+                                 roughly_equal(point.temp_ref, point.temp_sample,
+                                               value, tolerence=tolerance)
                 if settings.DEBUG:
-                    print("{count}: {result}".format(count=count, result=self.stabilized_at_start))
+                    print("{seconds}s: {result}".format(seconds=seconds_passed, result=has_stabilized))
+
             elif seconds_passed > duration + self.stabilization_duration:
                 break
-        return self.stabilized_at_start
+        return has_stabilized
 
     @property
     def real_ramp_rate(self):
@@ -145,7 +242,8 @@ class Run(object):
                    PID_ref, PID_sample,
                    json_data.get('active_loop_interval') or settings.MAIN_LOOP_INTERVAL,
                    json_data.get('web_api_min_upload_length') or settings.WEB_API_MIN_UPLOAD_LENGTH,
-                   json_data.get('stabilization_duration') or settings.TEMP_STABILISATION_MIN_DURATION)
+                   json_data.get('stabilization_duration') or settings.TEMP_STABILISATION_MIN_DURATION,
+                   json_data.get('temp_tolerance_range') or settings.TEMP_TOLERANCE)
 
 
 class DataPoint(object):

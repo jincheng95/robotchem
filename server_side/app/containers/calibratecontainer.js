@@ -53,9 +53,9 @@ export default class CalibrateContainer extends Component {
       <div style={{minWidth: '80%', marginBottom: '1.5em'}}>
         <TextField value={this.state.calorimeter[field]} style={{width: '100%'}}
                    onChange={this.onFieldChange.bind(null, field)}
+                   id={field}
                    floatingLabelText={floatingLabel}
-                   floatingLabelStyle={{color: teal900}}
-                   floatingLabelFixed={fixedLabel} />
+                   floatingLabelStyle={{color: teal900}}/>
         {!!fixedLabel && <p className="text-muted" style={{fontSize: '90%'}}>{fixedLabel}</p>}
       </div>
     )

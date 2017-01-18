@@ -19,46 +19,39 @@ Jin Cheng, 16/01/17:
     Several debugging changes to simplify calibration,
     Allow customisation of PID params, loop interval, maximum ramp rate from web interface.
 
-Jin Cheng, 17/01/17
-    Major refactor of common flow logic code into classes.
+Jin Cheng, 17/01/17:
+    Major refactor of common flow logic code into classes,
+    Optimisation of the temperature ramp logic to linearise temp profile as much as possible.
 """
 
 import asyncio
-import datetime
 import inspect
 import os
 import sys
 
 import aiohttp
 
-from classes import Run, DataPoint
 import settings
-from hardware import (read_temp_ref, read_temp_sample, measure_all, PID,
-                      initialize, indicate_heating, indicate_starting_up, cleanup)
-from utils import fetch, clamp, roughly_equal, batch_upload, StopHeatingError, NetworkQueue
-import logging
-
-# For some reason, relative imports on the raspberry pi do not work unless the following is included
-ROOT_DIR = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
-if ROOT_DIR not in sys.path:
-    sys.path.insert(0, ROOT_DIR)
+from classes import Run
+from hardware import (read_temp_ref, read_temp_sample, initialize, indicate_heating, indicate_starting_up, cleanup)
+from utils import fetch, StopHeatingError
 
 
-async def idle(loop):
+async def idle(_loop):
     """
     An asynchronous coroutine run periodically during idle periods.
     Checks the web API if it should new jobs, and updates the web API about current temperatures.
 
-    :param loop: The main event loop.
+    :param _loop: The main event loop.
     """
 
     # Read temperatures simultaneously by creating a combined Future object (blocking)
     temp_ref, temp_sample = await asyncio.gather(asyncio.ensure_future(read_temp_ref()),
                                                  asyncio.ensure_future(read_temp_sample()),
-                                                 loop=loop)
+                                                 loop=_loop)
 
     # Provide periodic updates to the Idle Web API about its current temperature
-    async with aiohttp.ClientSession(loop=loop) as session:
+    async with aiohttp.ClientSession(loop=_loop) as session:
         payload = {
             'current_ref_temp': temp_ref,
             'current_sample_temp': temp_sample,
@@ -88,10 +81,10 @@ async def idle(loop):
                 print('****************************************'
                       '\nThe main event loop has entered the ACTIVE LOOP.')
 
-            await active(loop, **data)
+            await active(_loop, **data)
 
     # Run itself again
-    asyncio.ensure_future(idle(loop), loop=loop)
+    asyncio.ensure_future(idle(_loop), loop=_loop)
 
 
 async def active(_loop, **calorimeter_data):
@@ -101,8 +94,7 @@ async def active(_loop, **calorimeter_data):
     Periodically calculates PID numbers.
 
     :param _loop: The main event loop.
-    :param active_job: Dictionary, containing information regarding the active job,
-    returned as a response from the web API.
+    :param calorimeter_data: JSON representation of the active job from the server API.
     """
 
     # Read temperatures simultaneously by creating a combined Future object (blocking)
@@ -140,7 +132,7 @@ async def active(_loop, **calorimeter_data):
 
 async def get_ready(_loop, run):
     """
-    Gets the temperatures to starting temp as quickly as possible.
+    An aync function that gets the temperatures to starting temp as quickly as possible.
 
     :param _loop: the main event loop.
     :param run: the object representing the run params.
@@ -151,16 +143,15 @@ async def get_ready(_loop, run):
     run.last_time = _loop.time()
 
     while True:
-        # Measure all data
+        # Measure all data then upload
         await run.make_measurement(_loop)
+        await run.queue_upload(_loop)
 
-        # if start temp is reached, give back control to whichever coroutine that called it
+        # if start temp is reached, give back control to whichever coroutine that called this function
         # but if sample hasn't been inserted, keep holding at start temp and keep running this loop
-        if run.is_ready and run.check_stabilization(run.start_temp):
+        run.stabilized_at_start = run.check_stabilization(run.start_temp)
+        if run.is_ready and run.stabilized_at_start:
             break
-
-        # Watch web API response for whether user has put in the sample
-        run.is_ready = await run.upload_queue(_loop)
 
         # Sleep for a set amount of time, then rerun the PWM calculations
         await asyncio.sleep(run.interval)
@@ -176,30 +167,41 @@ async def run_calorimetry(_loop, run):
 
     run.last_time = _loop.time()
     set_point = run.start_temp
+
     while True:
         # make measurements and upload
         await run.make_measurement(_loop)
-        await run.upload_queue(_loop)
+        await run.queue_upload(_loop)
+
+        # use a less stringent check (higher value tolerance and smaller duration) to make linear the temp profile
+        stabilised_at_setpoint= run.check_stabilization(set_point, duration=2, tolerance=1.25 * run.real_ramp_rate)
 
         # if current temps are more or less the desired set point, increment the ramp
-        if run.check_stabilization(set_point, duration=2, tolerance_factor=1.25) and set_point < run.target_temp:
+        if stabilised_at_setpoint:
             set_point += run.real_ramp_rate
             run.batch_setpoint(set_point)
 
             if settings.DEBUG:
-                print("*********************************"
+                print("*********************************\n"
                       "The setpoint has been increased to {setpoint}".format(setpoint=set_point))
 
         # check if temp has stabilised near the end temp and change its status accordingly
         if (not run.is_finished) and run.check_stabilization(run.target_temp, duration=50):
             run.is_finished = True
             # upload this status and rest of the data
-            await run.upload_queue(_loop, override_threshold=True)
+            await run.queue_upload(_loop, override_threshold=True)
             raise StopHeatingError
+
+        # Sleep for a set amount of time, then rerun the PWM calculations
         await asyncio.sleep(run.interval)
 
 
 if __name__ == '__main__':
+    # For some reason, some imports on the raspberry pi do not work unless the following is included
+    ROOT_DIR = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
+    if ROOT_DIR not in sys.path:
+        sys.path.insert(0, ROOT_DIR)
+
     # initialize the GPIO boards and set output pins to output mode
     initialize(board_only=True)
 

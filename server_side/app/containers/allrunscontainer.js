@@ -3,7 +3,10 @@ import axios from 'axios';
 import find from 'lodash/find';
 import matches from 'lodash/matches';
 import concat from 'lodash/concat';
+import fill from 'lodash/fill';
+
 import InfiniteScroll from 'react-infinite';
+import HeightRuler from 'react-height';
 
 import Run from '../components/run/run';
 import Refreshing from '../components/refreshing';
@@ -13,11 +16,13 @@ export default class AllRunsContainer extends Component {
     super(props);
     this.state = {
       runs: [],
+      heights: [],
       isInfiniteLoading: false,
       page: 0,
       has_more_pages: true,
     };
     this.loadPage = this.loadPage.bind(this);
+    this.measureHeight = this.measureHeight.bind(this);
   }
 
   loadPage() {
@@ -36,6 +41,7 @@ export default class AllRunsContainer extends Component {
               page: page,
               has_more_pages: parseInt(response.data.num_pages, 10) > page,
               runs: concat(this.state.runs, response.data.runs),
+              heights: concat(this.state.heights, fill(response.data.runs.slice(), 270)),
               isInfiniteLoading: false
             });
           })
@@ -46,6 +52,10 @@ export default class AllRunsContainer extends Component {
           })
       });
     }
+  }
+  measureHeight(index, height) {
+    let heights = this.state.heights.slice();
+    heights[index] = height;
   }
 
   render() {
@@ -62,31 +72,31 @@ export default class AllRunsContainer extends Component {
       <Refreshing size={60} zDepth={0} message="Loading..."/>
     );
     const end = (
-      <div className="text-primary text-center">
+      <div className="text-warning text-center">
         <hr/>
         You've reached the end of this list.
       </div>
     );
-    const {runs, has_more_pages} = this.state;
+    const {runs, has_more_pages, heights} = this.state;
 
     return (
       <div style={{overflowY: 'hidden', margin: '-1em'}}>
-        <InfiniteScroll useWindowAsScrollContainer={true} elementHeight={250}
-                        infiniteLoadBeginEdgeOffset={10}
+        <InfiniteScroll useWindowAsScrollContainer={true}
+                        elementHeight={heights.length == runs.length ? heights : fill(runs.slice(), 270)}
+                        infiniteLoadBeginEdgeOffset={135}
                         onInfiniteLoad={this.loadPage}
-                        loadingSpinnerDelegate={has_more_pages ? loader : <div/>}
-        >
-          <div style={{margin: '1em'}}>
-            {runs.map((run_data, index) => {
-              return (
+                        loadingSpinnerDelegate={has_more_pages ? loader : <div/> } >
+          {runs.map((run_data, index) => {
+            return (
+              <HeightRuler key={index} onHeightReady={this.measureHeight.bind(null, index)}>
+                <div style={{margin: '1em'}}>
                   <Run {...this.props}
-                       key={index}
                        run={run_data}
-                       expanded={!!run_data ? !run_data.is_finished : false}
-                  />
-              )
-            })}
-          </div>
+                       expanded={!!run_data ? !run_data.is_finished : false} />
+                </div>
+              </HeightRuler>
+            )
+          })}
         </InfiniteScroll>
         {!has_more_pages && end}
       </div>

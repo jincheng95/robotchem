@@ -309,6 +309,7 @@ class DataPointListAPI(APIView):
 
 
 def DataDownloadView(request, run_id):
+    """On-the-fly generation of CSV data files and HTTP attachment response to client's download request."""
 
     if request.method == 'POST':
         return HttpResponseNotAllowed
