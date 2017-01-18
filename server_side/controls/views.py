@@ -9,6 +9,7 @@ from datetime import datetime
 
 import dateutil.parser
 from django.core.mail import send_mail
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
@@ -17,13 +18,14 @@ from rest_framework import status, permissions
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 
 from rfsite.settings import DEBUG
 from .models import Calorimeter, Run, DataPoint
 from .serializers import CalorimeterSerializer, RunSerializer, DataPointSerializer
 
 
-def IndexView(request):
+def IndexView(request, *args, **kwargs):
     """
     Serves index HTML document as the HTTP response to any browser (non-API) request.
     :param request: Django HTTPRequest object
@@ -105,8 +107,23 @@ class RunListAPI(APIView):
 
     def get(self, request, format=None, **kwargs):
         runs = Run.objects.filter(**kwargs).order_by('-creation_time')
+        paginator = Paginator(runs, 3)
+        page = request.GET.get('page')
+
+        try:
+            runs = paginator.page(page)
+        except PageNotAnInteger:
+            runs = paginator.page(1)
+        except EmptyPage:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         serializer = RunSerializer(runs, many=True)
-        return Response(serializer.data)
+        data = {
+            'page': page,
+            'num_pages': paginator.num_pages,
+            'runs': serializer.data,
+        }
+        return Response(data)
 
     def post(self, request, format=None):
         serializer = RunSerializer(data=request.data)
@@ -114,6 +131,15 @@ class RunListAPI(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RunDetailsAPI(RetrieveUpdateDestroyAPIView):
+    """
+    Gives details about a Run, or changes the Run parameters, or delete the Run completely.
+    """
+    authentication_classes = (DeviceAccessPermission, )
+    queryset = Run.objects.all()
+    serializer_class = RunSerializer
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):

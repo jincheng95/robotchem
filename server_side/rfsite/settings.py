@@ -144,9 +144,10 @@ EMAIL_HOST_PASSWORD = local_settings.EMAIL_PASSWORD
 EMAIL_PORT = 587
 
 # Rest framework
+REST_FRAMEWORK = {}
 if not DEBUG:
-    REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
             'rest_framework.renderers.JSONRenderer',
-        )
-    }
+    )
+REST_FRAMEWORK['DEFAULT_PAGINATION_CLASS'] = 'rest_framework.pagination.PageNumberPagination'
+REST_FRAMEWORK['PAGE_SIZE'] = 5
