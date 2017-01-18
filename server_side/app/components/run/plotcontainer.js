@@ -91,9 +91,11 @@ export default class PlotContainer extends Component {
   }
 
   renderIndividualPlot(type, index, extraProps) {
+    const {data_points, is_active} = this.props;
     const props = {
-      data: this.props.data_points,
+      data: data_points,
       key: index,
+      is_active,
       ...extraProps,
     };
     switch (type) {
@@ -107,7 +109,8 @@ export default class PlotContainer extends Component {
 
   render() {
     const { plots, new_plot } = this.state;
-    var title = this.props.is_active ? "Real Time Plot" : "Plot";
+    const { is_active } = this.props;
+    const title = is_active ? "Real Time Plot" : "Plot";
     return (
       <div>
         {plots.map((value, index) => {
@@ -120,11 +123,10 @@ export default class PlotContainer extends Component {
                             canDelete={plots.length !== 1} handleDeletePlot={this.handleDeletePlot.bind(null, index)}
                             handlePlotChange={this.handlePlotChange.bind(null, index)}/>}
 
-              {this.renderIndividualPlot(
-                value.type,
-                index,
-                {referenceLines: this.getReferenceLines(value.xKey, value.yKeys), ...value}
-              )}
+              {this.renderIndividualPlot(value.type, index, {
+                referenceLines: this.getReferenceLines(value.xKey, value.yKeys),
+                ...value
+              })}
 
               {(index+1) != plots.length && <Divider />}
             </div>

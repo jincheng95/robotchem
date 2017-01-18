@@ -5,6 +5,7 @@ import SimpleTooltip from "./simpletooltip";
 import list_of_colors from "../../utils/list_of_colors";
 import humanized_axes from "../../utils/humanize_axes";
 import units from "../../utils/units";
+import clamp from 'lodash/clamp';
 
 
 export default class LinePlot extends React.PureComponent {
@@ -13,7 +14,8 @@ export default class LinePlot extends React.PureComponent {
   }
 
   render() {
-    const { data, yKeys, xKey, referenceLines } = this.props;
+    const { data, yKeys, xKey, referenceLines, is_active } = this.props;
+    const xTickFormatter = xKey == 'time_of_day' ? (datetime) => moment(datetime, 'X').format('H:mm:ss') : null;
 
     return(
       <ResponsiveContainer minHeight={350}>
@@ -21,9 +23,9 @@ export default class LinePlot extends React.PureComponent {
                      margin={{top: 20, right: 40, left: -5, bottom: 2}}>
 
             <XAxis dataKey={xKey} label={humanized_axes[xKey]}
-                   domain={['dataMin', 'auto']} tickCount={12} units={units[xKey]}
+                   domain={['dataMin', 'dataMax']} tickCount={12} units={units[xKey]}
                    type="number"
-                   tickFormatter={xKey == 'time_of_day' ? (datetime) => moment(datetime, 'X').format('H:mm:ss') : null}/>
+                   tickFormatter={xTickFormatter}/>
             <YAxis domain={['dataMin', 'auto']} tickCount={6}
                    type="number"/>
 
@@ -37,10 +39,13 @@ export default class LinePlot extends React.PureComponent {
               return (
                 <Line key={index} type="monotone" dataKey={value} name={humanized_axes[value]}
                       isAnimationActive={false}
+                      strokeWidth={3}
                       stroke={list_of_colors[index]} />
               )
             })}
 
+            {(!is_active) && <Brush height={40} width={15} dataKey={xKey} data={data}
+                                    travellerWidth={25} tickFormatter={xTickFormatter}/>}
 
           </LineChart>
       </ResponsiveContainer>

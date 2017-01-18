@@ -152,7 +152,7 @@ export default class Run extends Component {
   }
   componentDidMount() {
     if(!!this.props.expanded) {
-      this.onExpandChange();
+      this.onExpandChange(this.props.expanded);
     }
   }
   componentWillUnmount() {
@@ -268,6 +268,9 @@ export default class Run extends Component {
           Once stopped, this run can never be resumed.
         </Dialog>}
         <Snackbar open={show_is_ready_notification}
+                  action="OK"
+                  onActionTouchTap={()=>{this.setState({show_is_ready_notification: false})}}
+                  onRequestClose={()=>{}}
                   message={`The calorimeter has reached your specified starting temperature.
                   Insert your sample and click the "Begin Heating" button to continue.`}/>
       </Card>
