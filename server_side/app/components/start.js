@@ -4,9 +4,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Slider from 'material-ui/Slider';
 import TextField from 'material-ui/TextField';
-import Paper from 'material-ui/Paper';
 import {Step, Stepper, StepLabel, StepContent} from 'material-ui/Stepper';
 import {Table, TableBody} from 'material-ui/Table';
+import Card from 'material-ui/Card/Card';
+import CardText from 'material-ui/Card/CardText';
 
 import validateEmail from '../utils/validate_email';
 import TwoColumnRow from './TwoColumnRow';
@@ -134,7 +135,8 @@ export default class Start extends Component {
     const {step, start_temp, target_temp, ramp_rate, nickname, email, showInvalidEmailMessage} = this.state;
 
     return (
-      <Paper zDepth={1}>
+      <Card>
+        <CardText>
           <Stepper activeStep={step} orientation="vertical" margin="auto">
 
               <Step>
@@ -198,7 +200,8 @@ export default class Start extends Component {
               </Step>
 
           </Stepper>
-        </Paper>
+        </CardText>
+      </Card>
     );
   }
 }

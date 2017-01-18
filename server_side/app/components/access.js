@@ -48,6 +48,7 @@ export default class Access extends React.PureComponent {
         if(error.response){
           if(error.response.status == '403'){
             this.setState({accessCodeRejected: true});
+            changeAccessCode(code, true);
           }
         }
       });
@@ -66,14 +67,16 @@ export default class Access extends React.PureComponent {
     ];
     const enterAccessCode = (
       <div style={{minWidth: '80%', marginLeft: '10%', marginRight: '10%'}}>
-        <form onSubmit={this.handleCodeSubmitted}>
           <TextField value={this.state.access_code} id="access-code-field"
-                     style={{width: '100%'}} autoFocus onEnter={this.handleCodeSubmitted}
+                     style={{width: '100%'}} autoFocus
                      errorText={this.state.accessCodeRejected ? "Wrong access code! Please try again." : ""}
-                     onChange={ (event) => changeAccessCode(event.target.value) }/>
-          <RaisedButton onTouchTap={this.handleCodeSubmitted} type="submit"
+                     onChange={ (event) => changeAccessCode(event.target.value) }
+                     onKeyPress={(event) => {
+                       if(event.keyCode == 13) {this.handleCodeSubmitted();}
+                     }}
+          />
+          <RaisedButton onTouchTap={this.handleCodeSubmitted}
             label="Go!" primary={true} style={{width: '100%'}}/>
-          </form>
         </div>
     );
 

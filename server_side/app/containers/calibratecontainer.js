@@ -43,10 +43,13 @@ export default class CalibrateContainer extends Component {
 
   renderTextField(field, floatingLabel, fixedLabel) {
     return (
-      <TextField value={this.state.calorimeter[field]}
-                 onChange={this.onFieldChange.bind(null, field)}
-                 floatingLabelText={floatingLabel}
-                 floatingLabelFixed={fixedLabel} />
+      <div style={{minWidth: '80%'}}>
+        <TextField value={this.state.calorimeter[field]} style={{width: '100%'}}
+                   onChange={this.onFieldChange.bind(null, field)}
+                   floatingLabelText={floatingLabel}
+                   floatingLabelFixed={fixedLabel} />
+        <p className="text-muted" style={{fontSize: '90%'}}>{fixedLabel}</p>
+      </div>
     )
   }
 
@@ -64,12 +67,14 @@ export default class CalibrateContainer extends Component {
           <br/><br/>
 
           <h3>Temperature Stabilization</h3>
-          {renderTextField('max_ramp_rate', 'Linear ramp rate max.')}
+          {renderTextField('max_ramp_rate', 'Linear ramp rate max.', 'The maximum step size when the temperature set point is incremented.')}
           <br/>
           {renderTextField('temp_tolerance_range', 'Temperature comparison tolerance')}
+          <p className="text-muted">Temperature values within {this.state.calorimeter.temp_tolerance_range} &deg;C
+            will be considered 'equal' for purposes of comparison.</p>
           <br/>
-          {renderTextField('temp_tolerance_duration', 'Temperature stabilisation duration')}
-          <p className="text-muted">Time duration in seconds, in which temperature is held constant and considered to be 'stable'.</p>
+          {renderTextField('temp_tolerance_duration', 'Temperature stabilisation duration',
+            'Time duration in seconds, in which temperature is held constant and considered to be "stable".')}
           <br/>
 
 
@@ -93,7 +98,7 @@ export default class CalibrateContainer extends Component {
           {renderTextField('web_api_min_upload_length',
             'Minimum Upload Batch',
             'To prevent making too many HTTP requests, the device uploads measurements in batches. This value changes the minimum number of measurements in each batch.')}
-          <br/>
+          <br/><br/>
 
           <p className="text-right text-muted">Changes will not affect any jobs currently running.</p>
           <div className="text-right">

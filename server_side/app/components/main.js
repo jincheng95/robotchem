@@ -45,9 +45,14 @@ export default class Main extends Component {
     this.toggleLoading = this.toggleLoading.bind(this);
   }
 
-  changeAccessCode(code) {
+  changeAccessCode(code, remove) {
     this.setState({access_code: code, accessCodeEntered: true});
-    window.localStorage.setItem('access_code', code);
+    try {
+      window.localStorage.setItem('access_code', code);
+      if(!!remove) {
+        window.localStorage.removeItem('access_code');
+      }
+    }
   }
   changeCalorimeterStatus(data) {
     this.setState({calorimeter: data});
