@@ -19,9 +19,8 @@ urlpatterns = [
     # Download data
     url(r'^download/([0-9]+)/', views.DataDownloadView),
 
-    # Homepage
-    # matches anything, so put this last
-    url(r'^((history|calibrate)|history/[0-9]+)/?$', views.IndexView),
+    # React index.html
+    url(r'^/?((history|calibrate)|history/[0-9]+)?/?$', views.IndexView),
 
 ]
 
