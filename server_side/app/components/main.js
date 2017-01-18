@@ -49,10 +49,10 @@ export default class Main extends Component {
     this.setState({access_code: code, accessCodeEntered: true});
     try {
       window.localStorage.setItem('access_code', code);
-      if(!!remove) {
+      if (!!remove) {
         window.localStorage.removeItem('access_code');
       }
-    }
+    } catch(error) {}
   }
   changeCalorimeterStatus(data) {
     this.setState({calorimeter: data});
