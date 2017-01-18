@@ -45,10 +45,12 @@ export default class Main extends Component {
     this.toggleLoading = this.toggleLoading.bind(this);
   }
 
-  changeAccessCode(code, remove) {
+  changeAccessCode(code, store, remove) {
     this.setState({access_code: code, accessCodeEntered: true});
     try {
-      window.localStorage.setItem('access_code', code);
+      if (!!store) {
+        window.localStorage.setItem('access_code', code);
+      }
       if (!!remove) {
         window.localStorage.removeItem('access_code');
       }

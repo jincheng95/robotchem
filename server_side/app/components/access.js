@@ -37,18 +37,18 @@ export default class Access extends React.PureComponent {
     const { code, changeAccessCode, changeCalorimeterStatus, toggleLoading } = this.props;
     this.setState( {accessCodeRejected: false} );
     toggleLoading();
-    changeAccessCode(code);
     axios.get('/api/status/?access_code=' + code)
       .then((response) => {
         toggleLoading();
         changeCalorimeterStatus(response.data);
+        changeAccessCode(code, true, false);
       })
       .catch((error) => {
         toggleLoading();
         if(error.response){
           if(error.response.status == '403'){
             this.setState({accessCodeRejected: true});
-            changeAccessCode(code, true);
+            changeAccessCode(code, false, true);
           }
         }
       });
@@ -70,10 +70,10 @@ export default class Access extends React.PureComponent {
           <TextField value={this.state.access_code} id="access-code-field"
                      style={{width: '100%'}} autoFocus
                      errorText={this.state.accessCodeRejected ? "Wrong access code! Please try again." : ""}
-                     onChange={ (event) => changeAccessCode(event.target.value) }
-                     onKeyPress={(event) => {
-                       if(event.keyCode == 13) {this.handleCodeSubmitted();}
-                     }}
+                     onChange={ (event) => {
+                       changeAccessCode(event.target.value);
+                       if(event.keyCode == 13 || event.charCode == 13) {this.handleCodeSubmitted();}
+                     } }
           />
           <RaisedButton onTouchTap={this.handleCodeSubmitted}
             label="Go!" primary={true} style={{width: '100%'}}/>

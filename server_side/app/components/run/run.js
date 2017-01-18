@@ -136,9 +136,9 @@ export default class Run extends React.PureComponent {
     const {autorefreshInt} = this.state;
     window.clearInterval(autorefreshInt);
   }
-  componentWillReceiveProps(prev, next) {
+  componentWillReceiveProps(nextProps) {
     const { expanded, autorefreshInt } = this.state;
-    const { autorefresh } = this.props;
+    const { autorefresh, run } = this.props;
     const { is_running, is_finished, show_is_ready_notification } = this.props.run;
     if( expanded && !autorefreshInt && (!is_finished || is_running) ) {
       this.refresh();
@@ -146,7 +146,7 @@ export default class Run extends React.PureComponent {
       this.setState({autorefreshInt: int});
     } else if ( !autorefresh && autorefreshInt ) {
       this.cancelAutorefresh();
-    } else if ( !prev.run.stabilized_at_start && next.run.stabilized_at_start && !show_is_ready_notification) {
+    } else if ( !run.stabilized_at_start && nextProps.run.stabilized_at_start && !show_is_ready_notification) {
       this.setState({show_is_ready_notification: true});
     }
   }
