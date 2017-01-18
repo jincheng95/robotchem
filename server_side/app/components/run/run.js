@@ -151,7 +151,9 @@ export default class Run extends Component {
     }
   }
   componentDidMount() {
-    this.onExpandChange(!!this.props.expanded);
+    if(!!this.props.expanded) {
+      this.onExpandChange();
+    }
   }
   componentWillUnmount() {
     const {autorefreshInt} = this.state;
