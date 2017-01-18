@@ -7,9 +7,7 @@ import LinearProgress from 'material-ui/LinearProgress';
 import Dashboard from 'material-ui/svg-icons/action/dashboard';
 
 import {Grid, Row, Col} from 'react-flexbox-grid';
-
 import Access from './access';
-import Refreshing from './refreshing';
 
 const TitleBar = (props) => (
   <AppBar title="RoboFlux"
@@ -22,19 +20,6 @@ export default class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // access_code: '123456',
-      // calorimeter: {
-      //   access_code: "123456",
-      //   creation_time: "2016-12-02T23:17:28.683866Z",
-      //   current_ref_temp: 20.12,
-      //   current_sample_temp: 20.30,
-      //   id: 1,
-      //   is_active: false,
-      //   last_comm_time: "2016-12-02T23:17:27Z",
-      //   last_changed_time: "2016-12-03T00:00:48.462929Z",
-      //   name: "RPI3",
-      //   serial: "2323423y40hi993240934"
-      // },
       access_code: window.localStorage.getItem('access_code') || '',
       calorimeter: null,
       loading: false,
@@ -92,7 +77,7 @@ export default class Main extends Component {
               ? <div>{clonedChildren}</div>
               : clonePropsFunction(<Access isLoading={this.state.isLoading}/>) }
           </Col>
-      </Row>
+        </Row>
       </Grid>
     );
   }

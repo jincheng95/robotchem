@@ -12,7 +12,7 @@ export default function Refreshing(props) {
         size={size}
         left={-Math.round(size/2)}
         top={28}
-        zDepth={!!zDepth ? zDepth : 1}
+        zDepth={(!!zDepth || zDepth == 0) ? zDepth : 1}
         status={'loading'}
         style={{marginLeft: '50%'}}
       />

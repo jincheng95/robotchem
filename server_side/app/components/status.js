@@ -129,6 +129,7 @@ export default class Status extends Component {
                           toggleAutorefresh={this.toggleAutorefresh} autorefresh={this.state.autorefresh}
                 />
               </Col>
+              <br style={{clear: 'both'}} />
               <Col xs={12} sm={12} md={12} lg={12} style={{margin: '-1.5em 0 1.5em 0', zIndex: '1'}}>
                 {React.Children.map( this.props.children, (child) => React.cloneElement(child, {
                   setMenuItems: this.setMenuItems,

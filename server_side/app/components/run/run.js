@@ -72,11 +72,11 @@ const RunOptions = (props) => {
 };
 
 
-export default class Run extends React.PureComponent {
+export default class Run extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      expanded: props.expanded || false,
+      expanded: false,
       data_points: [],
       autorefreshInt: null,
       stopDialogOpen: false,
@@ -151,10 +151,11 @@ export default class Run extends React.PureComponent {
     }
   }
   componentDidMount() {
-    this.componentWillReceiveProps();
+    this.onExpandChange(!!this.props.expanded);
   }
   componentWillUnmount() {
-    if(!!this.state.autorefreshInt) {
+    const {autorefreshInt} = this.state;
+    if(!!autorefreshInt | autorefreshInt == 0) {
       this.cancelAutorefresh();
     }
   }
@@ -247,13 +248,13 @@ export default class Run extends React.PureComponent {
           {(data_points.length > 0 && has_retrieved_from_server) &&
             <PlotContainer data_points={data_points} run={run} is_active={is_active}/>}
           {(data_points.length == 0 && has_retrieved_from_server && is_active) &&
-            <Refreshing size={50}
+            <Refreshing size={50} zDepth={0}
                         message="No measurements have been recorded. Data will be shown as they are retrieved."/>}
           {(data_points.length == 0 && !has_retrieved_from_server &&
-            <Refreshing size={50}
-                        message="Measurements are being retrieved. One moment please..."/>)}
+            <Refreshing size={50} zDepth={0}
+                        message="Measurements are being retrieved..."/>)}
           {(data_points.length == 0 && has_retrieved_from_server && !is_active) &&
-            <p className="text-primary text-center">There are no measurements available.</p>}
+            <p className="text-primary text-center">There are no measurements recorded.</p>}
         </CardText>
 
         {is_active && <Dialog title="Are you sure?" open={stopDialogOpen}

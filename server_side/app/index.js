@@ -14,6 +14,7 @@ import Status from './components/status';
 import DefaultContainer from './containers/defaultcontainer';
 import CalibrateContainer from './containers/calibratecontainer';
 import AllRunsContainer from './containers/allrunscontainer';
+import RunContainer from './containers/runcontainer';
 
 injectTapEventPlugin();
 
@@ -23,7 +24,7 @@ const Routes = () => (
       <Route component={Status}>
 
         <IndexRoute components={DefaultContainer} />
-        <Route path="history/:run_id/" components={AllRunsContainer} />
+        <Route path="history/:run_id/" components={RunContainer} />
         <Route path="history" components={AllRunsContainer} />
         <Route path="calibrate" components={CalibrateContainer} />
 
