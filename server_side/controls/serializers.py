@@ -71,7 +71,7 @@ class RunSerializer(serializers.ModelSerializer):
     class Meta:
         model = Run
         fields = ('id', 'name', 'creation_time', 'start_time', 'finish_time',
-                  'is_ready', 'is_running', 'is_finished', 'email',
+                  'stabilized_at_start', 'is_ready', 'is_running', 'is_finished', 'email',
                   'start_temp', 'target_temp', 'ramp_rate',
                   'calorimeter', 'data_point_count',
                   )
