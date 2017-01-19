@@ -45,6 +45,9 @@ class Calorimeter(models.Model):
     def __str__(self):
         return self.__repr__()
 
+    class Meta:
+        app_label = "controls"
+
 
 class Run(models.Model):
     """
@@ -81,6 +84,9 @@ class Run(models.Model):
     def __str__(self):
         return self.__repr__()
 
+    class Meta:
+        app_label = "controls"
+
 
 class DataPoint(models.Model):
     """
@@ -104,5 +110,8 @@ class DataPoint(models.Model):
 
     def __str__(self):
         return self.__repr__()
+
+    class Meta:
+        app_label = "controls"
 
 

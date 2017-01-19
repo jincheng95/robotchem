@@ -1,7 +1,10 @@
 """
 Utility functions and classes for common calculations and networking patterns.
 
-Jin Cheng 12/12/16
+Jin Cheng 12/12/16:
+    StopHeatingError, async :func:`fetch` function that makes HTTP requests.
+    The Network queue.
+    Number manipulation functions.
 """
 
 import asyncio
@@ -11,7 +14,7 @@ from itertools import combinations
 
 import async_timeout
 
-import settings
+from robotchem import settings
 
 
 class StopHeatingError(BaseException):
@@ -78,6 +81,7 @@ class NetworkQueue(asyncio.Queue):
 def clamp(number, min_number=0, max_number=100):
     """
     A function that clamps the input argument number within the given range.
+
     :param number: The number to be clamped.
     :param min_number: Minimum value the clamped result can take.
     :param max_number: Maximum value the clamped result can take.
@@ -95,6 +99,7 @@ def roughly_equal(*args, tolerence=1e-02):
     """
     Compares argument inputs for equality.
     If all of their differences with each other are within the set tolerance, return True, vice versa.
+
     :param args: Compared numbers.
     :param tolerence: If all differences between inputs are within this value, return True.
     :return: Whether the arguments are roughly equal to each other.

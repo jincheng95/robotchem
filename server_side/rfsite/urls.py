@@ -3,8 +3,8 @@ from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from controls import views
-from rfsite.settings import DEBUG
+from server_side.controls import views
+from server_side.rfsite.settings import DEBUG
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

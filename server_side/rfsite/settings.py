@@ -37,6 +37,7 @@ else:
 
 
 # Application definition
+SITE_ID = 1
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'controls'
+    'server_side.controls',
 ]
 
 MIDDLEWARE = [

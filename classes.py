@@ -2,7 +2,11 @@
 Classes to generalise common patterns with DSC data.
 Has some similarities to the database models on the web backend.
 
-Jin Cheng, 17/01/17
+Jin Cheng, 17/01/17:
+    Wrote these classes partly using existing code from `main.py`.
+
+Jin Cheng, 18/01/17:
+    Further simplification of the Run object.
 """
 import asyncio
 import datetime
@@ -10,9 +14,9 @@ import time
 
 import aiohttp
 
-import settings
-from hardware import measure_all, PID, initialize
-from utils import NetworkQueue, clamp, roughly_equal, fetch, StopHeatingError
+from robotchem import settings
+from robotchem.hardware import measure_all, PID, initialize
+from robotchem.utils import NetworkQueue, clamp, roughly_equal, fetch, StopHeatingError
 
 
 class Run(object):
@@ -24,6 +28,7 @@ class Run(object):
                  temp_tolerance):
         """
         Generic init method that initiates the class.
+
         :type run_id: int
         :param run_id: Run ID from the web server response.
         :type start_temp: float
@@ -73,9 +78,10 @@ class Run(object):
     async def make_measurement(self, _loop):
         """
         Make a new measurement asynchronously and store it to the series of measurements related to this run.
-        :type _loop: asyncio.EventLoop
+
+        :type _loop: asyncio.BaseEventLoop
         :param _loop: The main event loop.
-        :rtype: classes.DataPoint
+        :rtype: robotchem.classes.DataPoint
         :return: The DataPoint object, containing all measurements made and measurement time.
         """
 
@@ -107,16 +113,15 @@ class Run(object):
         and when a specified number of items exist in the queue.
         The asynchronous process breaks otherwise.
 
-        :type _loop: asyncio.EventLoop
+        :type _loop: asyncio.BaseEventLoop
         :param _loop: the main event loop
         :type override_threshold: bool
         :param override_threshold: whether qsize and delta time constraints for batch uploading should be overrode
         :rtype: bool
         :returns: if sample has been inserted and formal temp ramp can begin
 
-        :exception StopHeatingError: When this error is raised, any async function that calls it
-        must give control back to the idle loop and stop heating.
-        Raised if a 'stop_flag' field returns True from the web API response.
+        :exception StopHeatingError: When this error is raised, any async function that calls it must give control \
+        back to the idle loop and stop heating. Raised if a 'stop_flag' field returns True from the web API response.
         """
         while True:
             # Only make HTTP requests above certain item number threshold
@@ -158,6 +163,7 @@ class Run(object):
     def batch_setpoint(self, setpoint):
         """
         Changes the set point for both PID objects related to the run's sample and reference cells.
+
         :type setpoint: int
         :param setpoint: temperature in Celsius.
         """
@@ -167,9 +173,10 @@ class Run(object):
 
     def check_stabilization(self, value, duration=None, tolerance=None):
         """
-        Check if the temperatures of the last measurements are within range of the value.
-        The measurements must be made within a specified amount of time ago and
+        Check if the temperatures of the last measurements are within range of the value. \
+        The measurements must be made within a specified amount of time ago and \
         the temperature comparison tolerance is also customisable.
+
         :param value: value around which to determine if temperatures have stabilised
         :param duration: value with which to override this object's stabilisation duration constraint,
         `self.stabilization_duration`
@@ -216,12 +223,20 @@ class Run(object):
 
     @property
     def real_ramp_rate(self):
+        """
+        Calculate the real temperature increment per main loop cycle, in degrees Celsius. The `ramp_rate` field stored \
+        on the web interface and the `self.ramp_rate` property stores the percentage of the maximum available ramp rate.
+
+        :rtype: float
+        :return: Temperature increase per cycle, in degrees Celsius.
+        """
         return self.ramp_rate * settings.MAX_RAMP_RATE
 
     @classmethod
     def from_web_resp(cls, json_data, temp_ref, temp_sample):
         """
         Construct a Run object from a dictionary of returned values from the web status API page.
+
         :param json_data: Returned JSON response.
         :param temp_ref: Measured temperature at ref.
         :param temp_sample: Measured temperature at sample
@@ -259,6 +274,11 @@ class DataPoint(object):
         self.heat_sample = heat_sample
 
     def jsonify(self):
+        """Pickle properties of this object into a JSON-ifiable dictionary. For communications with the web interface.
+
+        :rtype: dict
+        :return: dictionary representation of this object's properties.
+        """
         res = {
             'run': self.run.id,
             'measured_at': self.measured_at.isoformat(sep='T'),
@@ -271,7 +291,17 @@ class DataPoint(object):
 
     @classmethod
     async def async_measure_raw(cls, run, loop, delta_time):
-        """Construct a new DataPoint object based a new, raw measurement."""
+        """Construct a new DataPoint object based a new, raw measurement.
+
+        :type run: `robotchem.classes.Run`
+        :param run: parent `Run` object.
+        :type loop: asyncio.BaseEventLoop
+        :param loop: main event loop.
+        :type delta_time: float
+        :param delta_time: time, in seconds, passed since last measurement (i.e. construction \
+        of previous instance of this class related to the `Run`)
+        :return: `robotchem.classes.DataPoint` object.
+        """
         temp_ref, temp_sample, current_ref, current_sample = await measure_all(loop, run.adc)
 
         voltage_ref = settings.MAX_VOLTAGE * run.duty_cycle_ref / 100

@@ -31,17 +31,33 @@ import sys
 
 import aiohttp
 
-import settings
-from classes import Run
-from hardware import (read_temp_ref, read_temp_sample, initialize, indicate_heating, indicate_starting_up, cleanup)
-from utils import fetch, StopHeatingError
+from robotchem import settings
+from robotchem.classes import Run
+from robotchem.hardware import (read_temp_ref, read_temp_sample, initialize, indicate_heating, indicate_starting_up, cleanup)
+from robotchem.utils import fetch, StopHeatingError
 
 
 async def idle(_loop):
     """
     An asynchronous coroutine run periodically during idle periods.
-    Checks the web API if it should new jobs, and updates the web API about current temperatures.
+    Checks the web API if it should start new jobs, and updates the web API about measured temperatures.
 
+    The periodicity of refreshing and updating web API is determined by
+    the :const:`robotchem.settings.WEB_API_IDLE_INTERVAL` value,
+    or the corresponding value received from the web API.
+
+    This loop does the following:
+
+    #. Read reference and sample temperatures (simultanouesly)
+    #. Upload temperature values to the web API address specified by the
+       :const:`robotchem.settings.WEB_API_BASE_ADDRESS` value.
+    #. If the web response includes some basic information about a user-specified new calorimetry job,
+       enter the :func:`robotchem.main.active` loop.
+    #. After the :func:`robotchem.main.active` loop has finished running, this function will have control again,
+       which suggests that the active job has ended.
+    #. Renew running this loop after a certain time interval.
+
+    :type _loop: asyncio.BaseEventLoop
     :param _loop: The main event loop.
     """
 
@@ -91,7 +107,28 @@ async def active(_loop, **calorimeter_data):
     """
     An asynchronous coroutine run periodically during an active calorimetry job.
     Contains logic about the set point, heating to start temp as quickly as possible, and uploading measurements.
-    Periodically calculates PID numbers.
+
+    This function is the overarching loop responsible for two main parts of the DSC job.
+
+    #. Firstly measure both temperatures simultaneously.
+    #. Instantiate a new :class:`robotchem.classes.Run` object containing relevant basic info about this DSC run.
+       The info comes from the web API JSON response in the form of a dict.
+       This dict then constructs the :class:`robotchem.classes.Run` object using the special classmethod
+       :meth:`robotchem.classes.Run.from_web_resp`.
+    #. Switch on LED lights to indicate starting up. Asynchronously, yield control to the
+       :func:`robotchem.main.get_ready` co-routine loop. Coincidentally, when a new :class:`Run` object is
+       instantiated, it will automatically set the heaters
+    #. When control is given back to this function,
+       it suggests that temperature has stabilised at the start temperature.
+       Switch on LED lights to indicate heating up, while yielding control to the
+       :func:`robotchem.main.run_calorimetry` co-routine.
+    #. When control is again yielded to this function,
+       the DSC job in question has finished.
+       Clean up the GPIO boards and go back to the
+       :func:`robotchem.main.idle` loop.
+
+    This function will also go back to the :func:`robotchem.main.idle` loop and cleanup if at any point
+    a :exc:`robotchem.utils.StopHeatingError` is raised.
 
     :param _loop: The main event loop.
     :param calorimeter_data: JSON representation of the active job from the server API.
@@ -134,6 +171,22 @@ async def get_ready(_loop, run):
     """
     An aync function that gets the temperatures to starting temp as quickly as possible.
 
+    It first instantiate and initialise the heater PWM objects related to the :class:`robotchem.classes.Run` object,
+    so that their duty cycles can be changed inside the loop.
+
+    The loop itself flows like this:
+
+    #. Make all temperature, current measurements simultaneously. After making measurements,
+       the :meth:`robotchem.classes.Run.make_measurement` method automatically updates the PID controllers
+       with the new measurements and changes the heater PWM values. Its setpoint, though,
+       is never changed from the starting temperature, ensuring it is reached as quickly as possible.
+    #. Put measurement data into the :class:`robotchem.utils.NetworkQueue` queue to be uploaded to the web.
+       After queueing, the :meth:`robotchem.classes.Run.queue_upload: method should check if the user has
+       inserted the sample and prepared for the formal heat ramp.
+    #. Check if the temperature has stabilised around the start temperature.
+       If so, and if user has inserted the sample, go back to the
+       :func:`robotchem.main.active` function, which will invoke next the formal linear heat ramp.
+
     :param _loop: the main event loop.
     :param run: the object representing the run params.
     """
@@ -161,8 +214,24 @@ async def run_calorimetry(_loop, run):
     """An async function that starts the heat ramp until the end temp is reached at the rate of choice.
     Periodically and transmit currents and temperatures to web API.
 
+    This loop runs similarly to the :func:`get_ready` co-routine.
+    But in addition to PWM calculations and network queues,
+    this loop also:
+
+    #. Each cycle, check if temperature has 'stabilised' around the setpoint
+       of the :class:`robotchem.classes.Run` object.
+       Note the threshold for determining temperature stabilisation is less stringent for this purpose,
+       because being too strict may lead to a staircase temperature profile from experience.
+    #. If stabilised, increase the setpoint temperature by a ramp increment.
+       This increment value is a fraction of the :const:`robotchem.settings.MAX_RAMP_RATE` value, or the corresponding
+       setting on the web server.
+       The exact percentage of the maximum is as specified for this particular DSC job on the website.
+    #. If temperatures have stabilised around the end temperature for a specified duration,
+       stop heating and upload the remainder of all measurement data.
+
     :param _loop: the main event loop
     :param run: the object representing the run params.
+    :exception StopHeatingError: raised when the end temperature has been reached for a certain amount of time.
     """
 
     run.last_time = _loop.time()

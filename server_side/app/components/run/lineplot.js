@@ -5,7 +5,6 @@ import SimpleTooltip from "./simpletooltip";
 import list_of_colors from "../../utils/list_of_colors";
 import humanized_axes from "../../utils/humanize_axes";
 import units from "../../utils/units";
-import clamp from 'lodash/clamp';
 
 
 export default class LinePlot extends React.PureComponent {
@@ -39,7 +38,6 @@ export default class LinePlot extends React.PureComponent {
               return (
                 <Line key={index} type="monotone" dataKey={value} name={humanized_axes[value]}
                       isAnimationActive={false}
-                      strokeWidth={3}
                       stroke={list_of_colors[index]} />
               )
             })}

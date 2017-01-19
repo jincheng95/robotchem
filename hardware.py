@@ -1,8 +1,9 @@
 """
-This module contains GPIO hardware controls for
-1. the temperature sensors,
-2. the electric heaters (PID controlled),
-3. the LEDs.
+This module contains GPIO hardware controls for:
+
+#. the temperature sensors,
+#. the electric heaters (PID controlled),
+#. the LEDs.
 
 Jin Cheng & Hayley Weir 08/12/16:
     the PID class
@@ -28,8 +29,7 @@ import os
 import subprocess
 import time
 
-import settings
-from utils import clamp
+from robotchem import settings
 
 if not settings.FAKE_HARDWARE:
     import Adafruit_ADS1x15
@@ -68,10 +68,15 @@ class PID(object):
         self.last_time = time.time()
 
     def set_setpoint(self, set_point):
+        """Set a new set-point temperature for this PID controller object.
+
+        :type set_point: float | int
+        :param set_point: New setpoint.
+        """
         self.set_point = float(set_point)
 
     def clear(self):
-        """Clears PID computations and coefficients.
+        """Clears all PID computations and coefficients.
         """
         self.set_point = 0.
         self.proportional, self.integral, self.derivative, self.last_error = 0., 0., 0., 0.
@@ -79,9 +84,13 @@ class PID(object):
     def update(self, feedback_value):
         """Calculates PID output for a given feedback from sensor.
 
+        .. math::
+            u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d {de}/{dt}
+
+        :type feedback_value: float | int
         :param feedback_value: temperature reading
-        :return: PID output for current time:
-        u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d {de}/{dt}
+        :rtype: float
+        :return: PID output for current time.
         """
         error = self.set_point - feedback_value
         delta_error = error - self.last_error
@@ -106,25 +115,17 @@ class PID(object):
                "SP={3} IV={4}>".format(self.Kp, self.Ki, self.Kd, self.set_point, self.init_val)
 
 
-async def _change_heater_pwm(pid_object, queue, temperature, pwm_object):
-    """An asynchronous queue consumer to change PWM output.
-    if a setpoint is in the queue, the PWM will be changed on the specified pin number."""
-    while True:
-        set_point = await queue.get()
-        pid_object.set_setpoint(set_point)
-        duty_cycle = clamp(pid_object.update(temperature))
-        pwm_object.ChangeDutyCycle(duty_cycle)
-
-
-
 HAS_INITIALZED_MODPROBE = False
 debug_temp = 0
 
-async def _read_temp(identifier):
+async def read_temp(identifier):
     """
     Reads from the One-Wire thermocouple temperature info from its bus.
-    :param identifier: the unique device identifier
-    :return: temperature, in Celsius
+
+    :type identifier: str
+    :param identifier: the unique 1-wire device identifier string.
+    :rtype: float
+    :return: measured temperature, in Celsius
     """
 
     # if debug, return some random value for testing
@@ -167,29 +168,29 @@ async def _read_temp(identifier):
 
     # If temperature read is not found,
     # return a very large number to suspend heating until a proper measurement is made
-    return 99999
+    return 99999.
 
 
 async def read_temp_ref():
     """
     Reads reference cell temperature.
-    This is a wrapper for the _read_temp function,
-    with the device ID set with TEMP_SENSOR_ID_REF in the settings.py file.
+    This is a wrapper for the `read_temp` function, \
+    with the device ID set with `TEMP_SENSOR_ID_REF` in the `settings.py` file.
 
     :return: Temperature of the reference cell in Celsius.
     """
-    return await _read_temp(settings.TEMP_SENSOR_ID_REF)
+    return await read_temp(settings.TEMP_SENSOR_ID_REF)
 
 
 async def read_temp_sample():
     """
     Reads sample cell temperature.
-    This is a wrapper for the _read_temp function,
-    with the device ID set with TEMP_SENSOR_ID_SAMPLE in the settings.py file.
+    This is a wrapper for the `read_temp` function, \
+    with the device ID set with `TEMP_SENSOR_ID_SAMPLE` in the settings.py file.
 
     :return: Temperature of the sample cell in Celsius.
     """
-    return await _read_temp(settings.TEMP_SENSOR_ID_SAMPLE)
+    return await read_temp(settings.TEMP_SENSOR_ID_SAMPLE)
 
 
 async def _read_adc(channel, adc_object, gain=1, scale=(1/185000.0)):
@@ -206,12 +207,12 @@ async def _read_adc(channel, adc_object, gain=1, scale=(1/185000.0)):
 
 
 async def read_current_ref(adc_object, *args, **kwargs):
-    """An async wrapper function for reading realtime current at the reference."""
+    """An async wrapper function for reading real-time current at the reference."""
     return await _read_adc(settings.CURRENT_SENSOR_REF_CHANNEL, adc_object, *args, **kwargs)
 
 
 async def read_current_sample(adc_object, *args, **kwargs):
-    """An async wrapper function for reading realtime current at the sample."""
+    """An async wrapper function for reading real-time current at the sample."""
     return await _read_adc(settings.CURRENT_SENSOR_SAMPLE_CHANNEL, adc_object, *args, **kwargs)
 
 
@@ -219,8 +220,8 @@ async def measure_all(loop, adc_object):
     """A convenience function to measure all readings with one concurrent Future object.
 
     :param loop: the main event loop.
-    :param adc_object: the adc object representing the Analogue-to-Digital converter bytes reader
-    from the Adafruit library.
+    :param adc_object: the adc object representing the Analogue-to-Digital converter bytes reader \
+        from the Adafruit library.
     :returns: a tuple containing reference cell temp, sample cell temp, reference heater current, sample heater current.
     """
     _temp_ref, _temp_sample, _current_ref, _current_sample = await asyncio.gather(
@@ -233,11 +234,17 @@ async def measure_all(loop, adc_object):
 
 
 def initialize(board_only=False):
-    """Initial setup for GPIO board.
-    Make all GPIO output pins set up as outputs.
-    Start standby LED color (green).
+    """
+    #. Initial setup for GPIO board.
+    #. Make all GPIO output pins set up as outputs.
+    #. Start standby LED color (green).
+    #. If not `board_only`, instantiate and return new heater PWM and ADC reader objects.
 
-    :returns A tuple of reference, sample PWM objects
+
+    :type board_only: bool
+    :param board_only: If false, do not instantiate new heater and ADC reader objects.
+    :rtype: None | tuple[ (RPi.GPIO.PWM, RPi.GPIO.PWM, Adafruit_ADS1x15.ADS1115, )
+    :returns: If not `board-only`, a tuple of reference, sample PWM objects
     """
 
     if settings.FAKE_HARDWARE:
@@ -283,9 +290,10 @@ def initialize(board_only=False):
 
 async def flash_LED(*pins, period=0.15):
     """
-    A coroutine that routinely flashes the LEDs.
+    An async coroutine that routinely flashes the LEDs.
+
     :param pins: pin numbers of LED bulbs
-    :param period: the LED will flash every x seconds
+    :param period: the LED will flash every x seconds.
     """
     while True:
         GPIO.output(pins, GPIO.LOW)
@@ -295,8 +303,7 @@ async def flash_LED(*pins, period=0.15):
 
 
 def indicate_starting_up():
-    """
-    Indicate the device is heating to start_temp by turning on/off LED lights.
+    """Indicate the device is heating to start_temp by turning on/off LED lights.
     """
 
     if settings.FAKE_HARDWARE:
@@ -310,6 +317,9 @@ def indicate_starting_up():
 def indicate_heating(_loop):
     """
     Indicate the device is heating in an active calorimetry by turning on/off LED lights.
+
+    :type _loop: asyncio.BaseEventLoop
+    :param _loop: the main event loop
     """
 
     if settings.FAKE_HARDWARE:
@@ -323,6 +333,11 @@ def indicate_heating(_loop):
 def cleanup(*heaters, wipe=False):
     """
     Cleans up the whole GPIO board. Use when exception is raised.
+
+    :type heaters: list[ RPi.GPIO.PWM, ...
+    :param heaters: heater PWM objects
+    :type wipe: bool
+    :param wipe: run the hardware GPIO cleanup. Resets all previous PWM and ADC instances.
     """
 
     if settings.FAKE_HARDWARE:

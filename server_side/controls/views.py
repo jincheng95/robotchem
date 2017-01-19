@@ -20,9 +20,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 
-from rfsite.settings import DEBUG
-from .models import Calorimeter, Run, DataPoint
-from .serializers import CalorimeterSerializer, RunSerializer, DataPointSerializer
+from server_side.rfsite.settings import DEBUG
+from server_side.controls.models import Calorimeter, Run, DataPoint
+from server_side.controls.serializers import CalorimeterSerializer, RunSerializer, DataPointSerializer
 
 
 def IndexView(request, *args, **kwargs):

@@ -8,10 +8,11 @@ Jin Cheng, 02/12/16
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Calorimeter, Run, DataPoint
+from server_side.controls.models import Calorimeter, Run, DataPoint
 
 
 class CalorimeterSerializer(serializers.ModelSerializer):
+    """JSON representation of calorimetry settings."""
     is_active = serializers.SerializerMethodField('is_calorimeter_active')
     has_active_runs = serializers.SerializerMethodField('check_active_runs')
 
@@ -52,6 +53,7 @@ class CalorimeterSerializer(serializers.ModelSerializer):
 
 
 class DataPointSerializer(serializers.ModelSerializer):
+    """JSON representation of measurements made at a certain point in time."""
     measured_at = serializers.DateTimeField(input_formats=['iso-8601'])
     run = serializers.PrimaryKeyRelatedField(queryset=Run.objects.all(), validators=[])
 
@@ -65,6 +67,7 @@ class DataPointSerializer(serializers.ModelSerializer):
 
 
 class RunSerializer(serializers.ModelSerializer):
+    """JSON representation of a calorimetry job."""
     calorimeter = serializers.PrimaryKeyRelatedField(queryset=Calorimeter.objects.all(), validators=[])
     data_point_count = serializers.SerializerMethodField('count_data_points')
 
