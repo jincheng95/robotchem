@@ -135,7 +135,7 @@ class Run(object):
             q, qsize = self.network_queue, self.network_queue.qsize()
 
             if override_threshold or (
-                    qsize() >= q.threshold_qsize and (time.time() - q.last_time) >= q.threshold_time):
+                    qsize >= q.threshold_qsize and (time.time() - q.last_time) >= q.threshold_time):
 
                 # collect all items in the queue
                 data = await asyncio.gather(
