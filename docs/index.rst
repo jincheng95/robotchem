@@ -13,28 +13,34 @@ RoboFlux Code Documentation
 ###########################
 
 A Raspberry Pi powered differential scanning calorimeter with Internet remote control functionality.
+This documentation serves to explain the source code for the Robot Chemistry course assessment,
+rather than aiming to be a concise reference to the API.
 
-This document is semi-automatically generated with Sphinx from documentation string within the code.
-The doc strings within the code are very detailed and explain various functions and methods
-without examining the code block itself.
-However if you would like, next to this documentation,
-there will be links to view the source code.
-The source code for this project is also available on the
-`robotchem GitHub repository <https://github.com/jincheng95/robotchem>`_.
+Other pages of this document are semi-automatically generated using Sphinx from documentation strings within the code.
+These doc strings are very detailed and explain various functions and methods
+without the need to examine the code block itself.
+However if you would like dig deeper,
+there are links to view highlighted source code next to this documentation.
+
+
+The source code for this project is also available at its
+`GitHub repository <https://github.com/jincheng95/robotchem>`_.
+
 
 There are mainly three parts of code to make this project possible.
 
 Raspberry pi code
 =================
-Hardware control, temperature ramp, PID control and data upload on the raspberry pi.
+Performs hardware control, temperature ramping, PID control and measuremets.
+Also uploads measurement to the web server via HTTP.
 
 Written and tested on Python 3.6 with ``asyncio`` module for asynchronicity.
 Also makes use of the following Python libraries:
 
 * ``RPi.GPIO``, the GPIO board control library from raspberry pi
 * ``dateutil``, a date and time parser that converts a Python ``datetime`` object to a string
-* ``Adafruit_ADS1x15``, analog-to-digital converter info reader
-* and many other standard Python libraries.
+* ``Adafruit_ADS1x15``, an analog-to-digital converter library from the manufacturer, Adafruit
+* ``w1thermsensor``, a 1-wire thermocouple reader library
 
 .. toctree::
    :caption: Raspberry Pi Documentation
@@ -71,7 +77,8 @@ Web Server
 Manages a database of calorimetry job measurements. Responsible for facilitating the exchange of
 information and instructions between user and the raspberry pi.
 
-Powered by Django 1.10.
+Powered by Python 3.5, ``django`` and ``django-rest-framework``.
+Server is run by ``gunicorn`` and ``nginx`` on Ubuntu 16.04.
 
 .. toctree::
    :caption: Django Server Documentation
@@ -119,7 +126,7 @@ Javascript
 This is run natively on a user's browser and mainly for website aesthetics and function.
 Javascript modules are not documented here because it is largely framework dependent and not part of the course.
 
-Powered by React 0.15 and written in Javascript ES2015, bundling and minification by Webpack, npm and Babel.
+Powered by React 0.15, written in Javascript ES2015, bundled by Webpack, npm and Babel.
 
 File Structure
 --------------

@@ -146,7 +146,7 @@ export default class Run extends Component {
       this.setState({autorefreshInt: int});
     } else if ( !autorefresh && autorefreshInt ) {
       this.cancelAutorefresh();
-    } else if ( !run.stabilized_at_start && nextProps.run.stabilized_at_start && !show_is_ready_notification) {
+    } else if ( !nextProps.run.is_ready && nextProps.run.stabilized_at_start && !show_is_ready_notification) {
       this.setState({show_is_ready_notification: true});
     }
   }
@@ -228,6 +228,12 @@ export default class Run extends Component {
         </CardText>
 
         <CardActions style={{marginBottom: '1em', marginLeft: '0.6em'}}>
+          {(is_active && stabilized_at_start) &&
+              <RaisedButton primary label={is_ready ? "Ramp Started" : "Begin Heating"}
+                            icon={is_ready ? <TrendingUp/> : <TrendingFlat/>}
+                        disabled={is_ready_checkbox_loading || is_ready}
+                        onTouchTap={this.onIsReadyChecked} />
+          }
           {data_point_count > 0 && <RaisedButton href={`/download/${id}/?format=csv`} target="_blank"
             label="Download As .csv" icon={<CloudDownload/>}/>}
           {!is_active && <RaisedButton onTouchTap={this.onExpandChange}
@@ -235,13 +241,6 @@ export default class Run extends Component {
           {is_active &&
           <FlatButton onTouchTap={()=>this.setState({stopDialogOpen: true})}
             backgroundColor={red500} label="Stop" icon={<Stop/>} style={{color: 'white'}} />}
-          {stabilized_at_start &&
-            <div className="float-right">
-              <RaisedButton primary label={"Begin Heating"} icon={is_ready ? <TrendingUp/> : <TrendingFlat/>}
-                        disabled={is_ready_checkbox_loading}
-                        onTouchTap={this.onIsReadyChecked}
-              />
-            </div>}
         </CardActions>
 
         <Divider />
@@ -268,6 +267,9 @@ export default class Run extends Component {
           Once stopped, this run can never be resumed.
         </Dialog>}
         <Snackbar open={show_is_ready_notification}
+                  autoHideDuration={60000}
+                  style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}
+                  bodyStyle={{ pointerEvents: 'initial', maxWidth: 'none' }}
                   action="OK"
                   onActionTouchTap={()=>{this.setState({show_is_ready_notification: false})}}
                   onRequestClose={()=>{}}

@@ -78,6 +78,12 @@ class Run(object):
     async def make_measurement(self, _loop):
         """
         Make a new measurement asynchronously and store it to the series of measurements related to this run.
+        All measurements are put into the network queue responsible for this run's data.
+
+        Temperature measurements made are automatically fed into the :class:`robotchem.hardware.PID`
+        objects related to this run.
+        The main event loop is used to change the duty cycle on the respective heater PWM objects,
+        :class:`RPi.GPIO.PWM`.
 
         :type _loop: asyncio.BaseEventLoop
         :param _loop: The main event loop.
@@ -173,15 +179,22 @@ class Run(object):
 
     def check_stabilization(self, value, duration=None, tolerance=None):
         """
-        Check if the temperatures of the last measurements are within range of the value. \
+        Check if the latest temperatures are within range of the ``value`` given. \
         The measurements must be made within a specified amount of time ago and \
         the temperature comparison tolerance is also customisable.
 
+        :type value: float | int
         :param value: value around which to determine if temperatures have stabilised
-        :param duration: value with which to override this object's stabilisation duration constraint,
-        `self.stabilization_duration`
-        :param tolerance: value with which to override this object's temperature tolerance,
-        `self.temp_tolerance`
+
+        :type duration: float | int
+        :param duration: value with which to override this object's stabilisation duration constraint, \
+            :const:`self.stabilization_duration`
+
+        :type: tolerance: float | int
+        :param tolerance: value with which to override this object's temperature tolerance, \
+            :const:`self.temp_tolerance`
+
+        :rtype: bool
         :return: Whether stabilisation at the specified temperature has been achieved.
         """
         has_stabilized = False
@@ -224,8 +237,9 @@ class Run(object):
     @property
     def real_ramp_rate(self):
         """
-        Calculate the real temperature increment per main loop cycle, in degrees Celsius. The `ramp_rate` field stored \
-        on the web interface and the `self.ramp_rate` property stores the percentage of the maximum available ramp rate.
+        Calculate the real temperature increment per main loop cycle, in degrees Celsius.
+        The `ramp_rate` field is selected by the user on the web interface and
+        the `self.ramp_rate` property stores the percentage of the maximum available ramp rate.
 
         :rtype: float
         :return: Temperature increase per cycle, in degrees Celsius.
@@ -236,11 +250,14 @@ class Run(object):
     def from_web_resp(cls, json_data, temp_ref, temp_sample):
         """
         Construct a Run object from a dictionary of returned values from the web status API page.
+        PID objects are instantiated with initial temperature values supplied.
+        The customisable parameters from the web API are also stored,
+        and if none is given, defaults from :mod:`robotchem.settings` will be used.
 
         :param json_data: Returned JSON response.
         :param temp_ref: Measured temperature at ref.
         :param temp_sample: Measured temperature at sample
-        :return: This object.
+        :return: A :class:`robotchem.classes.Run` object.
         """
         run_data = json_data['has_active_runs']
 

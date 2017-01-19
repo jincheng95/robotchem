@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import sys
+sys.path.insert(0, os.path.abspath('../'))
+
 from . import local_settings, production_settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

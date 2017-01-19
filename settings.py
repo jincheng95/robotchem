@@ -26,7 +26,7 @@ DEBUG = True
 """Setting this to true enables a very basic logging system which just prints out to `stdout` various info
 about what the code is doing."""
 
-FAKE_HARDWARE = True
+FAKE_HARDWARE = False
 """Sometimes it is useful to run `main.py` on a personal computer and disable hardware controls. Setting this to true
 will make hardware control functions just print out what it was supposed to do."""
 

@@ -181,7 +181,7 @@ async def get_ready(_loop, run):
        with the new measurements and changes the heater PWM values. Its setpoint, though,
        is never changed from the starting temperature, ensuring it is reached as quickly as possible.
     #. Put measurement data into the :class:`robotchem.utils.NetworkQueue` queue to be uploaded to the web.
-       After queueing, the :meth:`robotchem.classes.Run.queue_upload: method should check if the user has
+       After queueing, the :meth:`robotchem.classes.Run.queue_upload` method should check if the user has
        inserted the sample and prepared for the formal heat ramp.
     #. Check if the temperature has stabilised around the start temperature.
        If so, and if user has inserted the sample, go back to the
