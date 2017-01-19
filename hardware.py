@@ -310,8 +310,8 @@ def indicate_starting_up():
         print('The red LED has been switched on.')
         return
 
-    GPIO.output((settings.BLUE, settings.GREEN), GPIO.LOW)
-    GPIO.output(settings.RED, GPIO.HIGH)
+    GPIO.output((settings.RED, settings.GREEN), GPIO.LOW)
+    GPIO.output(settings.BLUE, GPIO.HIGH)
 
 
 def indicate_heating(_loop):
@@ -327,7 +327,7 @@ def indicate_heating(_loop):
         return
 
     GPIO.output((settings.GREEN, settings.BLUE), GPIO.LOW)
-    asyncio.ensure_future(flash_LED(settings.RED), loop=_loop)
+    GPIO.output(settings.RED, GPIO.HIGH)
 
 
 def cleanup(*heaters, wipe=False):
