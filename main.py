@@ -31,6 +31,8 @@ import sys
 
 import aiohttp
 
+sys.path.insert(0, os.path.abspath('../'))
+
 from robotchem import settings
 from robotchem.classes import Run
 from robotchem.hardware import (read_temp_ref, read_temp_sample, initialize, indicate_heating, indicate_starting_up, cleanup)
