@@ -14,13 +14,21 @@ RoboFlux Code Documentation
 
 A Raspberry Pi powered differential scanning calorimeter with Internet remote control functionality.
 
+This document is semi-automatically generated with Sphinx from documentation string within the code.
+The doc strings within the code are very detailed and explain various functions and methods
+without examining the code block itself.
+However if you would like, next to this documentation,
+there will be links to view the source code.
+The source code for this project is also available on the
+`robotchem GitHub repository <https://github.com/jincheng95/robotchem>`_.
+
 There are mainly three parts of code to make this project possible.
 
 Raspberry pi code
 =================
 Hardware control, temperature ramp, PID control and data upload on the raspberry pi.
 
-Written and run on Python 3.6 with ``asyncio`` module for asynchronicity.
+Written and tested on Python 3.6 with ``asyncio`` module for asynchronicity.
 Also makes use of the following Python libraries:
 
 * ``RPi.GPIO``, the GPIO board control library from raspberry pi
@@ -109,7 +117,7 @@ File Structure
 Javascript
 ==========
 This is run natively on a user's browser and mainly for website aesthetics and function.
-Javascript modules are not documented here because it is largly framework-dependent and not part of the course.
+Javascript modules are not documented here because it is largely framework dependent and not part of the course.
 
 Powered by React 0.15 and written in Javascript ES2015, bundling and minification by Webpack, npm and Babel.
 

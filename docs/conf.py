@@ -101,6 +101,15 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
+html_context = {
+    # Enable the "Edit in GitHub link within the header of each page.
+    'display_github': True,
+    # Set the following variables to generate the resulting github URL for each page.
+    # Format Template: https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/blob/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ suffix }}
+    'github_user': 'jincheng95',
+    'github_repo': 'robotchem',
+    'github_version': 'master/docs/',
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
