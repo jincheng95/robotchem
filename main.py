@@ -238,6 +238,7 @@ async def run_calorimetry(_loop, run):
 
     run.last_time = _loop.time()
     set_point = run.start_temp
+    initial_increase = True
 
     while True:
         # make measurements and upload
@@ -245,10 +246,11 @@ async def run_calorimetry(_loop, run):
         await run.queue_upload(_loop)
 
         # use a less stringent check (higher value tolerance and smaller duration) to make linear the temp profile
-        stabilised_at_setpoint= run.check_stabilization(set_point, duration=2, tolerance=1.5 * run.real_ramp_rate)
+        stabilised_at_setpoint= run.check_stabilization(set_point, duration=2, tolerance=2 * run.real_ramp_rate)
 
         # if current temps are more or less the desired set point, increment the ramp
-        if stabilised_at_setpoint:
+        if stabilised_at_setpoint or initial_increase:
+            initial_increase = False
             set_point += run.real_ramp_rate
             run.batch_setpoint(set_point)
 
