@@ -148,6 +148,8 @@ export default class Run extends Component {
       this.cancelAutorefresh();
     } else if ( !nextProps.run.is_ready && nextProps.run.stabilized_at_start && !show_is_ready_notification) {
       this.setState({show_is_ready_notification: true});
+    } else if ( nextProps.run.is_ready && show_is_ready_notification ) {
+      this.setState({show_is_ready_notification: false});
     }
   }
   componentDidMount() {
@@ -266,7 +268,7 @@ export default class Run extends Component {
                 onRequestClose={()=>this.setState({stopDialogOpen: false})}>
           Once stopped, this run can never be resumed.
         </Dialog>}
-        <Snackbar open={show_is_ready_notification}
+        <Snackbar open={show_is_ready_notification && !is_ready}
                   autoHideDuration={60000}
                   style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}
                   bodyStyle={{ pointerEvents: 'initial', maxWidth: 'none' }}
