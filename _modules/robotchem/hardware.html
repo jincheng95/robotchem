@@ -1,0 +1,571 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>robotchem.hardware &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>robotchem.hardware</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/_modules/robotchem/hardware" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robotchem.hardware</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains GPIO hardware controls for:</span>
+
+<span class="sd">#. the temperature sensors,</span>
+<span class="sd">#. the electric heaters (PID controlled),</span>
+<span class="sd">#. the LEDs.</span>
+
+<span class="sd">Jin Cheng &amp; Hayley Weir 08/12/16:</span>
+<span class="sd">    the PID class</span>
+
+<span class="sd">Hayley Weir 11/12/16:</span>
+<span class="sd">    GPIO controls,</span>
+<span class="sd">    LED controls,</span>
+<span class="sd">    initialisation function,</span>
+<span class="sd">    hardware components testing</span>
+
+<span class="sd">Jin Cheng 12/12/16:</span>
+<span class="sd">    function cleanup and asynchronisation, introduced wrappers</span>
+<span class="sd">    the asynchronous PWM control queue</span>
+<span class="sd">    documentation</span>
+
+<span class="sd">Jin Cheng 17/01/17:</span>
+<span class="sd">    allow customisation of PID params from the web interface,</span>
+<span class="sd">    the flashing LED function</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">robotchem</span> <span class="k">import</span> <span class="n">settings</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">FAKE_HARDWARE</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">Adafruit_ADS1x15</span>
+    <span class="kn">import</span> <span class="nn">RPi.GPIO</span> <span class="k">as</span> <span class="nn">GPIO</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+
+
+<div class="viewcode-block" id="PID"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.PID">[docs]</a><span class="k">class</span> <span class="nc">PID</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object representing a PID controller,</span>
+<span class="sd">    allowing the two heaters to have separate PID params.</span>
+
+<span class="sd">    Stores historical integral and derivative values so far,</span>
+<span class="sd">    while the set point can be updated after class construction and at any point in time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_val</span><span class="p">,</span> <span class="n">Kp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Ki</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Kd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">set_point</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class constructor.</span>
+
+<span class="sd">        :param init_val: initial value,</span>
+<span class="sd">        :param Kp: custom PID proportionality factor,</span>
+<span class="sd">        :param Ki: custom PID integral factor,</span>
+<span class="sd">        :param Kd: custom PID derivative factor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">init_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_point</span> <span class="o">=</span> <span class="n">set_point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_error</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proportional</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">derivative</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span>
+
+        <span class="c1"># if not specified in object construction, use the PID params in settings.py</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Kp</span> <span class="o">=</span> <span class="n">Kp</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">PID_PARAMS</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ki</span> <span class="o">=</span> <span class="n">Ki</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">PID_PARAMS</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Kd</span> <span class="o">=</span> <span class="n">Kd</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">PID_PARAMS</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<div class="viewcode-block" id="PID.set_setpoint"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.PID.set_setpoint">[docs]</a>    <span class="k">def</span> <span class="nf">set_setpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_point</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set a new set-point temperature for this PID controller object.</span>
+
+<span class="sd">        :type set_point: float | int</span>
+<span class="sd">        :param set_point: New setpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_point</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">set_point</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PID.clear"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.PID.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clears all PID computations and coefficients.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_point</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proportional</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">derivative</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_error</span> <span class="o">=</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span></div>
+
+<div class="viewcode-block" id="PID.update"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.PID.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates PID output for a given feedback from sensor.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d {de}/{dt}</span>
+
+<span class="sd">        :type feedback_value: float | int</span>
+<span class="sd">        :param feedback_value: temperature reading</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        :return: PID output for current time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_point</span> <span class="o">-</span> <span class="n">feedback_value</span>
+        <span class="n">delta_error</span> <span class="o">=</span> <span class="n">error</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_error</span>
+
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">delta_time</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">proportional</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Kp</span> <span class="o">*</span> <span class="n">error</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integral</span> <span class="o">+=</span> <span class="n">delta_time</span> <span class="o">*</span> <span class="n">error</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">derivative</span> <span class="o">=</span> <span class="n">delta_error</span> <span class="o">/</span> <span class="n">delta_time</span>
+
+        <span class="c1"># reset last_time and last_error for next calculation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_error</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">error</span><span class="p">,</span> <span class="n">now</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proportional</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ki</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">integral</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Kd</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">derivative</span></div>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">__dict__</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;PID controller object (Kp, Ki, Kd)=(</span><span class="si">{0}</span><span class="s2">, </span><span class="si">{1}</span><span class="s2">, </span><span class="si">{2}</span><span class="s2">) &quot;</span> \
+               <span class="s2">&quot;SP=</span><span class="si">{3}</span><span class="s2"> IV=</span><span class="si">{4}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Kp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ki</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Kd</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_val</span><span class="p">)</span></div>
+
+
+<span class="n">HAS_INITIALZED_MODPROBE</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">debug_temp</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="read_temp"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.read_temp">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">read_temp</span><span class="p">(</span><span class="n">identifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads from the One-Wire thermocouple temperature info from its bus.</span>
+
+<span class="sd">    :type identifier: str</span>
+<span class="sd">    :param identifier: the unique 1-wire device identifier string.</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :return: measured temperature, in Celsius</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if debug, return some random value for testing</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">FAKE_HARDWARE</span><span class="p">:</span>
+        <span class="k">global</span> <span class="n">debug_temp</span>
+        <span class="n">debug_temp</span> <span class="o">+=</span> <span class="mf">0.2</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span> <span class="c1"># simulate slow I/O</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">debug_temp</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">global</span> <span class="n">HAS_INITIALZED_MODPROBE</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_INITIALZED_MODPROBE</span><span class="p">:</span>
+        <span class="c1"># Initialize the GPIO Pins, then change the global flag</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s1">&#39;sudo&#39;</span><span class="p">,</span> <span class="s1">&#39;modprobe&#39;</span><span class="p">,</span> <span class="s1">&#39;w1-gpio&#39;</span><span class="p">])</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s1">&#39;sudo&#39;</span><span class="p">,</span> <span class="s1">&#39;modprobe&#39;</span><span class="p">,</span> <span class="s1">&#39;w1-therm&#39;</span><span class="p">])</span>
+        <span class="n">HAS_INITIALZED_MODPROBE</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Absolute file path of the OneWire serial comm</span>
+    <span class="n">device_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TEMP_SENSOR_BASE_DIR</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">TEMP_SENSOR_ID_APPENDIX</span><span class="p">)</span>
+
+    <span class="c1"># Reads temperature data</span>
+    <span class="k">def</span> <span class="nf">read_temp_from_file</span><span class="p">(</span><span class="n">device_file</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">device_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">lines</span>
+
+    <span class="c1"># While the first line does not contain &#39;YES&#39;, wait for 0.2s and then read the device file again</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">read_temp_from_file</span><span class="p">(</span><span class="n">device_file</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">!=</span> <span class="s2">&quot;YES&quot;</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TEMP_READ_TIME_INTERVAL</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">read_temp_from_file</span><span class="p">(</span><span class="n">device_file</span><span class="p">)</span>
+
+    <span class="c1"># Look for the position of the &#39;=&#39; in the second line of the device file.</span>
+    <span class="n">equals_pos</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;t=&#39;</span><span class="p">)</span>
+
+    <span class="c1"># If the &#39;=&#39; is found, convert the rest of the line after the &#39;=&#39; into degrees Celsius,</span>
+    <span class="k">if</span> <span class="n">equals_pos</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">temp_string</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">equals_pos</span> <span class="o">+</span> <span class="mi">2</span><span class="p">:]</span>
+        <span class="n">temp_c</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temp_string</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000.0</span>
+        <span class="k">return</span> <span class="n">temp_c</span>
+
+    <span class="c1"># If temperature read is not found,</span>
+    <span class="c1"># return a very large number to suspend heating until a proper measurement is made</span>
+    <span class="k">return</span> <span class="mf">99999.</span></div>
+
+
+<div class="viewcode-block" id="read_temp_ref"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.read_temp_ref">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">read_temp_ref</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads reference cell temperature.</span>
+<span class="sd">    This is a wrapper for the `read_temp` function, \</span>
+<span class="sd">    with the device ID set with `TEMP_SENSOR_ID_REF` in the `settings.py` file.</span>
+
+<span class="sd">    :return: Temperature of the reference cell in Celsius.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">read_temp</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TEMP_SENSOR_ID_REF</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_temp_sample"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.read_temp_sample">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">read_temp_sample</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads sample cell temperature.</span>
+<span class="sd">    This is a wrapper for the `read_temp` function, \</span>
+<span class="sd">    with the device ID set with `TEMP_SENSOR_ID_SAMPLE` in the settings.py file.</span>
+
+<span class="sd">    :return: Temperature of the sample cell in Celsius.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">read_temp</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TEMP_SENSOR_ID_SAMPLE</span><span class="p">)</span></div>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_read_adc</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">adc_object</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">185000.0</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads measurement at a ADC channel with a specified GAIN.</span>
+<span class="sd">    Converts the measurement mV into current in amps with a scaling factor.</span>
+
+<span class="sd">    :param channel: channel number on the ADC device</span>
+<span class="sd">    :param gain: factor of gain in ADC. No gain by default.</span>
+<span class="sd">    :param scale: scale factor of the final output, by default converts mV into current in ampere.</span>
+<span class="sd">    :return: ADC measurement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">adc_object</span><span class="o">.</span><span class="n">read_adc</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">gain</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+
+
+<div class="viewcode-block" id="read_current_ref"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.read_current_ref">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">read_current_ref</span><span class="p">(</span><span class="n">adc_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An async wrapper function for reading real-time current at the reference.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">_read_adc</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CURRENT_SENSOR_REF_CHANNEL</span><span class="p">,</span> <span class="n">adc_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_current_sample"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.read_current_sample">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">read_current_sample</span><span class="p">(</span><span class="n">adc_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An async wrapper function for reading real-time current at the sample.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">_read_adc</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">CURRENT_SENSOR_SAMPLE_CHANNEL</span><span class="p">,</span> <span class="n">adc_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="measure_all"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.measure_all">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">measure_all</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="n">adc_object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A convenience function to measure all readings with one concurrent Future object.</span>
+
+<span class="sd">    :param loop: the main event loop.</span>
+<span class="sd">    :param adc_object: the adc object representing the Analogue-to-Digital converter bytes reader \</span>
+<span class="sd">        from the Adafruit library.</span>
+<span class="sd">    :returns: a tuple containing reference cell temp, sample cell temp, reference heater current, sample heater current.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_temp_ref</span><span class="p">,</span> <span class="n">_temp_sample</span><span class="p">,</span> <span class="n">_current_ref</span><span class="p">,</span> <span class="n">_current_sample</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_temp_ref</span><span class="p">()),</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_temp_sample</span><span class="p">()),</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_current_ref</span><span class="p">(</span><span class="n">adc_object</span><span class="p">)),</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_current_sample</span><span class="p">(</span><span class="n">adc_object</span><span class="p">)),</span>
+        <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_temp_ref</span><span class="p">,</span> <span class="n">_temp_sample</span><span class="p">,</span> <span class="n">_current_ref</span><span class="p">,</span> <span class="n">_current_sample</span></div>
+
+
+<div class="viewcode-block" id="initialize"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.initialize">[docs]</a><span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">board_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    #. Initial setup for GPIO board.</span>
+<span class="sd">    #. Make all GPIO output pins set up as outputs.</span>
+<span class="sd">    #. Start standby LED color (green).</span>
+<span class="sd">    #. If not `board_only`, instantiate and return new heater PWM and ADC reader objects.</span>
+
+
+<span class="sd">    :type board_only: bool</span>
+<span class="sd">    :param board_only: If false, do not instantiate new heater and ADC reader objects.</span>
+<span class="sd">    :rtype: None | tuple[ (RPi.GPIO.PWM, RPi.GPIO.PWM, Adafruit_ADS1x15.ADS1115, )</span>
+<span class="sd">    :returns: If not `board-only`, a tuple of reference, sample PWM objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">FAKE_HARDWARE</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GPIO board is all set up!&#39;</span><span class="p">)</span>
+
+        <span class="k">class</span> <span class="nc">FakePWM</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;A fake PWM class with fake pwm-changing functionality for debugging.&quot;&quot;&quot;</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">frequency</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pin</span> <span class="o">=</span> <span class="n">pin</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span>
+            <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">def</span> <span class="nf">ChangeDutyCycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duty_cycle</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Changed duty cycle on PIN </span><span class="si">{0}</span><span class="s1"> to </span><span class="si">{1}</span><span class="s1">%&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pin</span><span class="p">,</span> <span class="n">duty_cycle</span><span class="p">))</span>
+
+
+        <span class="k">class</span> <span class="nc">FakeADC</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;A fake ADC voltage / current reader.&quot;&quot;&quot;</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">def</span> <span class="nf">read_adc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">gain</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">gain</span>
+
+        <span class="k">return</span> <span class="n">FakePWM</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">HEATER_REF_PIN</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">FakePWM</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">HEATER_SAMPLE_PIN</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">FakeADC</span><span class="p">()</span>
+
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="n">GPIO</span><span class="o">.</span><span class="n">BCM</span><span class="p">)</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">([</span><span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BLUE</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span>
+                <span class="n">settings</span><span class="o">.</span><span class="n">HEATER_REF_PIN</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">HEATER_SAMPLE_PIN</span><span class="p">],</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">board_only</span><span class="p">:</span>
+        <span class="n">GPIO</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">OUT</span><span class="p">)</span>
+        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">heater_pwm_ref</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PWM</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">HEATER_REF_PIN</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">heater_pwm_sample</span> <span class="o">=</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">PWM</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">HEATER_SAMPLE_PIN</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">adc_object</span> <span class="o">=</span> <span class="n">Adafruit_ADS1x15</span><span class="o">.</span><span class="n">ADS1115</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">heater_pwm_ref</span><span class="p">,</span> <span class="n">heater_pwm_sample</span><span class="p">,</span> <span class="n">adc_object</span></div>
+
+
+<div class="viewcode-block" id="flash_LED"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.flash_LED">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">flash_LED</span><span class="p">(</span><span class="o">*</span><span class="n">pins</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mf">0.15</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An async coroutine that routinely flashes the LEDs.</span>
+
+<span class="sd">    :param pins: pin numbers of LED bulbs</span>
+<span class="sd">    :param period: the LED will flash every x seconds.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">pins</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
+        <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">pins</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">period</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="indicate_starting_up"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.indicate_starting_up">[docs]</a><span class="k">def</span> <span class="nf">indicate_starting_up</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Indicate the device is heating to start_temp by turning on/off LED lights.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">FAKE_HARDWARE</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The red LED has been switched on.&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">((</span><span class="n">settings</span><span class="o">.</span><span class="n">BLUE</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">),</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="indicate_heating"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.indicate_heating">[docs]</a><span class="k">def</span> <span class="nf">indicate_heating</span><span class="p">(</span><span class="n">_loop</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Indicate the device is heating in an active calorimetry by turning on/off LED lights.</span>
+
+<span class="sd">    :type _loop: asyncio.BaseEventLoop</span>
+<span class="sd">    :param _loop: the main event loop</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">FAKE_HARDWARE</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The Red LED is now flashing!.&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">((</span><span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BLUE</span><span class="p">),</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">flash_LED</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">),</span> <span class="n">loop</span><span class="o">=</span><span class="n">_loop</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cleanup"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.cleanup">[docs]</a><span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="o">*</span><span class="n">heaters</span><span class="p">,</span> <span class="n">wipe</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleans up the whole GPIO board. Use when exception is raised.</span>
+
+<span class="sd">    :type heaters: list[ RPi.GPIO.PWM, ...</span>
+<span class="sd">    :param heaters: heater PWM objects</span>
+<span class="sd">    :type wipe: bool</span>
+<span class="sd">    :param wipe: run the hardware GPIO cleanup. Resets all previous PWM and ADC instances.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">FAKE_HARDWARE</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GPIO board is cleaned up!&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">heater</span> <span class="ow">in</span> <span class="n">heaters</span><span class="p">:</span>
+        <span class="n">heater</span><span class="o">.</span><span class="n">ChangeDutyCycle</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">heater</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+    <span class="c1"># switch off all outputs (including heaters which are the most dangerous)</span>
+    <span class="n">all_output_pins</span> <span class="o">=</span> <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BLUE</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span>
+                       <span class="n">settings</span><span class="o">.</span><span class="n">HEATER_REF_PIN</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">HEATER_SAMPLE_PIN</span><span class="p">,</span>
+                       <span class="p">)</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">all_output_pins</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+
+    <span class="c1"># Turn on power indicator</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">wipe</span><span class="p">:</span>
+        <span class="c1"># at the end of event loop, use raspberry pi native hardware cleanup</span>
+        <span class="n">GPIO</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

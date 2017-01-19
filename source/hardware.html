@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Hardware Controls &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../index.html"/>
+        <link rel="next" title="Classes" href="classes.html"/>
+        <link rel="prev" title="RoboFlux Code Documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Hardware Controls</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/source/hardware.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-robotchem.hardware">
+<span id="hardware-controls"></span><h1>Hardware Controls<a class="headerlink" href="#module-robotchem.hardware" title="Permalink to this headline">¶</a></h1>
+<p>This module contains GPIO hardware controls for:</p>
+<ol class="arabic simple">
+<li>the temperature sensors,</li>
+<li>the electric heaters (PID controlled),</li>
+<li>the LEDs.</li>
+</ol>
+<dl class="docutils">
+<dt>Jin Cheng &amp; Hayley Weir 08/12/16:</dt>
+<dd>the PID class</dd>
+<dt>Hayley Weir 11/12/16:</dt>
+<dd>GPIO controls,
+LED controls,
+initialisation function,
+hardware components testing</dd>
+<dt>Jin Cheng 12/12/16:</dt>
+<dd>function cleanup and asynchronisation, introduced wrappers
+the asynchronous PWM control queue
+documentation</dd>
+<dt>Jin Cheng 17/01/17:</dt>
+<dd>allow customisation of PID params from the web interface,
+the flashing LED function</dd>
+</dl>
+<dl class="class">
+<dt id="robotchem.hardware.PID">
+<em class="property">class </em><code class="descclassname">robotchem.hardware.</code><code class="descname">PID</code><span class="sig-paren">(</span><em>init_val</em>, <em>Kp=None</em>, <em>Ki=None</em>, <em>Kd=None</em>, <em>set_point=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An object representing a PID controller,
+allowing the two heaters to have separate PID params.</p>
+<p>Stores historical integral and derivative values so far,
+while the set point can be updated after class construction and at any point in time.</p>
+<dl class="method">
+<dt id="robotchem.hardware.PID.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears all PID computations and coefficients.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="robotchem.hardware.PID.set_setpoint">
+<code class="descname">set_setpoint</code><span class="sig-paren">(</span><em>set_point</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID.set_setpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID.set_setpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a new set-point temperature for this PID controller object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>set_point</strong> (<em>float | int</em>) &#8211; New setpoint.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="robotchem.hardware.PID.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>feedback_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates PID output for a given feedback from sensor.</p>
+<div class="math">
+<p><img src="../_images/math/2b62886733e1f35148a17081741afd7c017a7a6e.png" alt="u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d {de}/{dt}"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>feedback_value</strong> (<em>float | int</em>) &#8211; temperature reading</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">PID output for current time.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.cleanup">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">cleanup</code><span class="sig-paren">(</span><em>*heaters</em>, <em>wipe=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans up the whole GPIO board. Use when exception is raised.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>heaters</strong> (<em>list</em><em>[ </em><em>RPi.GPIO.PWM</em><em>, </em><em>..</em>) &#8211; heater PWM objects</li>
+<li><strong>wipe</strong> (<em>bool</em>) &#8211; run the hardware GPIO cleanup. Resets all previous PWM and ADC instances.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.flash_LED">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">flash_LED</code><span class="sig-paren">(</span><em>*pins</em>, <em>period=0.15</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#flash_LED"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.flash_LED" title="Permalink to this definition">¶</a></dt>
+<dd><p>An async coroutine that routinely flashes the LEDs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pins</strong> &#8211; pin numbers of LED bulbs</li>
+<li><strong>period</strong> &#8211; the LED will flash every x seconds.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.indicate_heating">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">indicate_heating</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#indicate_heating"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.indicate_heating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicate the device is heating in an active calorimetry by turning on/off LED lights.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>_loop</strong> (<em>asyncio.BaseEventLoop</em>) &#8211; the main event loop</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.indicate_starting_up">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">indicate_starting_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#indicate_starting_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.indicate_starting_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicate the device is heating to start_temp by turning on/off LED lights.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.initialize">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">initialize</code><span class="sig-paren">(</span><em>board_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><ol class="arabic simple">
+<li>Initial setup for GPIO board.</li>
+<li>Make all GPIO output pins set up as outputs.</li>
+<li>Start standby LED color (green).</li>
+<li>If not <cite>board_only</cite>, instantiate and return new heater PWM and ADC reader objects.</li>
+</ol>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>board_only</strong> (<em>bool</em>) &#8211; If false, do not instantiate new heater and ADC reader objects.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">None | tuple[ (RPi.GPIO.PWM, RPi.GPIO.PWM, Adafruit_ADS1x15.ADS1115, )</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">If not <cite>board-only</cite>, a tuple of reference, sample PWM objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.measure_all">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">measure_all</code><span class="sig-paren">(</span><em>loop</em>, <em>adc_object</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#measure_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.measure_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>A convenience function to measure all readings with one concurrent Future object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>loop</strong> &#8211; the main event loop.</li>
+<li><strong>adc_object</strong> &#8211; the adc object representing the Analogue-to-Digital converter bytes reader         from the Adafruit library.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a tuple containing reference cell temp, sample cell temp, reference heater current, sample heater current.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.read_current_ref">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_current_ref</code><span class="sig-paren">(</span><em>adc_object</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_current_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_current_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>An async wrapper function for reading real-time current at the reference.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.read_current_sample">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_current_sample</code><span class="sig-paren">(</span><em>adc_object</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_current_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_current_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>An async wrapper function for reading real-time current at the sample.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.read_temp">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_temp</code><span class="sig-paren">(</span><em>identifier</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads from the One-Wire thermocouple temperature info from its bus.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>identifier</strong> (<em>str</em>) &#8211; the unique 1-wire device identifier string.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">measured temperature, in Celsius</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.read_temp_ref">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_temp_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_temp_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_temp_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads reference cell temperature.
+This is a wrapper for the <cite>read_temp</cite> function,     with the device ID set with <cite>TEMP_SENSOR_ID_REF</cite> in the <cite>settings.py</cite> file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Temperature of the reference cell in Celsius.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.hardware.read_temp_sample">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_temp_sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_temp_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_temp_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads sample cell temperature.
+This is a wrapper for the <cite>read_temp</cite> function,     with the device ID set with <cite>TEMP_SENSOR_ID_SAMPLE</cite> in the settings.py file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Temperature of the sample cell in Celsius.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="classes.html" class="btn btn-neutral float-right" title="Classes" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="RoboFlux Code Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

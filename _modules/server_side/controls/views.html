@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>server_side.controls.views &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>server_side.controls.views</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/_modules/server_side/controls/views" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for server_side.controls.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; HTML-serving views and JSON APIs.</span>
+
+<span class="sd">Jin Cheng, 02/12/16</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">dateutil.parser</span>
+<span class="kn">from</span> <span class="nn">django.core.mail</span> <span class="k">import</span> <span class="n">send_mail</span>
+<span class="kn">from</span> <span class="nn">django.core.paginator</span> <span class="k">import</span> <span class="n">Paginator</span><span class="p">,</span> <span class="n">PageNotAnInteger</span><span class="p">,</span> <span class="n">EmptyPage</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="k">import</span> <span class="n">HttpResponse</span><span class="p">,</span> <span class="n">HttpResponseBadRequest</span><span class="p">,</span> <span class="n">HttpResponseNotAllowed</span>
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="k">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span> <span class="nn">django.template.loader</span> <span class="k">import</span> <span class="n">render_to_string</span>
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">status</span><span class="p">,</span> <span class="n">permissions</span>
+<span class="kn">from</span> <span class="nn">rest_framework.authentication</span> <span class="k">import</span> <span class="n">SessionAuthentication</span><span class="p">,</span> <span class="n">BasicAuthentication</span>
+<span class="kn">from</span> <span class="nn">rest_framework.response</span> <span class="k">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">rest_framework.views</span> <span class="k">import</span> <span class="n">APIView</span>
+<span class="kn">from</span> <span class="nn">rest_framework.generics</span> <span class="k">import</span> <span class="n">RetrieveUpdateDestroyAPIView</span>
+
+<span class="kn">from</span> <span class="nn">server_side.rfsite.settings</span> <span class="k">import</span> <span class="n">DEBUG</span>
+<span class="kn">from</span> <span class="nn">server_side.controls.models</span> <span class="k">import</span> <span class="n">Calorimeter</span><span class="p">,</span> <span class="n">Run</span><span class="p">,</span> <span class="n">DataPoint</span>
+<span class="kn">from</span> <span class="nn">server_side.controls.serializers</span> <span class="k">import</span> <span class="n">CalorimeterSerializer</span><span class="p">,</span> <span class="n">RunSerializer</span><span class="p">,</span> <span class="n">DataPointSerializer</span>
+
+
+<div class="viewcode-block" id="IndexView"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.IndexView">[docs]</a><span class="k">def</span> <span class="nf">IndexView</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Serves index HTML document as the HTTP response to any browser (non-API) request.</span>
+<span class="sd">    :param request: Django HTTPRequest object</span>
+<span class="sd">    :return: Django HTTPResponse object, containing the HTML body and metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">,</span> <span class="p">{})</span></div>
+
+
+<div class="viewcode-block" id="DeviceAccessPermission"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DeviceAccessPermission">[docs]</a><span class="k">class</span> <span class="nc">DeviceAccessPermission</span><span class="p">(</span><span class="n">permissions</span><span class="o">.</span><span class="n">BasePermission</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Permission check done with every HTTP request.</span>
+
+<span class="sd">    Should be implemented with all API points to prevent abuse.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DeviceAccessPermission.has_object_permission"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DeviceAccessPermission.has_object_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_object_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">access_code</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s1">&#39;access_code&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">access_code</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;access_code&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">access_code</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="n">access_code</span></div>
+
+<div class="viewcode-block" id="DeviceAccessPermission.has_permission"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DeviceAccessPermission.has_permission">[docs]</a>    <span class="k">def</span> <span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_object_permission</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">Calorimeter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="CalorimeterStatusAPI"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.CalorimeterStatusAPI">[docs]</a><span class="k">class</span> <span class="nc">CalorimeterStatusAPI</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gives or updates JSONified data about the status of a single calorimeter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">(</span><span class="n">DeviceAccessPermission</span><span class="p">,</span> <span class="p">)</span>
+
+<div class="viewcode-block" id="CalorimeterStatusAPI.get_object"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.CalorimeterStatusAPI.get_object">[docs]</a>    <span class="k">def</span> <span class="nf">get_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># for now, fix this to always return one single calorimeter.</span>
+        <span class="n">calorimeter</span> <span class="o">=</span> <span class="n">Calorimeter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_object_permissions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">calorimeter</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">calorimeter</span></div>
+
+<div class="viewcode-block" id="CalorimeterStatusAPI.get"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.CalorimeterStatusAPI.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get serialized JSON response containing calorimeter status.&quot;&quot;&quot;</span>
+        <span class="n">calorimeter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">CalorimeterSerializer</span><span class="p">(</span><span class="n">calorimeter</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CalorimeterStatusAPI.put"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.CalorimeterStatusAPI.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Periodical updates from the device about its current temperatures when a job isn&#39;t running.&quot;&quot;&quot;</span>
+        <span class="n">calorimeter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">CalorimeterSerializer</span><span class="p">(</span><span class="n">calorimeter</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CalorimeterStatusAPI.delete"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.CalorimeterStatusAPI.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A non-standard implementation of the DELETE HTTP request,</span>
+<span class="sd">        instructing the device to stop heating immediately.&quot;&quot;&quot;</span>
+        <span class="n">calorimeter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_object</span><span class="p">()</span>
+        <span class="n">calorimeter</span><span class="o">.</span><span class="n">stop_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">calorimeter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">is_finished</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">finish_time</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">calorimeter</span><span class="o">=</span><span class="n">calorimeter</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">is_finished</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_running</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_202_ACCEPTED</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RunListAPI"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.RunListAPI">[docs]</a><span class="k">class</span> <span class="nc">RunListAPI</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gives a list of all runs conducted by a calorimeter, or create a new run to be started immediately.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">(</span><span class="n">DeviceAccessPermission</span><span class="p">,</span> <span class="p">)</span>
+
+<div class="viewcode-block" id="RunListAPI.get"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.RunListAPI.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">runs</span> <span class="o">=</span> <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-creation_time&#39;</span><span class="p">)</span>
+        <span class="n">paginator</span> <span class="o">=</span> <span class="n">Paginator</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;page&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">runs</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">PageNotAnInteger</span><span class="p">:</span>
+            <span class="n">runs</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">EmptyPage</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">)</span>
+
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">RunSerializer</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+            <span class="s1">&#39;num_pages&#39;</span><span class="p">:</span> <span class="n">paginator</span><span class="o">.</span><span class="n">num_pages</span><span class="p">,</span>
+            <span class="s1">&#39;runs&#39;</span><span class="p">:</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RunListAPI.post"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.RunListAPI.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">RunSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+            <span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RunDetailsAPI"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.RunDetailsAPI">[docs]</a><span class="k">class</span> <span class="nc">RunDetailsAPI</span><span class="p">(</span><span class="n">RetrieveUpdateDestroyAPIView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gives details about a Run, or changes the Run parameters, or delete the Run completely.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">authentication_classes</span> <span class="o">=</span> <span class="p">(</span><span class="n">DeviceAccessPermission</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">queryset</span> <span class="o">=</span> <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">serializer_class</span> <span class="o">=</span> <span class="n">RunSerializer</span></div>
+
+
+<div class="viewcode-block" id="CsrfExemptSessionAuthentication"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.CsrfExemptSessionAuthentication">[docs]</a><span class="k">class</span> <span class="nc">CsrfExemptSessionAuthentication</span><span class="p">(</span><span class="n">SessionAuthentication</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Django and Django REST framework by default requires all POST requests to include a X-CSRFToken header,</span>
+<span class="sd">    which is not applicable for when the raspberry pi sends data</span>
+<span class="sd">    because it won&#39;t have any existing response from an active session.</span>
+
+<span class="sd">    The enforce_csrf method is overridden to circumvent the CSRF check.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CsrfExemptSessionAuthentication.enforce_csrf"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.CsrfExemptSessionAuthentication.enforce_csrf">[docs]</a>    <span class="k">def</span> <span class="nf">enforce_csrf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="k">return</span></div></div>
+
+
+<div class="viewcode-block" id="datetime_parser"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.datetime_parser">[docs]</a><span class="k">def</span> <span class="nf">datetime_parser</span><span class="p">(</span><span class="n">raw_input</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a raw string input using tools. Tests its format by regex and initiates appropriate datetime constructor.</span>
+
+<span class="sd">    :param raw_input: any string representation of datetime, in either POSIX or ISO format</span>
+<span class="sd">    :return: a Python datetime object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if input is a number, convert this POSIX timestamp to a Python datetime object</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">r&#39;^[+-]?[0-9]*[.]?[0-9]+$&#39;</span><span class="p">,</span> <span class="n">raw_input</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_input</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_input</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">since</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">raw_input</span><span class="p">))</span>
+
+    <span class="c1"># else assume it is ISO formatted time string</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">since</span> <span class="o">=</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">raw_input</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">since</span></div>
+
+
+<div class="viewcode-block" id="DataPointListAPI"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DataPointListAPI">[docs]</a><span class="k">class</span> <span class="nc">DataPointListAPI</span><span class="p">(</span><span class="n">APIView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gives a list of all data points for a specific run measured after a specified time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">permission_classes</span> <span class="o">=</span> <span class="p">(</span><span class="n">DeviceAccessPermission</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">authentication_classes</span> <span class="o">=</span> <span class="p">(</span><span class="n">CsrfExemptSessionAuthentication</span><span class="p">,</span> <span class="n">BasicAuthentication</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="DataPointListAPI.get"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DataPointListAPI.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get data points for a run (with its ID specified in GET parameter `run`),</span>
+<span class="sd">        and after a certain time (with POSIX timestamp or ISO formatted string, optional).</span>
+<span class="sd">        :return: JSON Response</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;run_id&#39;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;since&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;measured_at__gt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime_parser</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s1">&#39;since&#39;</span><span class="p">])</span>
+
+        <span class="n">data_points</span> <span class="o">=</span> <span class="n">DataPoint</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">DataPointSerializer</span><span class="p">(</span><span class="n">data_points</span><span class="p">,</span> <span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataPointListAPI.put"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DataPointListAPI.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Toggles a run&#39;s `is_ready` param,</span>
+<span class="sd">        which indicates whether it has an inserted sample and should heat beyond the start temp.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">run_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span>
+            <span class="n">run</span> <span class="o">=</span> <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">run_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">Run</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">stabilized_at_start</span><span class="p">:</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">is_ready</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">is_ready</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">is_ready</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">run</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">RunSerializer</span><span class="p">(</span><span class="n">run</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataPointListAPI.post"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DataPointListAPI.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main entry point for raspberry pi DSC device.</span>
+<span class="sd">        Periodically receives data points measured on-device, containing a list of data point dicts.</span>
+<span class="sd">        The dict should contain info on: time measured, temperatures (ref and sample), heat used (ref and sample).</span>
+
+<span class="sd">        Time measured: should be either POSIX time or ISO formatted string</span>
+<span class="sd">        Temperatures, heat outputss: floats</span>
+
+<span class="sd">        :return: JSON Response, containing the Calorimeter stop flag (Bool), errors (List), data points (List).</span>
+<span class="sd">        The stop flag, if true, should instruct the device to immediately stop heating or cooling.</span>
+<span class="sd">        The error list will be empty if no error is found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data_points</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+            <span class="n">run_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span>
+            <span class="n">stabilized</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;stabilized_at_start&#39;</span><span class="p">]</span>
+            <span class="n">is_finished</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;is_finished&#39;</span><span class="p">]</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_points</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;errors&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;data_point&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="p">}</span>
+        <span class="c1"># Batch create new data points</span>
+        <span class="k">for</span> <span class="n">data_point</span> <span class="ow">in</span> <span class="n">data_points</span><span class="p">:</span>
+            <span class="n">serializer</span> <span class="o">=</span> <span class="n">DataPointSerializer</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_point</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">serializer</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+                <span class="n">serializer</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="n">response</span><span class="p">[</span><span class="s1">&#39;data_point&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">response</span><span class="p">[</span><span class="s1">&#39;errors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">serializer</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+
+        <span class="c1"># Calorimeter + Run related operations also go here,</span>
+        <span class="c1"># so that the device does not need to send multiple HTTP requests</span>
+        <span class="n">last_data_point</span> <span class="o">=</span> <span class="n">data_points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">last_sample_temp</span> <span class="o">=</span> <span class="n">last_data_point</span><span class="p">[</span><span class="s1">&#39;temp_sample&#39;</span><span class="p">]</span>
+
+        <span class="n">run</span> <span class="o">=</span> <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">run_id</span><span class="p">)</span>
+        <span class="n">run</span><span class="o">.</span><span class="n">stabilized_at_start</span> <span class="o">=</span> <span class="n">stabilized</span>
+        <span class="n">response</span><span class="p">[</span><span class="s1">&#39;is_ready&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">is_ready</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">is_running</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">is_finished</span> <span class="ow">and</span> <span class="n">last_sample_temp</span> <span class="o">&gt;=</span> <span class="n">run</span><span class="o">.</span><span class="n">start_temp</span><span class="p">:</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">is_running</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">is_finished</span> <span class="ow">and</span> <span class="n">run</span><span class="o">.</span><span class="n">is_running</span> <span class="ow">and</span> <span class="n">is_finished</span><span class="p">:</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">is_running</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">is_finished</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">finish_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">email</span><span class="p">:</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;run_name&#39;</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;Run #</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="s1">&#39;run_url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://robotchem.chengj.in/history/3/&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;access_code&#39;</span><span class="p">:</span> <span class="n">run</span><span class="o">.</span><span class="n">calorimeter</span><span class="o">.</span><span class="n">access_code</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">body</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s1">&#39;run_completion_email_body.txt&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+                <span class="n">subject</span> <span class="o">=</span> <span class="n">render_to_string</span><span class="p">(</span><span class="s1">&#39;run_completion_email_title.txt&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+                <span class="n">send_mail</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="s1">&#39;jinscheng@gmail.com&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">run</span><span class="o">.</span><span class="n">email</span><span class="p">],</span> <span class="n">fail_silently</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># If a stop flag is set in the database (instructed by user on browser page),</span>
+        <span class="c1"># send stop flag to device and reset this flag</span>
+        <span class="n">calorimeter</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">calorimeter</span>
+        <span class="n">stop_flag</span> <span class="o">=</span> <span class="n">calorimeter</span><span class="o">.</span><span class="n">stop_flag</span>
+        <span class="n">response</span><span class="p">[</span><span class="s1">&#39;stop_flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop_flag</span>
+        <span class="k">if</span> <span class="n">stop_flag</span><span class="p">:</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">is_running</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">is_finished</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">finish_time</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">calorimeter</span><span class="o">.</span><span class="n">stop_flag</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Change this calorimeter&#39;s last communication time and temperatures</span>
+        <span class="c1"># so that we can determine whether it&#39;s actively connected to the server</span>
+        <span class="c1"># and display semi-real-time temp to user</span>
+        <span class="n">calorimeter</span><span class="o">.</span><span class="n">last_comm_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">calorimeter</span><span class="o">.</span><span class="n">current_ref_temp</span> <span class="o">=</span> <span class="n">last_data_point</span><span class="p">[</span><span class="s1">&#39;temp_ref&#39;</span><span class="p">]</span>
+        <span class="n">calorimeter</span><span class="o">.</span><span class="n">current_sample_temp</span> <span class="o">=</span> <span class="n">last_data_point</span><span class="p">[</span><span class="s1">&#39;temp_sample&#39;</span><span class="p">]</span>
+
+        <span class="n">calorimeter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">run</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;errors&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DataDownloadView"><a class="viewcode-back" href="../../../source/views.html#server_side.controls.views.DataDownloadView">[docs]</a><span class="k">def</span> <span class="nf">DataDownloadView</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">run_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;On-the-fly generation of CSV data files and HTTP attachment response to client&#39;s download request.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">HttpResponseNotAllowed</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">file_format</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">file_format</span> <span class="o">=</span> <span class="s1">&#39;csv&#39;</span>
+
+    <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Run</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">run_id</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">content_type</span><span class="o">=</span><span class="s1">&#39;text/csv&#39;</span><span class="p">)</span>
+        <span class="n">response</span><span class="p">[</span><span class="s1">&#39;Content-Disposition&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;attachment; filename=&quot;</span><span class="si">{0}</span><span class="s1">.csv&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">&#39;Run #&#39;</span><span class="o">+</span><span class="n">run_id</span><span class="p">)</span>
+
+        <span class="n">data_points_by_measurement_time</span> <span class="o">=</span> <span class="n">DataPoint</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;measured_at&#39;</span><span class="p">)</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span> <span class="s1">&#39;Temperature (sample)&#39;</span><span class="p">,</span> <span class="s1">&#39;Temperature (reference)&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;Heat Output (sample)&#39;</span><span class="p">,</span> <span class="s1">&#39;Heat Output (reference)&#39;</span><span class="p">])</span>
+        <span class="n">time_origin</span> <span class="o">=</span> <span class="n">data_points_by_measurement_time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">measured_at</span>
+
+        <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">data_points_by_measurement_time</span><span class="p">:</span>
+            <span class="n">time_delta</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">measured_at</span> <span class="o">-</span> <span class="n">time_origin</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span>
+                <span class="n">time_delta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">temp_sample</span><span class="p">,</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">temp_ref</span><span class="p">,</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">heat_sample</span><span class="p">,</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">heat_ref</span><span class="p">,</span>
+            <span class="p">])</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">return</span> <span class="n">HttpResponseBadRequest</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

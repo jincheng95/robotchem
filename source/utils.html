@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>utils module &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../index.html"/>
+        <link rel="next" title="Main Module" href="main.html"/>
+        <link rel="prev" title="Classes" href="classes.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>utils module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/source/utils.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-robotchem.utils">
+<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-robotchem.utils" title="Permalink to this headline">¶</a></h1>
+<p>Utility functions and classes for common calculations and networking patterns.</p>
+<dl class="docutils">
+<dt>Jin Cheng 12/12/16:</dt>
+<dd>StopHeatingError, async <a class="reference internal" href="#robotchem.utils.fetch" title="robotchem.utils.fetch"><code class="xref py py-func docutils literal"><span class="pre">fetch()</span></code></a> function that makes HTTP requests.
+The Network queue.
+Number manipulation functions.</dd>
+</dl>
+<dl class="class">
+<dt id="robotchem.utils.NetworkQueue">
+<em class="property">class </em><code class="descclassname">robotchem.utils.</code><code class="descname">NetworkQueue</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#NetworkQueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.NetworkQueue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">asyncio.queues.Queue</span></code></p>
+<p>A Queue object with additional attribute to store last time an item was retrieved and processed.</p>
+<dl class="method">
+<dt id="robotchem.utils.NetworkQueue.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#NetworkQueue.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.NetworkQueue.put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="robotchem.utils.StopHeatingError">
+<em class="property">exception </em><code class="descclassname">robotchem.utils.</code><code class="descname">StopHeatingError</code><a class="reference internal" href="../_modules/robotchem/utils.html#StopHeatingError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.StopHeatingError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">BaseException</span></code></p>
+<p>An exception, when raised, should stop heating in cells
+and terminate current active calorimetry job.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.utils.clamp">
+<code class="descclassname">robotchem.utils.</code><code class="descname">clamp</code><span class="sig-paren">(</span><em>number</em>, <em>min_number=0</em>, <em>max_number=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#clamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.clamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that clamps the input argument number within the given range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> &#8211; The number to be clamped.</li>
+<li><strong>min_number</strong> &#8211; Minimum value the clamped result can take.</li>
+<li><strong>max_number</strong> &#8211; Maximum value the clamped result can take.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The clamped result.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.utils.fetch">
+<code class="descclassname">robotchem.utils.</code><code class="descname">fetch</code><span class="sig-paren">(</span><em>session</em>, <em>method</em>, <em>url</em>, <em>payload</em>, <em>timeout=5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>An asynchronous HTTP request function sending JSON data,
+with an automatically included ACCESS_CODE field from settings.py.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>session</strong> &#8211; the async HTTP session content manager</li>
+<li><strong>method</strong> &#8211; method of the HTTP request</li>
+<li><strong>url</strong> &#8211; URL of the API endpoint</li>
+<li><strong>timeout</strong> &#8211; raise a time out error after this duration of time (in seconds)</li>
+<li><strong>payload</strong> &#8211; dictionary containing JSON content</li>
+<li><strong>kwargs</strong> &#8211; extra JSON data to send, omitting ACCESS_CODE (which is automatically included)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">decoded JSON response as dict or list.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="robotchem.utils.roughly_equal">
+<code class="descclassname">robotchem.utils.</code><code class="descname">roughly_equal</code><span class="sig-paren">(</span><em>*args</em>, <em>tolerence=0.01</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#roughly_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.roughly_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares argument inputs for equality.
+If all of their differences with each other are within the set tolerance, return True, vice versa.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> &#8211; Compared numbers.</li>
+<li><strong>tolerence</strong> &#8211; If all differences between inputs are within this value, return True.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Whether the arguments are roughly equal to each other.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="main.html" class="btn btn-neutral float-right" title="Main Module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="classes.html" class="btn btn-neutral" title="Classes" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>server_side.controls.serializers &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>server_side.controls.serializers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/_modules/server_side/controls/serializers" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for server_side.controls.serializers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; JSON serializers for database models.</span>
+<span class="sd">Classes here parses python objects into JSON formats to be transmitted with HTTP requests to the Pi</span>
+<span class="sd">or to client Javascript code.</span>
+
+<span class="sd">Jin Cheng, 02/12/16</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.utils</span> <span class="k">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">rest_framework</span> <span class="k">import</span> <span class="n">serializers</span>
+
+<span class="kn">from</span> <span class="nn">server_side.controls.models</span> <span class="k">import</span> <span class="n">Calorimeter</span><span class="p">,</span> <span class="n">Run</span><span class="p">,</span> <span class="n">DataPoint</span>
+
+
+<div class="viewcode-block" id="CalorimeterSerializer"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.CalorimeterSerializer">[docs]</a><span class="k">class</span> <span class="nc">CalorimeterSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;JSON representation of calorimetry settings.&quot;&quot;&quot;</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">(</span><span class="s1">&#39;is_calorimeter_active&#39;</span><span class="p">)</span>
+    <span class="n">has_active_runs</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">(</span><span class="s1">&#39;check_active_runs&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CalorimeterSerializer.Meta"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.CalorimeterSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Calorimeter</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;serial&#39;</span><span class="p">,</span> <span class="s1">&#39;access_code&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;creation_time&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;current_sample_temp&#39;</span><span class="p">,</span> <span class="s1">&#39;current_ref_temp&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;K_p&#39;</span><span class="p">,</span> <span class="s1">&#39;K_i&#39;</span><span class="p">,</span> <span class="s1">&#39;K_d&#39;</span><span class="p">,</span> <span class="s1">&#39;idle_loop_interval&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;max_ramp_rate&#39;</span><span class="p">,</span> <span class="s1">&#39;temp_tolerance_range&#39;</span><span class="p">,</span> <span class="s1">&#39;temp_tolerance_duration&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;active_loop_interval&#39;</span><span class="p">,</span> <span class="s1">&#39;web_api_min_upload_length&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;last_changed_time&#39;</span><span class="p">,</span> <span class="s1">&#39;last_comm_time&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;is_active&#39;</span><span class="p">,</span> <span class="s1">&#39;has_active_runs&#39;</span><span class="p">,</span>
+                  <span class="p">)</span>
+        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;access_code&#39;</span><span class="p">,</span> <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CalorimeterSerializer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_device</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s1">&#39;from_device&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;from_device&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">from_device</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CalorimeterSerializer.is_calorimeter_active"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.CalorimeterSerializer.is_calorimeter_active">[docs]</a>    <span class="k">def</span> <span class="nf">is_calorimeter_active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="n">time_delta</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">last_comm_time</span> <span class="o">-</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">time_delta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">60</span></div>
+
+<div class="viewcode-block" id="CalorimeterSerializer.check_active_runs"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.CalorimeterSerializer.check_active_runs">[docs]</a>    <span class="k">def</span> <span class="nf">check_active_runs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;calorimeter&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;is_finished&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">active_run</span> <span class="o">=</span> <span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s1">&#39;-start_time&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">RunSerializer</span><span class="p">(</span><span class="n">active_run</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="CalorimeterSerializer.update"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.CalorimeterSerializer.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">last_comm_time</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CalorimeterSerializer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span></div></div>
+
+
+<div class="viewcode-block" id="DataPointSerializer"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.DataPointSerializer">[docs]</a><span class="k">class</span> <span class="nc">DataPointSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;JSON representation of measurements made at a certain point in time.&quot;&quot;&quot;</span>
+    <span class="n">measured_at</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">input_formats</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;iso-8601&#39;</span><span class="p">])</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">PrimaryKeyRelatedField</span><span class="p">(</span><span class="n">queryset</span><span class="o">=</span><span class="n">Run</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">validators</span><span class="o">=</span><span class="p">[])</span>
+
+<div class="viewcode-block" id="DataPointSerializer.Meta"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.DataPointSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">DataPoint</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;measured_at&#39;</span><span class="p">,</span> <span class="s1">&#39;received_at&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;temp_ref&#39;</span><span class="p">,</span> <span class="s1">&#39;temp_sample&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;heat_ref&#39;</span><span class="p">,</span> <span class="s1">&#39;heat_sample&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;run&#39;</span><span class="p">,</span>
+                  <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RunSerializer"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.RunSerializer">[docs]</a><span class="k">class</span> <span class="nc">RunSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;JSON representation of a calorimetry job.&quot;&quot;&quot;</span>
+    <span class="n">calorimeter</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">PrimaryKeyRelatedField</span><span class="p">(</span><span class="n">queryset</span><span class="o">=</span><span class="n">Calorimeter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="n">validators</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">data_point_count</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">SerializerMethodField</span><span class="p">(</span><span class="s1">&#39;count_data_points&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RunSerializer.Meta"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.RunSerializer.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Run</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;creation_time&#39;</span><span class="p">,</span> <span class="s1">&#39;start_time&#39;</span><span class="p">,</span> <span class="s1">&#39;finish_time&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;stabilized_at_start&#39;</span><span class="p">,</span> <span class="s1">&#39;is_ready&#39;</span><span class="p">,</span> <span class="s1">&#39;is_running&#39;</span><span class="p">,</span> <span class="s1">&#39;is_finished&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;start_temp&#39;</span><span class="p">,</span> <span class="s1">&#39;target_temp&#39;</span><span class="p">,</span> <span class="s1">&#39;ramp_rate&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;calorimeter&#39;</span><span class="p">,</span> <span class="s1">&#39;data_point_count&#39;</span><span class="p">,</span>
+                  <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RunSerializer.count_data_points"><a class="viewcode-back" href="../../../source/serializers.html#server_side.controls.serializers.RunSerializer.count_data_points">[docs]</a>    <span class="k">def</span> <span class="nf">count_data_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">datapoint_set</span><span class="o">.</span><span class="n">count</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

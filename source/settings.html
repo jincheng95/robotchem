@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Settings files &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../index.html"/>
+        <link rel="next" title="Database Models Definitions" href="models.html"/>
+        <link rel="prev" title="Main Module" href="main.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main module, main.py</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Settings files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-robotchem.local_settings">local_settings.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-robotchem.settings">settings.py</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Settings files</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/source/settings.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="settings-files">
+<h1>Settings files<a class="headerlink" href="#settings-files" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-robotchem.local_settings">
+<span id="local-settings-py"></span><h2>local_settings.py<a class="headerlink" href="#module-robotchem.local_settings" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-robotchem.settings">
+<span id="settings-py"></span><h2>settings.py<a class="headerlink" href="#module-robotchem.settings" title="Permalink to this headline">¶</a></h2>
+<p>Change the variables in this file to specify:</p>
+<ol class="arabic simple">
+<li>component pin numbers on GPIO board,</li>
+<li>default PID parameters,</li>
+<li>website URL or IP address to which data is sent,</li>
+<li>time intervals to measure and send data</li>
+</ol>
+<p>Some parameters can be controlled by the website&#8217;s Calibrate page,
+and the corresponding params listed here are defaults in case web connection fails.</p>
+<dl class="docutils">
+<dt>Jin Cheng, 12/12/16:</dt>
+<dd>Moved all hardware settings that are sensitive to circuitry changes to this separate file for easy &amp; quick changes.</dd>
+<dt>Jin Cheng, 17/01/16:</dt>
+<dd>Added Web API settings.</dd>
+</dl>
+<dl class="data">
+<dt id="robotchem.settings.BLUE">
+<code class="descclassname">robotchem.settings.</code><code class="descname">BLUE</code><em class="property"> = 21</em><a class="headerlink" href="#robotchem.settings.BLUE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blue LED GPIO output pin number.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.CURRENT_SENSOR_REF_CHANNEL">
+<code class="descclassname">robotchem.settings.</code><code class="descname">CURRENT_SENSOR_REF_CHANNEL</code><em class="property"> = 1</em><a class="headerlink" href="#robotchem.settings.CURRENT_SENSOR_REF_CHANNEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analog-digital converter channel used for the current sensor on the reference heater.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.CURRENT_SENSOR_SAMPLE_CHANNEL">
+<code class="descclassname">robotchem.settings.</code><code class="descname">CURRENT_SENSOR_SAMPLE_CHANNEL</code><em class="property"> = 3</em><a class="headerlink" href="#robotchem.settings.CURRENT_SENSOR_SAMPLE_CHANNEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analog-digital converter channel used for the current sensor on the sample heater.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.DEBUG">
+<code class="descclassname">robotchem.settings.</code><code class="descname">DEBUG</code><em class="property"> = True</em><a class="headerlink" href="#robotchem.settings.DEBUG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting this to true enables a very basic logging system which just prints out to <cite>stdout</cite> various info
+about what the code is doing.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.FAKE_HARDWARE">
+<code class="descclassname">robotchem.settings.</code><code class="descname">FAKE_HARDWARE</code><em class="property"> = True</em><a class="headerlink" href="#robotchem.settings.FAKE_HARDWARE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sometimes it is useful to run <cite>main.py</cite> on a personal computer and disable hardware controls. Setting this to true
+will make hardware control functions just print out what it was supposed to do.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.GREEN">
+<code class="descclassname">robotchem.settings.</code><code class="descname">GREEN</code><em class="property"> = 20</em><a class="headerlink" href="#robotchem.settings.GREEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Green LED GPIO output pin number.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.HEATER_REF_PIN">
+<code class="descclassname">robotchem.settings.</code><code class="descname">HEATER_REF_PIN</code><em class="property"> = 12</em><a class="headerlink" href="#robotchem.settings.HEATER_REF_PIN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference heater MOSFET PWM pin. Note this must be a hardware controlled GPIO pin.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.HEATER_SAMPLE_PIN">
+<code class="descclassname">robotchem.settings.</code><code class="descname">HEATER_SAMPLE_PIN</code><em class="property"> = 13</em><a class="headerlink" href="#robotchem.settings.HEATER_SAMPLE_PIN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference heater MOSFET PWM pin. Note this must be a hardware controlled GPIO pin.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.MAIN_LOOP_INTERVAL">
+<code class="descclassname">robotchem.settings.</code><code class="descname">MAIN_LOOP_INTERVAL</code><em class="property"> = 0.5</em><a class="headerlink" href="#robotchem.settings.MAIN_LOOP_INTERVAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main loop interval, in seconds. This is the increment between calculations of PID-controlled PWM when a job is active.
+Note the web API parameters override this setting.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.MAX_RAMP_RATE">
+<code class="descclassname">robotchem.settings.</code><code class="descname">MAX_RAMP_RATE</code><em class="property"> = 0.5</em><a class="headerlink" href="#robotchem.settings.MAX_RAMP_RATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum increment in temperature (degrees Celsius) each cycle.
+Note the web API parameters override this setting.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.MAX_VOLTAGE">
+<code class="descclassname">robotchem.settings.</code><code class="descname">MAX_VOLTAGE</code><em class="property"> = 3.3</em><a class="headerlink" href="#robotchem.settings.MAX_VOLTAGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Voltage supplied across the MOSFETs which power the Peltier heaters. Used to calculate energy used.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.PID_PARAMS">
+<code class="descclassname">robotchem.settings.</code><code class="descname">PID_PARAMS</code><em class="property"> = {'P': 3.0, 'I': 0.6, 'D': 0.0}</em><a class="headerlink" href="#robotchem.settings.PID_PARAMS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default PID controller parameter dictionary. Keys should be <cite>P</cite>, <cite>I</cite>, <cite>D</cite> which correspond to the proportional,
+integral and derivative factors. Note the web API PID parameters override this setting.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.RED">
+<code class="descclassname">robotchem.settings.</code><code class="descname">RED</code><em class="property"> = 16</em><a class="headerlink" href="#robotchem.settings.RED" title="Permalink to this definition">¶</a></dt>
+<dd><p>Red LED GPIO output pin number.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.TEMP_READ_TIME_INTERVAL">
+<code class="descclassname">robotchem.settings.</code><code class="descname">TEMP_READ_TIME_INTERVAL</code><em class="property"> = 0.2</em><a class="headerlink" href="#robotchem.settings.TEMP_READ_TIME_INTERVAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temperature read time interval
+This is used during an active calorimetry job, during the main PID calculating loop</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.TEMP_SENSOR_BASE_DIR">
+<code class="descclassname">robotchem.settings.</code><code class="descname">TEMP_SENSOR_BASE_DIR</code><em class="property"> = '/sys/bus/w1/devices/'</em><a class="headerlink" href="#robotchem.settings.TEMP_SENSOR_BASE_DIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base directory of the 1-wire raspberry pi reader files.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.TEMP_SENSOR_ID_APPENDIX">
+<code class="descclassname">robotchem.settings.</code><code class="descname">TEMP_SENSOR_ID_APPENDIX</code><em class="property"> = 'w1_slave'</em><a class="headerlink" href="#robotchem.settings.TEMP_SENSOR_ID_APPENDIX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appendix to the file names for the 1-wire data files on the file system on Raspberry Pi.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.TEMP_SENSOR_ID_REF">
+<code class="descclassname">robotchem.settings.</code><code class="descname">TEMP_SENSOR_ID_REF</code><em class="property"> = '3b-0cdc0388554f'</em><a class="headerlink" href="#robotchem.settings.TEMP_SENSOR_ID_REF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identifier of the 1-wire reader port connected to the reference thermocouple.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.TEMP_SENSOR_ID_SAMPLE">
+<code class="descclassname">robotchem.settings.</code><code class="descname">TEMP_SENSOR_ID_SAMPLE</code><em class="property"> = '3b-6cdc038848fb'</em><a class="headerlink" href="#robotchem.settings.TEMP_SENSOR_ID_SAMPLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identifier of the 1-wire reader port connected to the sample thermocouple.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.TEMP_STABILISATION_MIN_DURATION">
+<code class="descclassname">robotchem.settings.</code><code class="descname">TEMP_STABILISATION_MIN_DURATION</code><em class="property"> = 15</em><a class="headerlink" href="#robotchem.settings.TEMP_STABILISATION_MIN_DURATION" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum time duration in which temperature must stabilise before the program moves on to the next code block.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.TEMP_TOLERANCE">
+<code class="descclassname">robotchem.settings.</code><code class="descname">TEMP_TOLERANCE</code><em class="property"> = 1</em><a class="headerlink" href="#robotchem.settings.TEMP_TOLERANCE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The difference between temperature values for them to be considered &#8216;practically equal&#8217;</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.WEB_API_ACTIVE_INTERVAL">
+<code class="descclassname">robotchem.settings.</code><code class="descname">WEB_API_ACTIVE_INTERVAL</code><em class="property"> = 5</em><a class="headerlink" href="#robotchem.settings.WEB_API_ACTIVE_INTERVAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Active job refresh interval. Note the web API parameters override this setting.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.WEB_API_BASE_ADDRESS">
+<code class="descclassname">robotchem.settings.</code><code class="descname">WEB_API_BASE_ADDRESS</code><em class="property"> = 'http://robotchem.chengj.in/api/'</em><a class="headerlink" href="#robotchem.settings.WEB_API_BASE_ADDRESS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Web API base address.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.WEB_API_IDLE_INTERVAL">
+<code class="descclassname">robotchem.settings.</code><code class="descname">WEB_API_IDLE_INTERVAL</code><em class="property"> = 10</em><a class="headerlink" href="#robotchem.settings.WEB_API_IDLE_INTERVAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Idle refresh interval. Note the web API parameters override this setting.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="robotchem.settings.WEB_API_MIN_UPLOAD_LENGTH">
+<code class="descclassname">robotchem.settings.</code><code class="descname">WEB_API_MIN_UPLOAD_LENGTH</code><em class="property"> = 5</em><a class="headerlink" href="#robotchem.settings.WEB_API_MIN_UPLOAD_LENGTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum number of measurements that justifies sending a HTTP request.
+Note the web API parameters override this setting.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="models.html" class="btn btn-neutral float-right" title="Database Models Definitions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="main.html" class="btn btn-neutral" title="Main Module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

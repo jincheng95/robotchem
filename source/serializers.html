@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>JSON Serializers Definitions &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../index.html"/>
+        <link rel="next" title="HTML View Response Logic" href="views.html"/>
+        <link rel="prev" title="Database Models Definitions" href="models.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="models.html">Database models</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>JSON Serializers Definitions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/source/serializers.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-server_side.controls.serializers">
+<span id="json-serializers-definitions"></span><h1>JSON Serializers Definitions<a class="headerlink" href="#module-server_side.controls.serializers" title="Permalink to this headline">¶</a></h1>
+<p>JSON serializers for database models.
+Classes here parses python objects into JSON formats to be transmitted with HTTP requests to the Pi
+or to client Javascript code.</p>
+<p>Jin Cheng, 02/12/16</p>
+<dl class="class">
+<dt id="server_side.controls.serializers.CalorimeterSerializer">
+<em class="property">class </em><code class="descclassname">server_side.controls.serializers.</code><code class="descname">CalorimeterSerializer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/serializers.html#CalorimeterSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>JSON representation of calorimetry settings.</p>
+<dl class="class">
+<dt id="server_side.controls.serializers.CalorimeterSerializer.Meta">
+<em class="property">class </em><code class="descname">Meta</code><a class="reference internal" href="../_modules/server_side/controls/serializers.html#CalorimeterSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="server_side.controls.serializers.CalorimeterSerializer.Meta.fields">
+<code class="descname">fields</code><em class="property"> = ('id', 'serial', 'access_code', 'name', 'creation_time', 'current_sample_temp', 'current_ref_temp', 'K_p', 'K_i', 'K_d', 'idle_loop_interval', 'max_ramp_rate', 'temp_tolerance_range', 'temp_tolerance_duration', 'active_loop_interval', 'web_api_min_upload_length', 'last_changed_time', 'last_comm_time', 'is_active', 'has_active_runs')</em><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.serializers.CalorimeterSerializer.Meta.model">
+<code class="descname">model</code><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">Calorimeter</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.serializers.CalorimeterSerializer.Meta.read_only_fields">
+<code class="descname">read_only_fields</code><em class="property"> = ('access_code',)</em><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer.Meta.read_only_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.serializers.CalorimeterSerializer.check_active_runs">
+<code class="descclassname">CalorimeterSerializer.</code><code class="descname">check_active_runs</code><span class="sig-paren">(</span><em>instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/serializers.html#CalorimeterSerializer.check_active_runs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer.check_active_runs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.serializers.CalorimeterSerializer.is_calorimeter_active">
+<code class="descclassname">CalorimeterSerializer.</code><code class="descname">is_calorimeter_active</code><span class="sig-paren">(</span><em>instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/serializers.html#CalorimeterSerializer.is_calorimeter_active"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer.is_calorimeter_active" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.serializers.CalorimeterSerializer.update">
+<code class="descclassname">CalorimeterSerializer.</code><code class="descname">update</code><span class="sig-paren">(</span><em>instance</em>, <em>validated_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/serializers.html#CalorimeterSerializer.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.CalorimeterSerializer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.serializers.DataPointSerializer">
+<em class="property">class </em><code class="descclassname">server_side.controls.serializers.</code><code class="descname">DataPointSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/serializers.html#DataPointSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.DataPointSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>JSON representation of measurements made at a certain point in time.</p>
+<dl class="class">
+<dt id="server_side.controls.serializers.DataPointSerializer.Meta">
+<em class="property">class </em><code class="descname">Meta</code><a class="reference internal" href="../_modules/server_side/controls/serializers.html#DataPointSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.DataPointSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="server_side.controls.serializers.DataPointSerializer.Meta.fields">
+<code class="descname">fields</code><em class="property"> = ('measured_at', 'received_at', 'temp_ref', 'temp_sample', 'heat_ref', 'heat_sample', 'run')</em><a class="headerlink" href="#server_side.controls.serializers.DataPointSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.serializers.DataPointSerializer.Meta.model">
+<code class="descname">model</code><a class="headerlink" href="#server_side.controls.serializers.DataPointSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">DataPoint</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.serializers.RunSerializer">
+<em class="property">class </em><code class="descclassname">server_side.controls.serializers.</code><code class="descname">RunSerializer</code><span class="sig-paren">(</span><em>instance=None</em>, <em>data=&lt;class 'rest_framework.fields.empty'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/serializers.html#RunSerializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.RunSerializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.serializers.ModelSerializer</span></code></p>
+<p>JSON representation of a calorimetry job.</p>
+<dl class="class">
+<dt id="server_side.controls.serializers.RunSerializer.Meta">
+<em class="property">class </em><code class="descname">Meta</code><a class="reference internal" href="../_modules/server_side/controls/serializers.html#RunSerializer.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.RunSerializer.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="server_side.controls.serializers.RunSerializer.Meta.fields">
+<code class="descname">fields</code><em class="property"> = ('id', 'name', 'creation_time', 'start_time', 'finish_time', 'stabilized_at_start', 'is_ready', 'is_running', 'is_finished', 'email', 'start_temp', 'target_temp', 'ramp_rate', 'calorimeter', 'data_point_count')</em><a class="headerlink" href="#server_side.controls.serializers.RunSerializer.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.serializers.RunSerializer.Meta.model">
+<code class="descname">model</code><a class="headerlink" href="#server_side.controls.serializers.RunSerializer.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">Run</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.serializers.RunSerializer.count_data_points">
+<code class="descclassname">RunSerializer.</code><code class="descname">count_data_points</code><span class="sig-paren">(</span><em>instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/serializers.html#RunSerializer.count_data_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.serializers.RunSerializer.count_data_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="views.html" class="btn btn-neutral float-right" title="HTML View Response Logic" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="models.html" class="btn btn-neutral" title="Database Models Definitions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

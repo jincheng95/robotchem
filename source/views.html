@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>HTML View Response Logic &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../index.html"/>
+        <link rel="prev" title="JSON Serializers Definitions" href="serializers.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="serializers.html">JSON serializers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>HTML View Response Logic</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/source/views.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-server_side.controls.views">
+<span id="html-view-response-logic"></span><h1>HTML View Response Logic<a class="headerlink" href="#module-server_side.controls.views" title="Permalink to this headline">¶</a></h1>
+<p>HTML-serving views and JSON APIs.</p>
+<p>Jin Cheng, 02/12/16</p>
+<dl class="class">
+<dt id="server_side.controls.views.CalorimeterStatusAPI">
+<em class="property">class </em><code class="descclassname">server_side.controls.views.</code><code class="descname">CalorimeterStatusAPI</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#CalorimeterStatusAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.CalorimeterStatusAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.views.APIView</span></code></p>
+<p>Gives or updates JSONified data about the status of a single calorimeter.</p>
+<dl class="method">
+<dt id="server_side.controls.views.CalorimeterStatusAPI.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#CalorimeterStatusAPI.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.CalorimeterStatusAPI.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>A non-standard implementation of the DELETE HTTP request,
+instructing the device to stop heating immediately.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.CalorimeterStatusAPI.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#CalorimeterStatusAPI.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.CalorimeterStatusAPI.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get serialized JSON response containing calorimeter status.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.CalorimeterStatusAPI.get_object">
+<code class="descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#CalorimeterStatusAPI.get_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.CalorimeterStatusAPI.get_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.views.CalorimeterStatusAPI.permission_classes">
+<code class="descname">permission_classes</code><em class="property"> = (&lt;class 'server_side.controls.views.DeviceAccessPermission'&gt;,)</em><a class="headerlink" href="#server_side.controls.views.CalorimeterStatusAPI.permission_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.CalorimeterStatusAPI.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#CalorimeterStatusAPI.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.CalorimeterStatusAPI.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Periodical updates from the device about its current temperatures when a job isn&#8217;t running.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.views.CsrfExemptSessionAuthentication">
+<em class="property">class </em><code class="descclassname">server_side.controls.views.</code><code class="descname">CsrfExemptSessionAuthentication</code><a class="reference internal" href="../_modules/server_side/controls/views.html#CsrfExemptSessionAuthentication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.CsrfExemptSessionAuthentication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.authentication.SessionAuthentication</span></code></p>
+<p>Django and Django REST framework by default requires all POST requests to include a X-CSRFToken header,
+which is not applicable for when the raspberry pi sends data
+because it won&#8217;t have any existing response from an active session.</p>
+<p>The enforce_csrf method is overridden to circumvent the CSRF check.</p>
+<dl class="method">
+<dt id="server_side.controls.views.CsrfExemptSessionAuthentication.enforce_csrf">
+<code class="descname">enforce_csrf</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#CsrfExemptSessionAuthentication.enforce_csrf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.CsrfExemptSessionAuthentication.enforce_csrf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="server_side.controls.views.DataDownloadView">
+<code class="descclassname">server_side.controls.views.</code><code class="descname">DataDownloadView</code><span class="sig-paren">(</span><em>request</em>, <em>run_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#DataDownloadView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DataDownloadView" title="Permalink to this definition">¶</a></dt>
+<dd><p>On-the-fly generation of CSV data files and HTTP attachment response to client&#8217;s download request.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.views.DataPointListAPI">
+<em class="property">class </em><code class="descclassname">server_side.controls.views.</code><code class="descname">DataPointListAPI</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#DataPointListAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DataPointListAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.views.APIView</span></code></p>
+<p>Gives a list of all data points for a specific run measured after a specified time.</p>
+<dl class="attribute">
+<dt id="server_side.controls.views.DataPointListAPI.authentication_classes">
+<code class="descname">authentication_classes</code><em class="property"> = (&lt;class 'server_side.controls.views.CsrfExemptSessionAuthentication'&gt;, &lt;class 'rest_framework.authentication.BasicAuthentication'&gt;)</em><a class="headerlink" href="#server_side.controls.views.DataPointListAPI.authentication_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.DataPointListAPI.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#DataPointListAPI.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DataPointListAPI.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data points for a run (with its ID specified in GET parameter <cite>run</cite>),
+and after a certain time (with POSIX timestamp or ISO formatted string, optional).
+:return: JSON Response</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.views.DataPointListAPI.permission_classes">
+<code class="descname">permission_classes</code><em class="property"> = (&lt;class 'server_side.controls.views.DeviceAccessPermission'&gt;,)</em><a class="headerlink" href="#server_side.controls.views.DataPointListAPI.permission_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.DataPointListAPI.post">
+<code class="descname">post</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#DataPointListAPI.post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DataPointListAPI.post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main entry point for raspberry pi DSC device.
+Periodically receives data points measured on-device, containing a list of data point dicts.
+The dict should contain info on: time measured, temperatures (ref and sample), heat used (ref and sample).</p>
+<p>Time measured: should be either POSIX time or ISO formatted string
+Temperatures, heat outputss: floats</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">JSON Response, containing the Calorimeter stop flag (Bool), errors (List), data points (List).</td>
+</tr>
+</tbody>
+</table>
+<p>The stop flag, if true, should instruct the device to immediately stop heating or cooling.
+The error list will be empty if no error is found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.DataPointListAPI.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#DataPointListAPI.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DataPointListAPI.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles a run&#8217;s <cite>is_ready</cite> param,
+which indicates whether it has an inserted sample and should heat beyond the start temp.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.views.DeviceAccessPermission">
+<em class="property">class </em><code class="descclassname">server_side.controls.views.</code><code class="descname">DeviceAccessPermission</code><a class="reference internal" href="../_modules/server_side/controls/views.html#DeviceAccessPermission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DeviceAccessPermission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.permissions.BasePermission</span></code></p>
+<p>Permission check done with every HTTP request.</p>
+<p>Should be implemented with all API points to prevent abuse.</p>
+<dl class="method">
+<dt id="server_side.controls.views.DeviceAccessPermission.has_object_permission">
+<code class="descname">has_object_permission</code><span class="sig-paren">(</span><em>request</em>, <em>view</em>, <em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#DeviceAccessPermission.has_object_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DeviceAccessPermission.has_object_permission" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.DeviceAccessPermission.has_permission">
+<code class="descname">has_permission</code><span class="sig-paren">(</span><em>request</em>, <em>view</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#DeviceAccessPermission.has_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.DeviceAccessPermission.has_permission" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="server_side.controls.views.IndexView">
+<code class="descclassname">server_side.controls.views.</code><code class="descname">IndexView</code><span class="sig-paren">(</span><em>request</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#IndexView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.IndexView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serves index HTML document as the HTTP response to any browser (non-API) request.
+:param request: Django HTTPRequest object
+:return: Django HTTPResponse object, containing the HTML body and metadata</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.views.RunDetailsAPI">
+<em class="property">class </em><code class="descclassname">server_side.controls.views.</code><code class="descname">RunDetailsAPI</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#RunDetailsAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.RunDetailsAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.generics.RetrieveUpdateDestroyAPIView</span></code></p>
+<p>Gives details about a Run, or changes the Run parameters, or delete the Run completely.</p>
+<dl class="attribute">
+<dt id="server_side.controls.views.RunDetailsAPI.authentication_classes">
+<code class="descname">authentication_classes</code><em class="property"> = (&lt;class 'server_side.controls.views.DeviceAccessPermission'&gt;,)</em><a class="headerlink" href="#server_side.controls.views.RunDetailsAPI.authentication_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.views.RunDetailsAPI.queryset">
+<code class="descname">queryset</code><a class="headerlink" href="#server_side.controls.views.RunDetailsAPI.queryset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.views.RunDetailsAPI.serializer_class">
+<code class="descname">serializer_class</code><a class="headerlink" href="#server_side.controls.views.RunDetailsAPI.serializer_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">RunSerializer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.views.RunListAPI">
+<em class="property">class </em><code class="descclassname">server_side.controls.views.</code><code class="descname">RunListAPI</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#RunListAPI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.RunListAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">rest_framework.views.APIView</span></code></p>
+<p>Gives a list of all runs conducted by a calorimeter, or create a new run to be started immediately.</p>
+<dl class="method">
+<dt id="server_side.controls.views.RunListAPI.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#RunListAPI.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.RunListAPI.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.views.RunListAPI.permission_classes">
+<code class="descname">permission_classes</code><em class="property"> = (&lt;class 'server_side.controls.views.DeviceAccessPermission'&gt;,)</em><a class="headerlink" href="#server_side.controls.views.RunListAPI.permission_classes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.views.RunListAPI.post">
+<code class="descname">post</code><span class="sig-paren">(</span><em>request</em>, <em>format=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#RunListAPI.post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.RunListAPI.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="server_side.controls.views.datetime_parser">
+<code class="descclassname">server_side.controls.views.</code><code class="descname">datetime_parser</code><span class="sig-paren">(</span><em>raw_input</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/views.html#datetime_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.views.datetime_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a raw string input using tools. Tests its format by regex and initiates appropriate datetime constructor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>raw_input</strong> &#8211; any string representation of datetime, in either POSIX or ISO format</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a Python datetime object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="serializers.html" class="btn btn-neutral" title="JSON Serializers Definitions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

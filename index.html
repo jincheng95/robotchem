@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>RoboFlux Code Documentation &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="#"/>
+        <link rel="next" title="Hardware Controls" href="source/hardware.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>RoboFlux Code Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="roboflux-code-documentation">
+<h1>RoboFlux Code Documentation<a class="headerlink" href="#roboflux-code-documentation" title="Permalink to this headline">¶</a></h1>
+<p>A Raspberry Pi powered differential scanning calorimeter with Internet remote control functionality.
+This documentation serves to explain the source code for the Robot Chemistry course assessment,
+rather than aiming to be a concise reference to the API.</p>
+<p>Other pages of this document are semi-automatically generated using Sphinx from documentation strings within the code.
+These doc strings are very detailed and explain various functions and methods
+without the need to examine the code block itself.
+However if you would like dig deeper,
+there are links to view highlighted source code next to this documentation.</p>
+<p>The source code for this project is also available at its
+<a class="reference external" href="https://github.com/jincheng95/robotchem">GitHub repository</a>.</p>
+<p>There are mainly three parts of code to make this project possible.</p>
+<div class="section" id="raspberry-pi-code">
+<h2>Raspberry pi code<a class="headerlink" href="#raspberry-pi-code" title="Permalink to this headline">¶</a></h2>
+<p>Performs hardware control, temperature ramping, PID control and measuremets.
+Also uploads measurement to the web server via HTTP.</p>
+<p>Written and tested on Python 3.6 with <code class="docutils literal"><span class="pre">asyncio</span></code> module for asynchronicity.
+Also makes use of the following Python libraries:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">RPi.GPIO</span></code>, the GPIO board control library from raspberry pi</li>
+<li><code class="docutils literal"><span class="pre">dateutil</span></code>, a date and time parser that converts a Python <code class="docutils literal"><span class="pre">datetime</span></code> object to a string</li>
+<li><code class="docutils literal"><span class="pre">Adafruit_ADS1x15</span></code>, an analog-to-digital converter library from the manufacturer, Adafruit</li>
+<li><code class="docutils literal"><span class="pre">w1thermsensor</span></code>, a 1-wire thermocouple reader library</li>
+</ul>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/settings.html">Settings files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/settings.html#module-robotchem.local_settings">local_settings.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/settings.html#module-robotchem.settings">settings.py</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="file-structure">
+<h3>File Structure<a class="headerlink" href="#file-structure" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none"><div class="highlight"><pre><span></span>.
+├── __init__.py
+├── classes.py
+├── dependencies.txt
+├── from_hayley_unchanged
+│   ├── DSC.py
+│   ├── Heat_to_setpoint_lily.py
+│   └── pid.py
+├── hardware.py
+├── local_settings.py
+├── main.py
+├── settings.py
+├── tree.txt
+└── utils.py
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="web-server">
+<h2>Web Server<a class="headerlink" href="#web-server" title="Permalink to this headline">¶</a></h2>
+<p>Manages a database of calorimetry job measurements. Responsible for facilitating the exchange of
+information and instructions between user and the raspberry pi.</p>
+<p>Powered by Python 3.5, <code class="docutils literal"><span class="pre">django</span></code> and <code class="docutils literal"><span class="pre">django-rest-framework</span></code>.
+Server is run by <code class="docutils literal"><span class="pre">gunicorn</span></code> and <code class="docutils literal"><span class="pre">nginx</span></code> on Ubuntu 16.04.</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/views.html">HTTP Response logic</a></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3>File Structure<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none"><div class="highlight"><pre><span></span>server_side/
+├── app
+├── controls
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── serializers.py
+│   └── views.py
+├── manage.py
+├── package.json
+├── rfsite
+│   ├── __init__.py
+│   ├── local_settings.py
+│   ├── production_settings.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── static
+│   ├── bundle.js
+│   └── bundle.js.map
+├── stats.json
+├── templates
+│   ├── index.html
+│   ├── run_completion_email_body.txt
+│   └── run_completion_email_title.txt
+├── webpack.config.js
+└── webpack.production.config.js
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="javascript">
+<h2>Javascript<a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h2>
+<p>This is run natively on a user&#8217;s browser and mainly for website aesthetics and function.
+Javascript modules are not documented here because it is largely framework dependent and not part of the course.</p>
+<p>Powered by React 0.15, written in Javascript ES2015, bundled by Webpack, npm and Babel.</p>
+<div class="section" id="id2">
+<h3>File Structure<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-none"><div class="highlight"><pre><span></span>server_side/app/
+├── components
+│   ├── TwoColumnRow.js
+│   ├── access.js
+│   ├── controls.js
+│   ├── loading.js
+│   ├── main.js
+│   ├── refreshing.js
+│   ├── run
+│   │   ├── lineplot.js
+│   │   ├── plotcontainer.js
+│   │   ├── plottoolbar.js
+│   │   ├── run.js
+│   │   └── simpletooltip.js
+│   ├── start.js
+│   └── status.js
+├── containers
+│   ├── allrunscontainer.js
+│   ├── calibratecontainer.js
+│   ├── defaultcontainer.js
+│   └── runcontainer.js
+├── index.js
+└── utils
+    ├── humanize_axes.js
+    ├── list_of_colors.js
+    ├── round_to_2dp.js
+    ├── units.js
+    └── validate_email.js
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="source/hardware.html" class="btn btn-neutral float-right" title="Hardware Controls" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

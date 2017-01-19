@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Classes &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../index.html"/>
+        <link rel="next" title="utils module" href="utils.html"/>
+        <link rel="prev" title="Hardware Controls" href="hardware.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Classes</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/source/classes.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-robotchem.classes">
+<span id="classes"></span><h1>Classes<a class="headerlink" href="#module-robotchem.classes" title="Permalink to this headline">¶</a></h1>
+<p>Classes to generalise common patterns with DSC data.
+Has some similarities to the database models on the web backend.</p>
+<dl class="docutils">
+<dt>Jin Cheng, 17/01/17:</dt>
+<dd>Wrote these classes partly using existing code from <cite>main.py</cite>.</dd>
+<dt>Jin Cheng, 18/01/17:</dt>
+<dd>Further simplification of the Run object.</dd>
+</dl>
+<dl class="class">
+<dt id="robotchem.classes.DataPoint">
+<em class="property">class </em><code class="descclassname">robotchem.classes.</code><code class="descname">DataPoint</code><span class="sig-paren">(</span><em>run</em>, <em>measured_at</em>, <em>temp_ref</em>, <em>temp_sample</em>, <em>heat_ref</em>, <em>heat_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#DataPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.DataPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An object based on the web backend database model <cite>DataPoint</cite>.</p>
+<dl class="classmethod">
+<dt id="robotchem.classes.DataPoint.async_measure_raw">
+<em class="property">classmethod </em><code class="descname">async_measure_raw</code><span class="sig-paren">(</span><em>run</em>, <em>loop</em>, <em>delta_time</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#DataPoint.async_measure_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.DataPoint.async_measure_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a new DataPoint object based a new, raw measurement.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>run</strong> (<cite>robotchem.classes.Run</cite>) &#8211; parent <cite>Run</cite> object.</li>
+<li><strong>loop</strong> (<em>asyncio.BaseEventLoop</em>) &#8211; main event loop.</li>
+<li><strong>delta_time</strong> (<em>float</em>) &#8211; time, in seconds, passed since last measurement (i.e. construction         of previous instance of this class related to the <cite>Run</cite>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>robotchem.classes.DataPoint</cite> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="robotchem.classes.DataPoint.jsonify">
+<code class="descname">jsonify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#DataPoint.jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.DataPoint.jsonify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pickle properties of this object into a JSON-ifiable dictionary. For communications with the web interface.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dictionary representation of this object&#8217;s properties.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="robotchem.classes.Run">
+<em class="property">class </em><code class="descclassname">robotchem.classes.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>run_id</em>, <em>start_temp</em>, <em>target_temp</em>, <em>ramp_rate</em>, <em>PID_ref</em>, <em>PID_sample</em>, <em>interval</em>, <em>min_upload_length</em>, <em>stabilization_duration</em>, <em>temp_tolerance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An object loosely based on the backend database model <cite>Run</cite> with additional hardware properties
+such as the PID object, the Analog-to-digital object, and the Network upload queue.</p>
+<dl class="method">
+<dt id="robotchem.classes.Run.batch_setpoint">
+<code class="descname">batch_setpoint</code><span class="sig-paren">(</span><em>setpoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.batch_setpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.batch_setpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the set point for both PID objects related to the run&#8217;s sample and reference cells.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>setpoint</strong> (<em>int</em>) &#8211; temperature in Celsius.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="robotchem.classes.Run.check_stabilization">
+<code class="descname">check_stabilization</code><span class="sig-paren">(</span><em>value</em>, <em>duration=None</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.check_stabilization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.check_stabilization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the latest temperatures are within range of the <code class="docutils literal"><span class="pre">value</span></code> given.         The measurements must be made within a specified amount of time ago and         the temperature comparison tolerance is also customisable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> (<em>float | int</em>) &#8211; value around which to determine if temperatures have stabilised</li>
+<li><strong>duration</strong> (<em>float | int</em>) &#8211; value with which to override this object&#8217;s stabilisation duration constraint,             <code class="xref py py-const docutils literal"><span class="pre">self.stabilization_duration</span></code></li>
+<li><strong>tolerance</strong> &#8211; value with which to override this object&#8217;s temperature tolerance,             <code class="xref py py-const docutils literal"><span class="pre">self.temp_tolerance</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body"><p class="first">tolerance: float | int</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Whether stabilisation at the specified temperature has been achieved.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="robotchem.classes.Run.from_web_resp">
+<em class="property">classmethod </em><code class="descname">from_web_resp</code><span class="sig-paren">(</span><em>json_data</em>, <em>temp_ref</em>, <em>temp_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.from_web_resp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.from_web_resp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a Run object from a dictionary of returned values from the web status API page.
+PID objects are instantiated with initial temperature values supplied.
+The customisable parameters from the web API are also stored,
+and if none is given, defaults from <a class="reference internal" href="settings.html#module-robotchem.settings" title="robotchem.settings"><code class="xref py py-mod docutils literal"><span class="pre">robotchem.settings</span></code></a> will be used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>json_data</strong> &#8211; Returned JSON response.</li>
+<li><strong>temp_ref</strong> &#8211; Measured temperature at ref.</li>
+<li><strong>temp_sample</strong> &#8211; Measured temperature at sample</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="#robotchem.classes.Run" title="robotchem.classes.Run"><code class="xref py py-class docutils literal"><span class="pre">robotchem.classes.Run</span></code></a> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="robotchem.classes.Run.make_measurement">
+<code class="descname">make_measurement</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.make_measurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.make_measurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a new measurement asynchronously and store it to the series of measurements related to this run.
+All measurements are put into the network queue responsible for this run&#8217;s data.</p>
+<p>Temperature measurements made are automatically fed into the <a class="reference internal" href="hardware.html#robotchem.hardware.PID" title="robotchem.hardware.PID"><code class="xref py py-class docutils literal"><span class="pre">robotchem.hardware.PID</span></code></a>
+objects related to this run.
+The main event loop is used to change the duty cycle on the respective heater PWM objects,
+<code class="xref py py-class docutils literal"><span class="pre">RPi.GPIO.PWM</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>_loop</strong> (<em>asyncio.BaseEventLoop</em>) &#8211; The main event loop.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#robotchem.classes.DataPoint" title="robotchem.classes.DataPoint">robotchem.classes.DataPoint</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The DataPoint object, containing all measurements made and measurement time.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="robotchem.classes.Run.queue_upload">
+<code class="descname">queue_upload</code><span class="sig-paren">(</span><em>_loop</em>, <em>override_threshold=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.queue_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.queue_upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>An asynchronous function that uploads payloads by consuming from the network queue
+only when a specified amount of time has passed from time of last processing
+and when a specified number of items exist in the queue.
+The asynchronous process breaks otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>_loop</strong> (<em>asyncio.BaseEventLoop</em>) &#8211; the main event loop</li>
+<li><strong>override_threshold</strong> (<em>bool</em>) &#8211; whether qsize and delta time constraints for batch uploading should be overrode</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">if sample has been inserted and formal temp ramp can begin</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="utils.html#robotchem.utils.StopHeatingError" title="robotchem.utils.StopHeatingError"><strong>StopHeatingError</strong></a> &#8211; When this error is raised, any async function that calls it must give control         back to the idle loop and stop heating. Raised if a &#8216;stop_flag&#8217; field returns True from the web API response.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="robotchem.classes.Run.real_ramp_rate">
+<code class="descname">real_ramp_rate</code><a class="headerlink" href="#robotchem.classes.Run.real_ramp_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the real temperature increment per main loop cycle, in degrees Celsius.
+The <cite>ramp_rate</cite> field is selected by the user on the web interface and
+the <cite>self.ramp_rate</cite> property stores the percentage of the maximum available ramp rate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Temperature increase per cycle, in degrees Celsius.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils.html" class="btn btn-neutral float-right" title="utils module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hardware.html" class="btn btn-neutral" title="Hardware Controls" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>robotchem.utils &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>robotchem.utils</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/_modules/robotchem/utils" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robotchem.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utility functions and classes for common calculations and networking patterns.</span>
+
+<span class="sd">Jin Cheng 12/12/16:</span>
+<span class="sd">    StopHeatingError, async :func:`fetch` function that makes HTTP requests.</span>
+<span class="sd">    The Network queue.</span>
+<span class="sd">    Number manipulation functions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">combinations</span>
+
+<span class="kn">import</span> <span class="nn">async_timeout</span>
+
+<span class="kn">from</span> <span class="nn">robotchem</span> <span class="k">import</span> <span class="n">settings</span>
+
+
+<div class="viewcode-block" id="StopHeatingError"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.StopHeatingError">[docs]</a><span class="k">class</span> <span class="nc">StopHeatingError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An exception, when raised, should stop heating in cells</span>
+<span class="sd">    and terminate current active calorimetry job.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="fetch"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.fetch">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">WEB_API_ACTIVE_INTERVAL</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An asynchronous HTTP request function sending JSON data,</span>
+<span class="sd">    with an automatically included ACCESS_CODE field from settings.py.</span>
+
+<span class="sd">    :param session: the async HTTP session content manager</span>
+<span class="sd">    :param method: method of the HTTP request</span>
+<span class="sd">    :param url: URL of the API endpoint</span>
+<span class="sd">    :param timeout: raise a time out error after this duration of time (in seconds)</span>
+<span class="sd">    :param payload: dictionary containing JSON content</span>
+<span class="sd">    :param kwargs: extra JSON data to send, omitting ACCESS_CODE (which is automatically included)</span>
+<span class="sd">    :return: decoded JSON response as dict or list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="p">):</span>
+        <span class="c1"># automatically insert settings.py access_code</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s1">&#39;access_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ACCESS_CODE</span>
+        <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">async_timeout</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">),</span>
+                                       <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;content-type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">})</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
+
+                <span class="c1"># if an HTTP error code is returned, stop heating</span>
+                <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">&gt;=</span> <span class="mi">400</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="k">await</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+                    <span class="k">raise</span> <span class="n">StopHeatingError</span>
+
+                <span class="n">res</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">res</span>
+
+    <span class="c1"># if server connection times out, stop heating</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">StopHeatingError</span></div>
+
+
+<div class="viewcode-block" id="NetworkQueue"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.NetworkQueue">[docs]</a><span class="k">class</span> <span class="nc">NetworkQueue</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Queue object with additional attribute to store last time an item was retrieved and processed.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;threshold_time&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEB_API_ACTIVE_INTERVAL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold_qsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;threshold_qsize&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEB_API_MIN_UPLOAD_LENGTH</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NetworkQueue</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NetworkQueue.put"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.NetworkQueue.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Network queue size: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">NetworkQueue</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="clamp"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.clamp">[docs]</a><span class="k">def</span> <span class="nf">clamp</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">min_number</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_number</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function that clamps the input argument number within the given range.</span>
+
+<span class="sd">    :param number: The number to be clamped.</span>
+<span class="sd">    :param min_number: Minimum value the clamped result can take.</span>
+<span class="sd">    :param max_number: Maximum value the clamped result can take.</span>
+<span class="sd">    :return: The clamped result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">number</span>
+    <span class="k">if</span> <span class="n">number</span> <span class="o">&gt;</span> <span class="n">max_number</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">max_number</span>
+    <span class="k">elif</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="n">min_number</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">min_number</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="roughly_equal"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.roughly_equal">[docs]</a><span class="k">def</span> <span class="nf">roughly_equal</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">tolerence</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">02</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compares argument inputs for equality.</span>
+<span class="sd">    If all of their differences with each other are within the set tolerance, return True, vice versa.</span>
+
+<span class="sd">    :param args: Compared numbers.</span>
+<span class="sd">    :param tolerence: If all differences between inputs are within this value, return True.</span>
+<span class="sd">    :return: Whether the arguments are roughly equal to each other.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_prev</span><span class="p">,</span> <span class="n">_next</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">_prev</span> <span class="o">-</span> <span class="n">_next</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tolerence</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

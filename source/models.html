@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Database Models Definitions &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../index.html"/>
+        <link rel="next" title="JSON Serializers Definitions" href="serializers.html"/>
+        <link rel="prev" title="Settings files" href="settings.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Database Models Definitions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/source/models.rst" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-server_side.controls.models">
+<span id="database-models-definitions"></span><h1>Database Models Definitions<a class="headerlink" href="#module-server_side.controls.models" title="Permalink to this headline">¶</a></h1>
+<p>Models for the website database.</p>
+<p>Jin Cheng, 2/12/16</p>
+<dl class="class">
+<dt id="server_side.controls.models.Calorimeter">
+<em class="property">class </em><code class="descclassname">server_side.controls.models.</code><code class="descname">Calorimeter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/models.html#Calorimeter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.models.Calorimeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>A database representation of a calorimeter.
+Saves connection times on server to determine whether device is offline,
+and whether user at browser can access / control the device.</p>
+<dl class="exception">
+<dt id="server_side.controls.models.Calorimeter.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.K_d">
+<code class="descclassname">Calorimeter.</code><code class="descname">K_d</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.K_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.K_i">
+<code class="descclassname">Calorimeter.</code><code class="descname">K_i</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.K_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.K_p">
+<code class="descclassname">Calorimeter.</code><code class="descname">K_p</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.K_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="server_side.controls.models.Calorimeter.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descclassname">Calorimeter.</code><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.access_code">
+<code class="descclassname">Calorimeter.</code><code class="descname">access_code</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.access_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.active_loop_interval">
+<code class="descclassname">Calorimeter.</code><code class="descname">active_loop_interval</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.active_loop_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.creation_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">creation_time</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.creation_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.current_ref_temp">
+<code class="descclassname">Calorimeter.</code><code class="descname">current_ref_temp</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.current_ref_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.current_sample_temp">
+<code class="descclassname">Calorimeter.</code><code class="descname">current_sample_temp</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.current_sample_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Calorimeter.get_next_by_creation_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">get_next_by_creation_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Calorimeter.get_next_by_creation_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Calorimeter.get_next_by_last_changed_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">get_next_by_last_changed_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Calorimeter.get_next_by_last_changed_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Calorimeter.get_next_by_last_comm_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">get_next_by_last_comm_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Calorimeter.get_next_by_last_comm_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Calorimeter.get_previous_by_creation_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">get_previous_by_creation_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Calorimeter.get_previous_by_creation_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Calorimeter.get_previous_by_last_changed_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">get_previous_by_last_changed_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Calorimeter.get_previous_by_last_changed_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Calorimeter.get_previous_by_last_comm_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">get_previous_by_last_comm_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Calorimeter.get_previous_by_last_comm_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.id">
+<code class="descclassname">Calorimeter.</code><code class="descname">id</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.idle_loop_interval">
+<code class="descclassname">Calorimeter.</code><code class="descname">idle_loop_interval</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.idle_loop_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.last_changed_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">last_changed_time</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.last_changed_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.last_comm_time">
+<code class="descclassname">Calorimeter.</code><code class="descname">last_comm_time</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.last_comm_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.max_ramp_rate">
+<code class="descclassname">Calorimeter.</code><code class="descname">max_ramp_rate</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.max_ramp_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.name">
+<code class="descclassname">Calorimeter.</code><code class="descname">name</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.objects">
+<code class="descclassname">Calorimeter.</code><code class="descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#server_side.controls.models.Calorimeter.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.run_set">
+<code class="descclassname">Calorimeter.</code><code class="descname">run_set</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.run_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">parent.children</span></code> is a <code class="docutils literal"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.serial">
+<code class="descclassname">Calorimeter.</code><code class="descname">serial</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.serial" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.stop_flag">
+<code class="descclassname">Calorimeter.</code><code class="descname">stop_flag</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.stop_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.temp_tolerance_duration">
+<code class="descclassname">Calorimeter.</code><code class="descname">temp_tolerance_duration</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.temp_tolerance_duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.temp_tolerance_range">
+<code class="descclassname">Calorimeter.</code><code class="descname">temp_tolerance_range</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.temp_tolerance_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Calorimeter.web_api_min_upload_length">
+<code class="descclassname">Calorimeter.</code><code class="descname">web_api_min_upload_length</code><a class="headerlink" href="#server_side.controls.models.Calorimeter.web_api_min_upload_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.models.DataPoint">
+<em class="property">class </em><code class="descclassname">server_side.controls.models.</code><code class="descname">DataPoint</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/models.html#DataPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.models.DataPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>A database representation of data measurements associated with a single point in time.
+When a measurement is made on device, it is streamed to the server to be saved here.</p>
+<dl class="exception">
+<dt id="server_side.controls.models.DataPoint.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#server_side.controls.models.DataPoint.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="server_side.controls.models.DataPoint.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descclassname">DataPoint.</code><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#server_side.controls.models.DataPoint.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.DataPoint.get_next_by_measured_at">
+<code class="descclassname">DataPoint.</code><code class="descname">get_next_by_measured_at</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.DataPoint.get_next_by_measured_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.DataPoint.get_next_by_received_at">
+<code class="descclassname">DataPoint.</code><code class="descname">get_next_by_received_at</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.DataPoint.get_next_by_received_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.DataPoint.get_previous_by_measured_at">
+<code class="descclassname">DataPoint.</code><code class="descname">get_previous_by_measured_at</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.DataPoint.get_previous_by_measured_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.DataPoint.get_previous_by_received_at">
+<code class="descclassname">DataPoint.</code><code class="descname">get_previous_by_received_at</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.DataPoint.get_previous_by_received_at" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.heat_ref">
+<code class="descclassname">DataPoint.</code><code class="descname">heat_ref</code><a class="headerlink" href="#server_side.controls.models.DataPoint.heat_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.heat_sample">
+<code class="descclassname">DataPoint.</code><code class="descname">heat_sample</code><a class="headerlink" href="#server_side.controls.models.DataPoint.heat_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.id">
+<code class="descclassname">DataPoint.</code><code class="descname">id</code><a class="headerlink" href="#server_side.controls.models.DataPoint.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.measured_at">
+<code class="descclassname">DataPoint.</code><code class="descname">measured_at</code><a class="headerlink" href="#server_side.controls.models.DataPoint.measured_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.objects">
+<code class="descclassname">DataPoint.</code><code class="descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#server_side.controls.models.DataPoint.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.received_at">
+<code class="descclassname">DataPoint.</code><code class="descname">received_at</code><a class="headerlink" href="#server_side.controls.models.DataPoint.received_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.run">
+<code class="descclassname">DataPoint.</code><code class="descname">run</code><a class="headerlink" href="#server_side.controls.models.DataPoint.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">child.parent</span></code> is a <code class="docutils literal"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.run_id">
+<code class="descclassname">DataPoint.</code><code class="descname">run_id</code><a class="headerlink" href="#server_side.controls.models.DataPoint.run_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.temp_ref">
+<code class="descclassname">DataPoint.</code><code class="descname">temp_ref</code><a class="headerlink" href="#server_side.controls.models.DataPoint.temp_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.DataPoint.temp_sample">
+<code class="descclassname">DataPoint.</code><code class="descname">temp_sample</code><a class="headerlink" href="#server_side.controls.models.DataPoint.temp_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="server_side.controls.models.Run">
+<em class="property">class </em><code class="descclassname">server_side.controls.models.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/server_side/controls/models.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#server_side.controls.models.Run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>A database representation of a single DSC run.
+As device streams temperature and heat flow data to the server,
+this data is saved on database independent of the PID controller on device.</p>
+<dl class="exception">
+<dt id="server_side.controls.models.Run.DoesNotExist">
+<em class="property">exception </em><code class="descname">DoesNotExist</code><a class="headerlink" href="#server_side.controls.models.Run.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="server_side.controls.models.Run.MultipleObjectsReturned">
+<em class="property">exception </em><code class="descclassname">Run.</code><code class="descname">MultipleObjectsReturned</code><a class="headerlink" href="#server_side.controls.models.Run.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.calorimeter">
+<code class="descclassname">Run.</code><code class="descname">calorimeter</code><a class="headerlink" href="#server_side.controls.models.Run.calorimeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">child.parent</span></code> is a <code class="docutils literal"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.calorimeter_id">
+<code class="descclassname">Run.</code><code class="descname">calorimeter_id</code><a class="headerlink" href="#server_side.controls.models.Run.calorimeter_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.creation_time">
+<code class="descclassname">Run.</code><code class="descname">creation_time</code><a class="headerlink" href="#server_side.controls.models.Run.creation_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.datapoint_set">
+<code class="descclassname">Run.</code><code class="descname">datapoint_set</code><a class="headerlink" href="#server_side.controls.models.Run.datapoint_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">parent.children</span></code> is a <code class="docutils literal"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.email">
+<code class="descclassname">Run.</code><code class="descname">email</code><a class="headerlink" href="#server_side.controls.models.Run.email" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.finish_time">
+<code class="descclassname">Run.</code><code class="descname">finish_time</code><a class="headerlink" href="#server_side.controls.models.Run.finish_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Run.get_next_by_creation_time">
+<code class="descclassname">Run.</code><code class="descname">get_next_by_creation_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Run.get_next_by_creation_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="server_side.controls.models.Run.get_previous_by_creation_time">
+<code class="descclassname">Run.</code><code class="descname">get_previous_by_creation_time</code><span class="sig-paren">(</span><em>*moreargs</em>, <em>**morekwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#server_side.controls.models.Run.get_previous_by_creation_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.id">
+<code class="descclassname">Run.</code><code class="descname">id</code><a class="headerlink" href="#server_side.controls.models.Run.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.is_finished">
+<code class="descclassname">Run.</code><code class="descname">is_finished</code><a class="headerlink" href="#server_side.controls.models.Run.is_finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.is_ready">
+<code class="descclassname">Run.</code><code class="descname">is_ready</code><a class="headerlink" href="#server_side.controls.models.Run.is_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.is_running">
+<code class="descclassname">Run.</code><code class="descname">is_running</code><a class="headerlink" href="#server_side.controls.models.Run.is_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.name">
+<code class="descclassname">Run.</code><code class="descname">name</code><a class="headerlink" href="#server_side.controls.models.Run.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.objects">
+<code class="descclassname">Run.</code><code class="descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#server_side.controls.models.Run.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.ramp_rate">
+<code class="descclassname">Run.</code><code class="descname">ramp_rate</code><a class="headerlink" href="#server_side.controls.models.Run.ramp_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.stabilized_at_start">
+<code class="descclassname">Run.</code><code class="descname">stabilized_at_start</code><a class="headerlink" href="#server_side.controls.models.Run.stabilized_at_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.start_temp">
+<code class="descclassname">Run.</code><code class="descname">start_temp</code><a class="headerlink" href="#server_side.controls.models.Run.start_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.start_time">
+<code class="descclassname">Run.</code><code class="descname">start_time</code><a class="headerlink" href="#server_side.controls.models.Run.start_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="server_side.controls.models.Run.target_temp">
+<code class="descclassname">Run.</code><code class="descname">target_temp</code><a class="headerlink" href="#server_side.controls.models.Run.target_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="serializers.html" class="btn btn-neutral float-right" title="JSON Serializers Definitions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="settings.html" class="btn btn-neutral" title="Settings files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

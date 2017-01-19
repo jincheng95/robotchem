@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>robotchem.main &mdash; Roboflux 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Roboflux 1.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Roboflux
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">RoboFlux Code Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Raspberry Pi Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/hardware.html">Hardware controls, hardware.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/classes.html">Classes, classes.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/utils.html">Utility, utils.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/main.html">Main module, main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/settings.html">Settings files</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Django Server Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/models.html">Database models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/serializers.html">JSON serializers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/views.html">HTTP Response logic</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">Roboflux</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>robotchem.main</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="https://github.com/jincheng95/robotchem/blob/master/docs/_modules/robotchem/main" class="fa fa-github"> Edit on GitHub</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robotchem.main</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Main script to be run automatically on raspberry Pi startup.</span>
+<span class="sd">Web requests, measurements and GPIO control occur simultaneously and independently.</span>
+<span class="sd">Concurrency based on Python 3.5&#39;s async/await syntax with the asyncio library.</span>
+
+<span class="sd">Hayley Weir, 11/12/16:</span>
+<span class="sd">    Hardware (GPIO control),</span>
+<span class="sd">    PID calculation,</span>
+<span class="sd">    Heat ramp process</span>
+
+<span class="sd">Jin Cheng, 12/12/16:</span>
+<span class="sd">    Asynchronous functions, event loops, futures and coroutines,</span>
+<span class="sd">    Web API communication,</span>
+<span class="sd">    Calorimetry and flow logic,</span>
+<span class="sd">    Implement current -&gt; power -&gt; energy conversion,</span>
+<span class="sd">    Documentation</span>
+
+<span class="sd">Jin Cheng, 16/01/17:</span>
+<span class="sd">    Several debugging changes to simplify calibration,</span>
+<span class="sd">    Allow customisation of PID params, loop interval, maximum ramp rate from web interface.</span>
+
+<span class="sd">Jin Cheng, 17/01/17:</span>
+<span class="sd">    Major refactor of common flow logic code into classes,</span>
+<span class="sd">    Optimisation of the temperature ramp logic to linearise temp profile as much as possible.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">aiohttp</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../&#39;</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">robotchem</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">robotchem.classes</span> <span class="k">import</span> <span class="n">Run</span>
+<span class="kn">from</span> <span class="nn">robotchem.hardware</span> <span class="k">import</span> <span class="p">(</span><span class="n">read_temp_ref</span><span class="p">,</span> <span class="n">read_temp_sample</span><span class="p">,</span> <span class="n">initialize</span><span class="p">,</span> <span class="n">indicate_heating</span><span class="p">,</span> <span class="n">indicate_starting_up</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">robotchem.utils</span> <span class="k">import</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">StopHeatingError</span>
+
+
+<div class="viewcode-block" id="idle"><a class="viewcode-back" href="../../source/main.html#robotchem.main.idle">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">idle</span><span class="p">(</span><span class="n">_loop</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An asynchronous coroutine run periodically during idle periods.</span>
+<span class="sd">    Checks the web API if it should start new jobs, and updates the web API about measured temperatures.</span>
+
+<span class="sd">    The periodicity of refreshing and updating web API is determined by</span>
+<span class="sd">    the :const:`robotchem.settings.WEB_API_IDLE_INTERVAL` value,</span>
+<span class="sd">    or the corresponding value received from the web API.</span>
+
+<span class="sd">    This loop does the following:</span>
+
+<span class="sd">    #. Read reference and sample temperatures (simultanouesly)</span>
+<span class="sd">    #. Upload temperature values to the web API address specified by the</span>
+<span class="sd">       :const:`robotchem.settings.WEB_API_BASE_ADDRESS` value.</span>
+<span class="sd">    #. If the web response includes some basic information about a user-specified new calorimetry job,</span>
+<span class="sd">       enter the :func:`robotchem.main.active` loop.</span>
+<span class="sd">    #. After the :func:`robotchem.main.active` loop has finished running, this function will have control again,</span>
+<span class="sd">       which suggests that the active job has ended.</span>
+<span class="sd">    #. Renew running this loop after a certain time interval.</span>
+
+<span class="sd">    :type _loop: asyncio.BaseEventLoop</span>
+<span class="sd">    :param _loop: The main event loop.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Read temperatures simultaneously by creating a combined Future object (blocking)</span>
+    <span class="n">temp_ref</span><span class="p">,</span> <span class="n">temp_sample</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_temp_ref</span><span class="p">()),</span>
+                                                 <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_temp_sample</span><span class="p">()),</span>
+                                                 <span class="n">loop</span><span class="o">=</span><span class="n">_loop</span><span class="p">)</span>
+
+    <span class="c1"># Provide periodic updates to the Idle Web API about its current temperature</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">_loop</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;current_ref_temp&#39;</span><span class="p">:</span> <span class="n">temp_ref</span><span class="p">,</span>
+            <span class="s1">&#39;current_sample_temp&#39;</span><span class="p">:</span> <span class="n">temp_sample</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># fetch status information from web API</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fetch</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEB_API_STATUS_ADDRESS</span><span class="p">,</span>
+                           <span class="n">timeout</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">WEB_API_IDLE_INTERVAL</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Check if user has instructed a new run</span>
+    <span class="k">if</span> <span class="s1">&#39;has_active_runs&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">active_run</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;has_active_runs&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">active_run</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">active_run</span><span class="p">:</span>
+            <span class="c1"># Sleep for a set interval determined in settings.py</span>
+            <span class="c1"># so this can be refreshed later</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;idle_loop_interval&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEB_API_IDLE_INTERVAL</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">active_run</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># pass the active run information to the active function,</span>
+            <span class="c1"># wait for the active run to finish</span>
+            <span class="c1"># and return control to the idle function.</span>
+
+            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;****************************************&#39;</span>
+                      <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">The main event loop has entered the ACTIVE LOOP.&#39;</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">active</span><span class="p">(</span><span class="n">_loop</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Run itself again</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">idle</span><span class="p">(</span><span class="n">_loop</span><span class="p">),</span> <span class="n">loop</span><span class="o">=</span><span class="n">_loop</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="active"><a class="viewcode-back" href="../../source/main.html#robotchem.main.active">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="n">_loop</span><span class="p">,</span> <span class="o">**</span><span class="n">calorimeter_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An asynchronous coroutine run periodically during an active calorimetry job.</span>
+<span class="sd">    Contains logic about the set point, heating to start temp as quickly as possible, and uploading measurements.</span>
+
+<span class="sd">    This function is the overarching loop responsible for two main parts of the DSC job.</span>
+
+<span class="sd">    #. Firstly measure both temperatures simultaneously.</span>
+<span class="sd">    #. Instantiate a new :class:`robotchem.classes.Run` object containing relevant basic info about this DSC run.</span>
+<span class="sd">       The info comes from the web API JSON response in the form of a dict.</span>
+<span class="sd">       This dict then constructs the :class:`robotchem.classes.Run` object using the special classmethod</span>
+<span class="sd">       :meth:`robotchem.classes.Run.from_web_resp`.</span>
+<span class="sd">    #. Switch on LED lights to indicate starting up. Asynchronously, yield control to the</span>
+<span class="sd">       :func:`robotchem.main.get_ready` co-routine loop. Coincidentally, when a new :class:`Run` object is</span>
+<span class="sd">       instantiated, it will automatically set the heaters</span>
+<span class="sd">    #. When control is given back to this function,</span>
+<span class="sd">       it suggests that temperature has stabilised at the start temperature.</span>
+<span class="sd">       Switch on LED lights to indicate heating up, while yielding control to the</span>
+<span class="sd">       :func:`robotchem.main.run_calorimetry` co-routine.</span>
+<span class="sd">    #. When control is again yielded to this function,</span>
+<span class="sd">       the DSC job in question has finished.</span>
+<span class="sd">       Clean up the GPIO boards and go back to the</span>
+<span class="sd">       :func:`robotchem.main.idle` loop.</span>
+
+<span class="sd">    This function will also go back to the :func:`robotchem.main.idle` loop and cleanup if at any point</span>
+<span class="sd">    a :exc:`robotchem.utils.StopHeatingError` is raised.</span>
+
+<span class="sd">    :param _loop: The main event loop.</span>
+<span class="sd">    :param calorimeter_data: JSON representation of the active job from the server API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Read temperatures simultaneously by creating a combined Future object (blocking)</span>
+    <span class="n">temp_ref</span><span class="p">,</span> <span class="n">temp_sample</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_temp_ref</span><span class="p">()),</span>
+                                                 <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">read_temp_sample</span><span class="p">()),</span>
+                                                 <span class="n">loop</span><span class="o">=</span><span class="n">_loop</span><span class="p">)</span>
+
+    <span class="c1"># Get a representation of this DSC run</span>
+    <span class="n">run</span> <span class="o">=</span> <span class="n">Run</span><span class="o">.</span><span class="n">from_web_resp</span><span class="p">(</span><span class="n">calorimeter_data</span><span class="p">,</span> <span class="n">temp_ref</span><span class="p">,</span> <span class="n">temp_sample</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get cells to reach start temperature</span>
+        <span class="n">_loop</span><span class="o">.</span><span class="n">call_soon</span><span class="p">(</span><span class="n">indicate_starting_up</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;****************************************&#39;</span>
+                  <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">The main event loop has entered the GET READY LOOP.&#39;</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="n">get_ready</span><span class="p">(</span><span class="n">_loop</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span>
+
+        <span class="c1"># When control is yielded back from get_ready, start_temp has been reached</span>
+        <span class="n">_loop</span><span class="o">.</span><span class="n">call_soon</span><span class="p">(</span><span class="n">indicate_heating</span><span class="p">,</span> <span class="n">_loop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;****************************************&#39;</span>
+                  <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">The main event loop has entered the LINEAR RAMP LOOP.&#39;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">run_calorimetry</span><span class="p">(</span><span class="n">_loop</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span>
+
+    <span class="c1"># when instructed to stop heating, clean up and return to idle function</span>
+    <span class="k">except</span> <span class="n">StopHeatingError</span><span class="p">:</span>
+        <span class="n">cleanup</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">heater_sample</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">heater_ref</span><span class="p">,</span> <span class="n">wipe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">initialize</span><span class="p">(</span><span class="n">board_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="get_ready"><a class="viewcode-back" href="../../source/main.html#robotchem.main.get_ready">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_ready</span><span class="p">(</span><span class="n">_loop</span><span class="p">,</span> <span class="n">run</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An aync function that gets the temperatures to starting temp as quickly as possible.</span>
+
+<span class="sd">    It first instantiate and initialise the heater PWM objects related to the :class:`robotchem.classes.Run` object,</span>
+<span class="sd">    so that their duty cycles can be changed inside the loop.</span>
+
+<span class="sd">    The loop itself flows like this:</span>
+
+<span class="sd">    #. Make all temperature, current measurements simultaneously. After making measurements,</span>
+<span class="sd">       the :meth:`robotchem.classes.Run.make_measurement` method automatically updates the PID controllers</span>
+<span class="sd">       with the new measurements and changes the heater PWM values. Its setpoint, though,</span>
+<span class="sd">       is never changed from the starting temperature, ensuring it is reached as quickly as possible.</span>
+<span class="sd">    #. Put measurement data into the :class:`robotchem.utils.NetworkQueue` queue to be uploaded to the web.</span>
+<span class="sd">       After queueing, the :meth:`robotchem.classes.Run.queue_upload` method should check if the user has</span>
+<span class="sd">       inserted the sample and prepared for the formal heat ramp.</span>
+<span class="sd">    #. Check if the temperature has stabilised around the start temperature.</span>
+<span class="sd">       If so, and if user has inserted the sample, go back to the</span>
+<span class="sd">       :func:`robotchem.main.active` function, which will invoke next the formal linear heat ramp.</span>
+
+<span class="sd">    :param _loop: the main event loop.</span>
+<span class="sd">    :param run: the object representing the run params.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Make available the heater PWM objects, then asynchronously measure temperatures</span>
+    <span class="n">run</span><span class="o">.</span><span class="n">heater_ref</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">run</span><span class="o">.</span><span class="n">heater_sample</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">run</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">_loop</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Measure all data then upload</span>
+        <span class="k">await</span> <span class="n">run</span><span class="o">.</span><span class="n">make_measurement</span><span class="p">(</span><span class="n">_loop</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">run</span><span class="o">.</span><span class="n">queue_upload</span><span class="p">(</span><span class="n">_loop</span><span class="p">)</span>
+
+        <span class="c1"># if start temp is reached, give back control to whichever coroutine that called this function</span>
+        <span class="c1"># but if sample hasn&#39;t been inserted, keep holding at start temp and keep running this loop</span>
+        <span class="n">run</span><span class="o">.</span><span class="n">stabilized_at_start</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">check_stabilization</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">start_temp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">is_ready</span> <span class="ow">and</span> <span class="n">run</span><span class="o">.</span><span class="n">stabilized_at_start</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Sleep for a set amount of time, then rerun the PWM calculations</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="run_calorimetry"><a class="viewcode-back" href="../../source/main.html#robotchem.main.run_calorimetry">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">run_calorimetry</span><span class="p">(</span><span class="n">_loop</span><span class="p">,</span> <span class="n">run</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An async function that starts the heat ramp until the end temp is reached at the rate of choice.</span>
+<span class="sd">    Periodically and transmit currents and temperatures to web API.</span>
+
+<span class="sd">    This loop runs similarly to the :func:`get_ready` co-routine.</span>
+<span class="sd">    But in addition to PWM calculations and network queues,</span>
+<span class="sd">    this loop also:</span>
+
+<span class="sd">    #. Each cycle, check if temperature has &#39;stabilised&#39; around the setpoint</span>
+<span class="sd">       of the :class:`robotchem.classes.Run` object.</span>
+<span class="sd">       Note the threshold for determining temperature stabilisation is less stringent for this purpose,</span>
+<span class="sd">       because being too strict may lead to a staircase temperature profile from experience.</span>
+<span class="sd">    #. If stabilised, increase the setpoint temperature by a ramp increment.</span>
+<span class="sd">       This increment value is a fraction of the :const:`robotchem.settings.MAX_RAMP_RATE` value, or the corresponding</span>
+<span class="sd">       setting on the web server.</span>
+<span class="sd">       The exact percentage of the maximum is as specified for this particular DSC job on the website.</span>
+<span class="sd">    #. If temperatures have stabilised around the end temperature for a specified duration,</span>
+<span class="sd">       stop heating and upload the remainder of all measurement data.</span>
+
+<span class="sd">    :param _loop: the main event loop</span>
+<span class="sd">    :param run: the object representing the run params.</span>
+<span class="sd">    :exception StopHeatingError: raised when the end temperature has been reached for a certain amount of time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">run</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">_loop</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">set_point</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">start_temp</span>
+    <span class="n">initial_increase</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># make measurements and upload</span>
+        <span class="k">await</span> <span class="n">run</span><span class="o">.</span><span class="n">make_measurement</span><span class="p">(</span><span class="n">_loop</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">run</span><span class="o">.</span><span class="n">queue_upload</span><span class="p">(</span><span class="n">_loop</span><span class="p">)</span>
+
+        <span class="c1"># use a less stringent check (higher value tolerance and smaller duration) to make linear the temp profile</span>
+        <span class="n">stabilised_at_setpoint</span><span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">check_stabilization</span><span class="p">(</span><span class="n">set_point</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">run</span><span class="o">.</span><span class="n">real_ramp_rate</span><span class="p">)</span>
+
+        <span class="c1"># if current temps are more or less the desired set point, increment the ramp</span>
+        <span class="k">if</span> <span class="n">stabilised_at_setpoint</span> <span class="ow">or</span> <span class="n">initial_increase</span><span class="p">:</span>
+            <span class="n">initial_increase</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">set_point</span> <span class="o">+=</span> <span class="n">run</span><span class="o">.</span><span class="n">real_ramp_rate</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">batch_setpoint</span><span class="p">(</span><span class="n">set_point</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*********************************</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="s2">&quot;The setpoint has been increased to </span><span class="si">{setpoint}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">setpoint</span><span class="o">=</span><span class="n">set_point</span><span class="p">))</span>
+
+        <span class="c1"># check if temp has stabilised near the end temp and change its status accordingly</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">run</span><span class="o">.</span><span class="n">is_finished</span><span class="p">)</span> <span class="ow">and</span> <span class="n">run</span><span class="o">.</span><span class="n">check_stabilization</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">target_temp</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+            <span class="n">run</span><span class="o">.</span><span class="n">is_finished</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># upload this status and rest of the data</span>
+            <span class="k">await</span> <span class="n">run</span><span class="o">.</span><span class="n">queue_upload</span><span class="p">(</span><span class="n">_loop</span><span class="p">,</span> <span class="n">override_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">StopHeatingError</span>
+
+        <span class="c1"># Sleep for a set amount of time, then rerun the PWM calculations</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># For some reason, some imports on the raspberry pi do not work unless the following is included</span>
+    <span class="n">ROOT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">ROOT_DIR</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ROOT_DIR</span><span class="p">)</span>
+
+    <span class="c1"># initialize the GPIO boards and set output pins to output mode</span>
+    <span class="n">initialize</span><span class="p">(</span><span class="n">board_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># asynchronous main event loop</span>
+    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+
+    <span class="c1"># enable verbose mode if in development</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">set_debug</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># start and run main event loop</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">idle</span><span class="p">(</span><span class="n">loop</span><span class="p">),</span> <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># When any error occurs or when the main loop ends,</span>
+        <span class="c1"># it is important to clear all outputs on the GPIO board</span>
+        <span class="c1"># so that the system does not keep heating up.</span>
+        <span class="n">cleanup</span><span class="p">(</span><span class="n">wipe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jin Cheng.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
