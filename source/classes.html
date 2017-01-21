@@ -159,26 +159,10 @@ Has some similarities to the database models on the web backend.</p>
 <em class="property">class </em><code class="descclassname">classes.</code><code class="descname">DataPoint</code><span class="sig-paren">(</span><em>run</em>, <em>measured_at</em>, <em>temp_ref</em>, <em>temp_sample</em>, <em>heat_ref</em>, <em>heat_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#DataPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataPoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>An object based on the web backend database model <cite>DataPoint</cite>.</p>
-<dl class="attribute">
-<dt id="classes.DataPoint.__dict__">
-<code class="descname">__dict__</code><em class="property"> = mappingproxy({'__module__': 'classes', '__doc__': 'An object based on the web backend database model `DataPoint`.', '__init__': &lt;function DataPoint.__init__&gt;, 'jsonify': &lt;function DataPoint.jsonify&gt;, 'async_measure_raw': &lt;classmethod object&gt;, '__dict__': &lt;attribute '__dict__' of 'DataPoint' objects&gt;, '__weakref__': &lt;attribute '__weakref__' of 'DataPoint' objects&gt;})</em><a class="headerlink" href="#classes.DataPoint.__dict__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
 <dt id="classes.DataPoint.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>run</em>, <em>measured_at</em>, <em>temp_ref</em>, <em>temp_sample</em>, <em>heat_ref</em>, <em>heat_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#DataPoint.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataPoint.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="attribute">
-<dt id="classes.DataPoint.__module__">
-<code class="descname">__module__</code><em class="property"> = 'classes'</em><a class="headerlink" href="#classes.DataPoint.__module__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="classes.DataPoint.__weakref__">
-<code class="descname">__weakref__</code><a class="headerlink" href="#classes.DataPoint.__weakref__" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of weak references to the object (if defined)</p>
-</dd></dl>
 
 <dl class="classmethod">
 <dt id="classes.DataPoint.async_measure_raw">
@@ -226,11 +210,6 @@ Has some similarities to the database models on the web backend.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>An object loosely based on the backend database model <cite>Run</cite> with additional hardware properties
 such as the PID object, the Analog-to-digital object, and the Network upload queue.</p>
-<dl class="attribute">
-<dt id="classes.Run.__dict__">
-<code class="descname">__dict__</code><em class="property"> = mappingproxy({'__module__': 'classes', '__doc__': 'An object loosely based on the backend database model `Run` with additional hardware properties\n    such as the PID object, the Analog-to-digital object, and the Network upload queue.', '__init__': &lt;function Run.__init__&gt;, 'make_measurement': &lt;function Run.make_measurement&gt;, 'queue_upload': &lt;function Run.queue_upload&gt;, 'batch_setpoint': &lt;function Run.batch_setpoint&gt;, 'check_stabilization': &lt;function Run.check_stabilization&gt;, 'real_ramp_rate': &lt;property object&gt;, 'from_web_resp': &lt;classmethod object&gt;, '__dict__': &lt;attribute '__dict__' of 'Run' objects&gt;, '__weakref__': &lt;attribute '__weakref__' of 'Run' objects&gt;})</em><a class="headerlink" href="#classes.Run.__dict__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
 <dt id="classes.Run.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>run_id</em>, <em>start_temp</em>, <em>target_temp</em>, <em>ramp_rate</em>, <em>max_ramp_rate</em>, <em>PID_ref</em>, <em>PID_sample</em>, <em>interval</em>, <em>min_upload_length</em>, <em>stabilization_duration</em>, <em>temp_tolerance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run.__init__" title="Permalink to this definition">¶</a></dt>
@@ -258,17 +237,6 @@ for them to be considered equivalent.</li>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="classes.Run.__module__">
-<code class="descname">__module__</code><em class="property"> = 'classes'</em><a class="headerlink" href="#classes.Run.__module__" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="classes.Run.__weakref__">
-<code class="descname">__weakref__</code><a class="headerlink" href="#classes.Run.__weakref__" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of weak references to the object (if defined)</p>
 </dd></dl>
 
 <dl class="method">
