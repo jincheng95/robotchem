@@ -229,8 +229,8 @@ class DataPointListAPI(APIView):
         Temperatures, heat outputss: floats
 
         :return: JSON Response, containing the Calorimeter stop flag (Bool), errors (List), data points (List).
-        The stop flag, if true, should instruct the device to immediately stop heating or cooling.
-        The error list will be empty if no error is found.
+            The stop flag, if true, should instruct the device to immediately stop heating or cooling.
+            The error list will be empty if no error is found.
         """
         try:
             data_points = request.data['data']

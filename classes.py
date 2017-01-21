@@ -38,8 +38,8 @@ class Run(object):
         :type ramp_rate: float
         :param ramp_rate: Ramp rate (0 - 1), as fraction of max rate, specified by the user on the web interface.
         :type max_ramp_rate: float
-        :param max_ramp_rate: Maximum ramp rate allowed in degrees Celsius per minute, \
-        specified by the user on the Calibrate web page.
+        :param max_ramp_rate: Maximum ramp rate allowed in degrees Celsius per minute,
+            specified by the user on the Calibrate web page.
         :type PID_ref: hardware.PID
         :param PID_ref: PID object for the reference heater
         :type PID_sample: hardware.PID
@@ -52,7 +52,7 @@ class Run(object):
         :param stabilization_duration: Minimum duration, in seconds, that temperature must stabilise before moving on.
         :type temp_tolerance: float
         :param temp_tolerance: Maximum difference between two temperature readings, in degrees Celsius,
-        for them to be considered equivalent.
+            for them to be considered equivalent.
         """
         self.id = run_id
         self.start_temp = start_temp
@@ -84,14 +84,14 @@ class Run(object):
         Make a new measurement asynchronously and store it to the series of measurements related to this run.
         All measurements are put into the network queue responsible for this run's data.
 
-        Temperature measurements made are automatically fed into the :class:`robotchem.hardware.PID`
+        Temperature measurements made are automatically fed into the :class:`hardware.PID`
         objects related to this run.
         The main event loop is used to change the duty cycle on the respective heater PWM objects,
         :class:`RPi.GPIO.PWM`.
 
         :type _loop: asyncio.BaseEventLoop
         :param _loop: The main event loop.
-        :rtype: robotchem.classes.DataPoint
+        :rtype: classes.DataPoint
         :return: The DataPoint object, containing all measurements made and measurement time.
         """
 
@@ -261,12 +261,12 @@ class Run(object):
         Construct a Run object from a dictionary of returned values from the web status API page.
         PID objects are instantiated with initial temperature values supplied.
         The customisable parameters from the web API are also stored,
-        and if none is given, defaults from :mod:`robotchem.settings` will be used.
+        and if none is given, defaults from :mod:`settings` will be used.
 
         :param json_data: Returned JSON response.
         :param temp_ref: Measured temperature at ref.
         :param temp_sample: Measured temperature at sample
-        :return: A :class:`robotchem.classes.Run` object.
+        :return: A :class:`classes.Run` object.
         """
         run_data = json_data['has_active_runs']
 
@@ -320,14 +320,14 @@ class DataPoint(object):
     async def async_measure_raw(cls, run, loop, delta_time):
         """Construct a new DataPoint object based a new, raw measurement.
 
-        :type run: `robotchem.classes.Run`
+        :type run: `classes.Run`
         :param run: parent `Run` object.
         :type loop: asyncio.BaseEventLoop
         :param loop: main event loop.
         :type delta_time: float
         :param delta_time: time, in seconds, passed since last measurement (i.e. construction \
         of previous instance of this class related to the `Run`)
-        :return: `robotchem.classes.DataPoint` object.
+        :return: `classes.DataPoint` object.
         """
         temp_ref, temp_sample, current_ref, current_sample = await measure_all(loop, run.adc)
 

@@ -76,7 +76,7 @@ Note the web API parameters override this setting."""
 # Change this in local_settings.py in production
 # settings.py is publicly viewable through GitHub but local_settings.py is ignored by Git
 try:
-    from robotchem.local_settings import ACCESS_CODE
+    from local_settings import ACCESS_CODE
 except ImportError:
     ACCESS_CODE = "SUPER_SECRET_PASSWORD"
 
