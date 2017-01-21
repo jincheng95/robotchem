@@ -3,7 +3,8 @@
 Hardware Controls
 =================
 
-.. automodule:: robotchem.hardware
+.. automodule:: hardware
     :members:
+    :private-members:
     :undoc-members:
     :show-inheritance:
