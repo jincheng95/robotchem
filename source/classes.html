@@ -189,13 +189,13 @@ Has some similarities to the database models on the web backend.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>run</strong> (<cite>robotchem.classes.Run</cite>) &#8211; parent <cite>Run</cite> object.</li>
+<li><strong>run</strong> (<cite>classes.Run</cite>) &#8211; parent <cite>Run</cite> object.</li>
 <li><strong>loop</strong> (<em>asyncio.BaseEventLoop</em>) &#8211; main event loop.</li>
 <li><strong>delta_time</strong> (<em>float</em>) &#8211; time, in seconds, passed since last measurement (i.e. construction         of previous instance of this class related to the <cite>Run</cite>)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>robotchem.classes.DataPoint</cite> object.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><cite>classes.DataPoint</cite> object.</p>
 </td>
 </tr>
 </tbody>
@@ -319,7 +319,7 @@ for them to be considered equivalent.</li>
 <dd><p>Construct a Run object from a dictionary of returned values from the web status API page.
 PID objects are instantiated with initial temperature values supplied.
 The customisable parameters from the web API are also stored,
-and if none is given, defaults from <code class="xref py py-mod docutils literal"><span class="pre">robotchem.settings</span></code> will be used.</p>
+and if none is given, defaults from <a class="reference internal" href="settings.html#module-settings" title="settings"><code class="xref py py-mod docutils literal"><span class="pre">settings</span></code></a> will be used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -331,7 +331,7 @@ and if none is given, defaults from <code class="xref py py-mod docutils literal
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <code class="xref py py-class docutils literal"><span class="pre">robotchem.classes.Run</span></code> object.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="#classes.Run" title="classes.Run"><code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code></a> object.</p>
 </td>
 </tr>
 </tbody>
@@ -343,7 +343,7 @@ and if none is given, defaults from <code class="xref py py-mod docutils literal
 <code class="descname">make_measurement</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run.make_measurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run.make_measurement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a new measurement asynchronously and store it to the series of measurements related to this run.
 All measurements are put into the network queue responsible for this run&#8217;s data.</p>
-<p>Temperature measurements made are automatically fed into the <code class="xref py py-class docutils literal"><span class="pre">robotchem.hardware.PID</span></code>
+<p>Temperature measurements made are automatically fed into the <a class="reference internal" href="hardware.html#hardware.PID" title="hardware.PID"><code class="xref py py-class docutils literal"><span class="pre">hardware.PID</span></code></a>
 objects related to this run.
 The main event loop is used to change the duty cycle on the respective heater PWM objects,
 <code class="xref py py-class docutils literal"><span class="pre">RPi.GPIO.PWM</span></code>.</p>
@@ -353,7 +353,7 @@ The main event loop is used to change the duty cycle on the respective heater PW
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>_loop</strong> (<em>asyncio.BaseEventLoop</em>) &#8211; The main event loop.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">robotchem.classes.DataPoint</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#classes.DataPoint" title="classes.DataPoint">classes.DataPoint</a></td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The DataPoint object, containing all measurements made and measurement time.</td>
 </tr>
