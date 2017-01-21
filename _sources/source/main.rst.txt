@@ -2,7 +2,7 @@
 Main Module
 ===========
 
-.. automodule:: robotchem.main
+.. automodule:: main
     :members:
     :undoc-members:
     :show-inheritance:

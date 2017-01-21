@@ -458,8 +458,8 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The red LED has been switched on.&#39;</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">((</span><span class="n">settings</span><span class="o">.</span><span class="n">BLUE</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">),</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
-    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span></div>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">((</span><span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">),</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">BLUE</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="indicate_heating"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.indicate_heating">[docs]</a><span class="k">def</span> <span class="nf">indicate_heating</span><span class="p">(</span><span class="n">_loop</span><span class="p">):</span>
@@ -475,7 +475,7 @@
         <span class="k">return</span>
 
     <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">((</span><span class="n">settings</span><span class="o">.</span><span class="n">GREEN</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">BLUE</span><span class="p">),</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">LOW</span><span class="p">)</span>
-    <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">flash_LED</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">),</span> <span class="n">loop</span><span class="o">=</span><span class="n">_loop</span><span class="p">)</span></div>
+    <span class="n">GPIO</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span> <span class="n">GPIO</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="cleanup"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.cleanup">[docs]</a><span class="k">def</span> <span class="nf">cleanup</span><span class="p">(</span><span class="o">*</span><span class="n">heaters</span><span class="p">,</span> <span class="n">wipe</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

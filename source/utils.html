@@ -144,38 +144,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-robotchem.utils">
-<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-robotchem.utils" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-utils">
+<span id="utils-module"></span><h1>utils module<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h1>
 <p>Utility functions and classes for common calculations and networking patterns.</p>
 <dl class="docutils">
 <dt>Jin Cheng 12/12/16:</dt>
-<dd>StopHeatingError, async <a class="reference internal" href="#robotchem.utils.fetch" title="robotchem.utils.fetch"><code class="xref py py-func docutils literal"><span class="pre">fetch()</span></code></a> function that makes HTTP requests.
+<dd>StopHeatingError, async <a class="reference internal" href="#utils.fetch" title="utils.fetch"><code class="xref py py-func docutils literal"><span class="pre">fetch()</span></code></a> function that makes HTTP requests.
 The Network queue.
 Number manipulation functions.</dd>
 </dl>
 <dl class="class">
-<dt id="robotchem.utils.NetworkQueue">
-<em class="property">class </em><code class="descclassname">robotchem.utils.</code><code class="descname">NetworkQueue</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#NetworkQueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.NetworkQueue" title="Permalink to this definition">¶</a></dt>
+<dt id="utils.NetworkQueue">
+<em class="property">class </em><code class="descclassname">utils.</code><code class="descname">NetworkQueue</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils.html#NetworkQueue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.NetworkQueue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">asyncio.queues.Queue</span></code></p>
 <p>A Queue object with additional attribute to store last time an item was retrieved and processed.</p>
 <dl class="method">
-<dt id="robotchem.utils.NetworkQueue.put">
-<code class="descname">put</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#NetworkQueue.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.NetworkQueue.put" title="Permalink to this definition">¶</a></dt>
+<dt id="utils.NetworkQueue.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils.html#NetworkQueue.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.NetworkQueue.put" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="exception">
-<dt id="robotchem.utils.StopHeatingError">
-<em class="property">exception </em><code class="descclassname">robotchem.utils.</code><code class="descname">StopHeatingError</code><a class="reference internal" href="../_modules/robotchem/utils.html#StopHeatingError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.StopHeatingError" title="Permalink to this definition">¶</a></dt>
+<dt id="utils.StopHeatingError">
+<em class="property">exception </em><code class="descclassname">utils.</code><code class="descname">StopHeatingError</code><a class="reference internal" href="../_modules/utils.html#StopHeatingError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.StopHeatingError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">BaseException</span></code></p>
 <p>An exception, when raised, should stop heating in cells
 and terminate current active calorimetry job.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="robotchem.utils.clamp">
-<code class="descclassname">robotchem.utils.</code><code class="descname">clamp</code><span class="sig-paren">(</span><em>number</em>, <em>min_number=0</em>, <em>max_number=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#clamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.clamp" title="Permalink to this definition">¶</a></dt>
+<dt id="utils.clamp">
+<code class="descclassname">utils.</code><code class="descname">clamp</code><span class="sig-paren">(</span><em>number</em>, <em>min_number=0</em>, <em>max_number=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils.html#clamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.clamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>A function that clamps the input argument number within the given range.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -196,8 +196,8 @@ and terminate current active calorimetry job.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="robotchem.utils.fetch">
-<code class="descclassname">robotchem.utils.</code><code class="descname">fetch</code><span class="sig-paren">(</span><em>session</em>, <em>method</em>, <em>url</em>, <em>payload</em>, <em>timeout=5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.fetch" title="Permalink to this definition">¶</a></dt>
+<dt id="utils.fetch">
+<code class="descclassname">utils.</code><code class="descname">fetch</code><span class="sig-paren">(</span><em>session</em>, <em>method</em>, <em>url</em>, <em>payload</em>, <em>timeout=5</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils.html#fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.fetch" title="Permalink to this definition">¶</a></dt>
 <dd><p>An asynchronous HTTP request function sending JSON data,
 with an automatically included ACCESS_CODE field from settings.py.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -222,8 +222,8 @@ with an automatically included ACCESS_CODE field from settings.py.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="robotchem.utils.roughly_equal">
-<code class="descclassname">robotchem.utils.</code><code class="descname">roughly_equal</code><span class="sig-paren">(</span><em>*args</em>, <em>tolerence=0.01</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/utils.html#roughly_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.utils.roughly_equal" title="Permalink to this definition">¶</a></dt>
+<dt id="utils.roughly_equal">
+<code class="descclassname">utils.</code><code class="descname">roughly_equal</code><span class="sig-paren">(</span><em>*args</em>, <em>tolerence=0.01</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils.html#roughly_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.roughly_equal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares argument inputs for equality.
 If all of their differences with each other are within the set tolerance, return True, vice versa.</p>
 <table class="docutils field-list" frame="void" rules="none">

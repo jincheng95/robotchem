@@ -3,7 +3,7 @@
 utils module
 ============
 
-.. automodule:: robotchem.utils
+.. automodule:: utils
     :members:
     :undoc-members:
     :show-inheritance:
