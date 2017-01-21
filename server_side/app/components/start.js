@@ -155,7 +155,7 @@ export default class Start extends Component {
               <Step>
                 <StepLabel>Decide the rate at which your sample is heated</StepLabel>
                 <StepContent style={{paddingRight: '0.5em'}}>
-                  <h4>Temperature will increase at {Math.round(ramp_rate * 10) / 10} °C per minute.</h4>
+                  <h4>Temperature will increase at approx. {Math.round(ramp_rate * 10) / 10} °C per minute</h4>
                   <p className="text-muted">...after reaching a start temperature of {start_temp} °C.</p>
                   <div style={{marginRight: '1em'}}>
                     <Slider value={ramp_rate / max_ramp_rate} min={1.2 / max_ramp_rate} onChange={this.changeRampRate}/>
@@ -193,7 +193,7 @@ export default class Start extends Component {
                       {!!nickname && <TwoColumnRow title="Name" value={nickname}/>}
                       <TwoColumnRow title="Starting temperature" value={start_temp + "°C"}/>
                       <TwoColumnRow title="Target temperature" value={target_temp + "°C"}/>
-                      <TwoColumnRow title="Power output" value={Math.round(ramp_rate * 100) + "%"}/>
+                      <TwoColumnRow title="Power output" value={`Approx. ${Math.round(ramp_rate * 10) / 10}°C per minute`}/>
                       {!!email && <TwoColumnRow title="Notify when done" value={email}/>}
                     </TableBody>
                   </Table>
