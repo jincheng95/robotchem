@@ -57,7 +57,7 @@ const RunOptions = (props) => {
     <div className="row">
       <div className="col-xs-6 col-sm-6 col-md-5 col-lg-5 col-md-offset-1 col-lg-offset-1">
         <StatColumn icon={<TrendingUp />} text={`From ${start_temp} to ${target_temp} °C`} />
-        <StatColumn icon={<FastForward />} text={`At ${ramp_rate * 100}% power`} />
+        <StatColumn icon={<FastForward />} text={`At ${Math.round(ramp_rate * 10) / 10} °C per minute`} />
       </div>
       <div className="col-xs-6 col-sm-6 col-md-5 col-lg-5">
         <StatColumn icon={<Hourglass />} text={duration} />
@@ -138,7 +138,7 @@ export default class Run extends Component {
   }
   componentWillReceiveProps(nextProps) {
     const { expanded, autorefreshInt } = this.state;
-    const { autorefresh, run } = this.props;
+    const { autorefresh } = this.props;
     const { is_running, is_finished, show_is_ready_notification } = this.props.run;
     if( expanded && !autorefreshInt && (!is_finished || is_running) ) {
       this.refresh();

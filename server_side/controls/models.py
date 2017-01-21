@@ -61,7 +61,7 @@ class Run(models.Model):
     # user defined numbers
     start_temp = models.FloatField('Start Temperature (Celsius)')
     target_temp = models.FloatField('Target Temperature (Celsius)')
-    ramp_rate = models.FloatField('Rate of Temp Ramp (Celsius per second)')
+    ramp_rate = models.FloatField('Rate of Temp Ramp (Celsius per minute)')
 
     # automatically edited flags and dates to determine state of the run
     creation_time = models.DateTimeField('Creation Date', auto_now_add=True)

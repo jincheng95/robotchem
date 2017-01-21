@@ -106,8 +106,8 @@ class RunListAPI(APIView):
     permission_classes = (DeviceAccessPermission, )
 
     def get(self, request, format=None, **kwargs):
-        runs = Run.objects.filter(**kwargs).order_by('-creation_time')
-        paginator = Paginator(runs, 3)
+        runs = Run.objects.filter(creation_time__gte="2017-01-21", **kwargs).order_by('-creation_time')
+        paginator = Paginator(runs, 5)
         page = request.GET.get('page')
 
         try:
@@ -277,7 +277,7 @@ class DataPointListAPI(APIView):
             if run.email:
                 context = {
                     'run_name': run.name or "Run #{0}".format(run.id),
-                    'run_url': 'http://robotchem.chengj.in/history/3/',
+                    'run_url': 'http://robotchem.chengj.in/history/{0}/'.format(run_id),
                     'access_code': run.calorimeter.access_code,
                 }
                 body = render_to_string('run_completion_email_body.txt', context)

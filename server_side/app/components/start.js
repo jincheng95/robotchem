@@ -16,13 +16,13 @@ import Refreshing from './refreshing';
 export default class Start extends Component {
   constructor(props) {
     super(props);
-    const {current_sample_temp} = this.props.calorimeter;
+    const {current_sample_temp, max_ramp_rate} = this.props.calorimeter;
     const start_temp = current_sample_temp > 99 ? 99 : Math.round(props.calorimeter.current_sample_temp);
     this.state = {
       step: 0,
       start_temp: start_temp,
       target_temp: start_temp + 1,
-      ramp_rate: 0.5,
+      ramp_rate: max_ramp_rate / 2,
       nickname: "",
       email: "",
       showInvalidEmailMessage: false,
@@ -94,7 +94,7 @@ export default class Start extends Component {
 
   renderStepActions(renderedStep) {
     const { step } = this.state;
-    var label;
+    let label;
     if(step === 3){
       label = "Start Run";
     } else if (step === 2) {
@@ -156,9 +156,9 @@ export default class Start extends Component {
                 <StepLabel>Decide the rate at which your sample is heated</StepLabel>
                 <StepContent style={{paddingRight: '0.5em'}}>
                   <h4>Temperature will increase at {Math.round(ramp_rate * 10) / 10} °C per minute.</h4>
-                  <p className="text-primary">...after reaching a start temperature of ${start_temp} °C.</p>
+                  <p className="text-muted">...after reaching a start temperature of {start_temp} °C.</p>
                   <div style={{marginRight: '1em'}}>
-                    <Slider value={ramp_rate / max_ramp_rate} onChange={this.changeRampRate}/>
+                    <Slider value={ramp_rate / max_ramp_rate} min={1.2 / max_ramp_rate} onChange={this.changeRampRate}/>
                   </div>
                   {this.renderStepActions(1)}
                 </StepContent>
