@@ -14,7 +14,7 @@ from itertools import combinations
 
 import async_timeout
 
-from robotchem import settings
+import settings
 
 
 class StopHeatingError(BaseException):
@@ -73,6 +73,7 @@ class NetworkQueue(asyncio.Queue):
         super(NetworkQueue, self).__init__(*args, **kwargs)
 
     def put(self, *args, **kwargs):
+        """Put a json object into the networking queue, to await upload to the server. """
         if settings.DEBUG:
             print("Network queue size: {0}".format(self.qsize() + 1))
         return super(NetworkQueue, self).put(*args, **kwargs)

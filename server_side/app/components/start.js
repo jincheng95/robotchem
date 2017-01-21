@@ -17,12 +17,12 @@ export default class Start extends Component {
   constructor(props) {
     super(props);
     const {current_sample_temp} = this.props.calorimeter;
-    var start_temp = current_sample_temp > 99 ? 99 : Math.round(props.calorimeter.current_sample_temp);
+    const start_temp = current_sample_temp > 99 ? 99 : Math.round(props.calorimeter.current_sample_temp);
     this.state = {
       step: 0,
       start_temp: start_temp,
       target_temp: start_temp + 1,
-      ramp_rate: 1,
+      ramp_rate: 0.5,
       nickname: "",
       email: "",
       showInvalidEmailMessage: false,
@@ -45,14 +45,15 @@ export default class Start extends Component {
     this.setState({start_temp});
   }
   changeTargetTemp(event, val) {
-    var temp = val * 100;
+    let temp = val * 100;
     if(temp < this.state.start_temp || (temp - this.state.start_temp) < 1){
       temp = this.state.start_temp + 1;
     }
     this.setState({target_temp: Math.round(temp)});
   }
   changeRampRate(event, rate) {
-    this.setState({ramp_rate: rate})
+    const {max_ramp_rate} = this.props.calorimeter;
+    this.setState({ramp_rate: rate * max_ramp_rate})
   }
 
   handlePrev() {
@@ -133,6 +134,7 @@ export default class Start extends Component {
     }
 
     const {step, start_temp, target_temp, ramp_rate, nickname, email, showInvalidEmailMessage} = this.state;
+    const {max_ramp_rate} = this.props.calorimeter;
 
     return (
       <Card>
@@ -153,10 +155,10 @@ export default class Start extends Component {
               <Step>
                 <StepLabel>Decide the rate at which your sample is heated</StepLabel>
                 <StepContent style={{paddingRight: '0.5em'}}>
-                  <h4>Heating at {Math.round(ramp_rate * 100)}% power.</h4>
-                  <p>An explanation of overshoots, ramp rate, theoretical maximum power, etc.</p>
+                  <h4>Temperature will increase at {Math.round(ramp_rate * 10) / 10} °C per minute.</h4>
+                  <p className="text-primary">...after reaching a start temperature of ${start_temp} °C.</p>
                   <div style={{marginRight: '1em'}}>
-                    <Slider value={ramp_rate} onChange={this.changeRampRate}/>
+                    <Slider value={ramp_rate / max_ramp_rate} onChange={this.changeRampRate}/>
                   </div>
                   {this.renderStepActions(1)}
                 </StepContent>
