@@ -31,12 +31,10 @@ import sys
 
 import aiohttp
 
-sys.path.insert(0, os.path.abspath('../'))
-
-from robotchem import settings
-from robotchem.classes import Run
-from robotchem.hardware import (read_temp_ref, read_temp_sample, initialize, indicate_heating, indicate_starting_up, cleanup)
-from robotchem.utils import fetch, StopHeatingError
+import settings
+from classes import Run
+from hardware import (read_temp_ref, read_temp_sample, initialize, indicate_heating, indicate_starting_up, cleanup)
+from utils import fetch, StopHeatingError
 
 
 async def idle(_loop):
@@ -250,13 +248,14 @@ async def run_calorimetry(_loop, run):
 
         # if current temps are more or less the desired set point, increment the ramp
         if stabilised_at_setpoint or initial_increase:
-            initial_increase = False
             set_point += run.real_ramp_rate
             run.batch_setpoint(set_point)
+            initial_increase = False
 
             if settings.DEBUG:
-                print("*********************************\n"
-                      "The setpoint has been increased to {setpoint}".format(setpoint=set_point))
+                print("*********************************************\n"
+                      "The setpoint has been increased to {setpoint}\n"
+                      "*********************************************\n".format(setpoint=set_point))
 
         # check if temp has stabilised near the end temp and change its status accordingly
         if (not run.is_finished) and run.check_stabilization(run.target_temp, duration=50):

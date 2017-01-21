@@ -16,6 +16,7 @@ Jin Cheng, 17/01/16:
     Added Web API settings.
 """
 
+import sys
 
 #
 # ==========================================
@@ -26,9 +27,12 @@ DEBUG = True
 """Setting this to true enables a very basic logging system which just prints out to `stdout` various info
 about what the code is doing."""
 
-FAKE_HARDWARE = True
-"""Sometimes it is useful to run `main.py` on a personal computer and disable hardware controls. Setting this to true
-will make hardware control functions just print out what it was supposed to do."""
+if 'sphinx' in sys.modules:
+    FAKE_HARDWARE = True
+else:
+    FAKE_HARDWARE = False
+    """Sometimes it is useful to run `main.py` on a personal computer and disable hardware controls. Setting this to true
+    will make hardware control functions just print out what it was supposed to do."""
 
 
 PID_PARAMS = {
@@ -40,8 +44,8 @@ PID_PARAMS = {
 integral and derivative factors. Note the web API PID parameters override this setting."""
 
 
-MAX_RAMP_RATE = 0.5
-"""Maximum increment in temperature (degrees Celsius) each cycle.
+MAX_RAMP_RATE = 20
+"""Maximum increment in temperature (degrees Celsius) per minute.
 Note the web API parameters override this setting."""
 
 

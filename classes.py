@@ -14,16 +14,16 @@ import time
 
 import aiohttp
 
-from robotchem import settings
-from robotchem.hardware import measure_all, PID, initialize
-from robotchem.utils import NetworkQueue, clamp, roughly_equal, fetch, StopHeatingError
+import settings
+from hardware import measure_all, PID, initialize
+from utils import NetworkQueue, clamp, roughly_equal, fetch, StopHeatingError
 
 
 class Run(object):
     """An object loosely based on the backend database model `Run` with additional hardware properties
     such as the PID object, the Analog-to-digital object, and the Network upload queue."""
 
-    def __init__(self, run_id, start_temp, target_temp, ramp_rate,
+    def __init__(self, run_id, start_temp, target_temp, ramp_rate, max_ramp_rate,
                  PID_ref, PID_sample, interval, min_upload_length, stabilization_duration,
                  temp_tolerance):
         """
@@ -37,6 +37,9 @@ class Run(object):
         :param target_temp: Target temperature specified by the user on the web interface.
         :type ramp_rate: float
         :param ramp_rate: Ramp rate (0 - 1), as fraction of max rate, specified by the user on the web interface.
+        :type max_ramp_rate: float
+        :param max_ramp_rate: Maximum ramp rate allowed in degrees Celsius per minute, \
+        specified by the user on the Calibrate web page.
         :type PID_ref: hardware.PID
         :param PID_ref: PID object for the reference heater
         :type PID_sample: hardware.PID
@@ -55,6 +58,7 @@ class Run(object):
         self.start_temp = start_temp
         self.target_temp = target_temp
         self.ramp_rate = ramp_rate
+        self.max_ramp_rate = (max_ramp_rate + 0.434) / 0.8665  # degrees per minute -> degrees per cycle
 
         self.PID_ref = PID_ref
         self.PID_sample = PID_sample
@@ -239,12 +243,17 @@ class Run(object):
         """
         Calculate the real temperature increment per main loop cycle, in degrees Celsius.
         The `ramp_rate` field is selected by the user on the web interface and
-        the `self.ramp_rate` property stores the percentage of the maximum available ramp rate.
+        the `self.ramp_rate` property stores the ramp rate in degrees Celsius per *minute*.
+
+        The output value is clamped between a maximum value (if too high, it can be dangerous)
+        and a minimum (from experience, a too small increment can lead to a stagnating temperature).
 
         :rtype: float
         :return: Temperature increase per cycle, in degrees Celsius.
         """
-        return self.ramp_rate * settings.MAX_RAMP_RATE
+        # the following relationship was determined by testing + calibration by Lily and Rebeca
+        celsius_per_cycle = (self.ramp_rate + 0.434) / 0.8665
+        return clamp(celsius_per_cycle, 0.75, self.max_ramp_rate)
 
     @classmethod
     def from_web_resp(cls, json_data, temp_ref, temp_sample):
@@ -270,7 +279,8 @@ class Run(object):
         PID_ref = PID(temp_ref, **PID_init_kwargs)
         PID_sample = PID(temp_sample, **PID_init_kwargs)
 
-        return cls(run_data['id'], run_data['start_temp'], run_data['target_temp'], run_data['ramp_rate'],
+        return cls(run_data['id'], run_data['start_temp'], run_data['target_temp'],
+                   run_data['ramp_rate'], run_data.get('max_ramp_rate') or settings.MAX_RAMP_RATE,
                    PID_ref, PID_sample,
                    json_data.get('active_loop_interval') or settings.MAIN_LOOP_INTERVAL,
                    json_data.get('web_api_min_upload_length') or settings.WEB_API_MIN_UPLOAD_LENGTH,

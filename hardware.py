@@ -29,7 +29,7 @@ import os
 import subprocess
 import time
 
-from robotchem import settings
+import settings
 
 if not settings.FAKE_HARDWARE:
     import Adafruit_ADS1x15
