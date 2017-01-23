@@ -195,7 +195,7 @@ class DataPointListAPI(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if 'since' in request.GET:
-            kwargs['measured_at__gt'] = datetime_parser(request.GET['since'])
+            kwargs['received_at__gt'] = datetime_parser(request.GET['since'])
 
         data_points = DataPoint.objects.filter(**kwargs)
         serializer = DataPointSerializer(data_points, many=True)
