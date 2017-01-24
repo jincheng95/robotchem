@@ -15,13 +15,12 @@ Hayley Weir 11/12/16:
     hardware components testing
 
 Jin Cheng 12/12/16:
-    function cleanup and asynchronisation, introduced wrappers
-    the asynchronous PWM control queue
+    function cleanup and asynchronisation,
+    the asynchronous PWM control queue,
     documentation
 
 Jin Cheng 17/01/17:
-    allow customisation of PID params from the web interface,
-    the flashing LED function
+    allow customisation of PID params from the web interface
 """
 
 import asyncio
@@ -85,12 +84,13 @@ class PID(object):
         """Calculates PID output for a given feedback from sensor.
 
         .. math::
-            u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d {de}/{dt}
+            u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d \\frac{de}{dt}
+
 
         :type feedback_value: float | int
         :param feedback_value: temperature reading
         :rtype: float
-        :return: PID output for current time.
+        :return: PID output after accounting for feedback value
         """
         error = self.set_point - feedback_value
         delta_error = error - self.last_error

@@ -39,7 +39,8 @@ django.setup()
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.imgmath',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -81,6 +82,14 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
+
+
+# make sphinx document __init__ methods
+# http://stackoverflow.com/questions/5599254/how-to-use-sphinxs-autodoc-to-document-a-classs-init-self-method
+def skip(app, what, name, obj, skip, options):
+    if name == "__init__":
+        return False
+    return skip
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False

@@ -5,23 +5,23 @@ Concurrency based on Python 3.5's async/await syntax with the asyncio library.
 
 Hayley Weir, 11/12/16:
     Hardware (GPIO control),
-    PID calculation,
-    Heat ramp process
+    pid calculation,
+    heat ramp process
 
 Jin Cheng, 12/12/16:
-    Asynchronous functions, event loops, futures and coroutines,
-    Web API communication,
-    Calorimetry and flow logic,
-    Implement current -> power -> energy conversion,
-    Documentation
+    Refactored Hayley's code into modular and asynchronous functions, event loops, futures and co-routines.
+    Introduced web API communication functions,
+    calorimetry and flow logic,
+    implement current -> power conversion,
+    documentation
 
 Jin Cheng, 16/01/17:
     Several debugging changes to simplify calibration,
-    Allow customisation of PID params, loop interval, maximum ramp rate from web interface.
+    allow customisation of PID params, loop interval, maximum ramp rate from web interface.
 
 Jin Cheng, 17/01/17:
     Major refactor of common flow logic code into classes,
-    Optimisation of the temperature ramp logic to linearise temp profile as much as possible.
+    optimisation of the temperature ramp logic to make temp profile as linear as possible.
 """
 
 import asyncio
@@ -243,7 +243,7 @@ async def run_calorimetry(_loop, run):
         await run.queue_upload(_loop)
 
         # use a less stringent check (higher value tolerance and smaller duration) to make linear the temp profile
-        stabilised_at_setpoint = run.check_stabilization(set_point, duration=2, tolerance=2 * run.real_ramp_rate)
+        stabilised_at_setpoint = run.check_stabilization(set_point, duration=2, tolerance=1.5 * run.real_ramp_rate)
 
         # if current temps are more or less the desired set point, increment the ramp
         if stabilised_at_setpoint or initial_increase:
