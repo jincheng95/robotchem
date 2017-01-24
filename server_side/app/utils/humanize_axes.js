@@ -7,8 +7,8 @@ export const simple_humanized_axes = {
   temp_ref: 'Temp. (reference)',
   temp_sample: 'Temp. (sample)',
 
-  heat_ref: 'Heat (reference)',
-  heat_sample: 'Heat (sample)',
+  heat_ref: 'Heat Flow (reference)',
+  heat_sample: 'Heat Flow (sample)',
   heat_diff: 'Heat Difference'
 };
 
@@ -20,9 +20,9 @@ const humanized_axes = {
   temp_ref: 'Reference Cell Temperature (°C)',
   temp_sample: 'Sample Cell Temperature (°C)',
 
-  heat_ref: 'Heat Supplied To Reference Cell (J)',
-  heat_sample: 'Heat Supplied to Sample (J)',
-  heat_diff: 'Heat Differential [Sample – Reference] (J)'
+  heat_ref: 'Reference Cell Heat Flow (mW)',
+  heat_sample: 'Sample Cell Heat Flow (mW)',
+  heat_diff: 'Heat Differential (mW)'
 };
 
 export default humanized_axes;

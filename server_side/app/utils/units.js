@@ -7,9 +7,9 @@ const units = {
   temp_ref: '°C',
   temp_sample: '°C',
 
-  heat_ref: 'J',
-  heat_sample: 'J',
-  heat_diff: 'J'
+  heat_ref: 'mW',
+  heat_sample: 'mW',
+  heat_diff: 'mW'
 };
 
 export default units;

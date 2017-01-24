@@ -293,12 +293,12 @@ class DataPoint(object):
 
     def __init__(self, run, measured_at, temp_ref, temp_sample, heat_ref, heat_sample):
         self.run = run
-        self.measured_at = measured_at
+        self.measured_at = measured_at  # datetime
 
-        self.temp_ref = temp_ref
-        self.temp_sample = temp_sample
-        self.heat_ref = heat_ref
-        self.heat_sample = heat_sample
+        self.temp_ref = temp_ref  # deg C
+        self.temp_sample = temp_sample  # deg C
+        self.heat_ref = heat_ref  # heat flow / mW
+        self.heat_sample = heat_sample  # heat flow / mW
 
     def jsonify(self):
         """Pickle properties of this object into a JSON-ifiable dictionary. For communications with the web interface.
@@ -333,8 +333,8 @@ class DataPoint(object):
 
         voltage_ref = settings.MAX_VOLTAGE * run.duty_cycle_ref / 100
         voltage_sample = settings.MAX_VOLTAGE * run.duty_cycle_sample / 100
-        heat_ref = voltage_ref * current_ref
-        heat_sample = voltage_sample * current_sample
+        heat_ref = voltage_ref * current_ref * 1000   # P = VI then W -> mW
+        heat_sample = voltage_sample * current_sample * 1000  # P = VI then W -> mW
 
         return cls(run, datetime.datetime.now(),
                    temp_ref, temp_sample, heat_ref, heat_sample)
