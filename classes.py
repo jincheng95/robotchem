@@ -58,7 +58,7 @@ class Run(object):
         self.start_temp = start_temp
         self.target_temp = target_temp
         self.ramp_rate = ramp_rate
-        self.max_ramp_rate = (max_ramp_rate + 0.434) / 0.8665  # degrees per minute -> degrees per cycle
+        self.max_ramp_rate = (max_ramp_rate + 0.434) * 0.06411489  # degrees per minute -> degrees per cycle
 
         self.PID_ref = PID_ref
         self.PID_sample = PID_sample
@@ -75,7 +75,7 @@ class Run(object):
         self.is_ready = False
         self.is_finished = False
 
-        self.last_time = -1
+        self.last_time = time.time()
         self.network_queue = NetworkQueue(threshold_time=interval, threshold_qsize=min_upload_length)
         self.data_points = []
 
@@ -101,7 +101,7 @@ class Run(object):
         self.last_time = now
 
         # make new data point by new measurements
-        measurement = await DataPoint.async_measure_raw(self, _loop, delta_time)
+        measurement = await DataPoint.async_measure_raw(self, _loop)
         self.data_points.append(measurement)
 
         # send its json representation into the upload queue
@@ -242,8 +242,8 @@ class Run(object):
     def real_ramp_rate(self):
         """
         Calculate the real temperature increment per main loop cycle, in degrees Celsius.
-        The `ramp_rate` field is selected by the user on the web interface and
-        the `self.ramp_rate` property stores the ramp rate in degrees Celsius per *minute*.
+        The ``ramp_rate`` field is selected by the user on the web interface and
+        the ``self.ramp_rate`` property stores the ramp rate in degrees Celsius per *minute*.
 
         The output value is clamped between a maximum value (if too high, it can be dangerous)
         and a minimum (from experience, a too small increment can lead to a stagnating temperature).
@@ -252,8 +252,8 @@ class Run(object):
         :return: Temperature increase per cycle, in degrees Celsius.
         """
         # the following relationship was determined by testing + calibration by Lily and Rebeca
-        celsius_per_cycle = (self.ramp_rate + 0.434) / 0.8665
-        return clamp(celsius_per_cycle, 0.75, self.max_ramp_rate)
+        celsius_per_cycle = (self.ramp_rate + 0.434) * 0.06411489
+        return clamp(celsius_per_cycle, 0, self.max_ramp_rate)
 
     @classmethod
     def from_web_resp(cls, json_data, temp_ref, temp_sample):
@@ -317,7 +317,7 @@ class DataPoint(object):
         return res
 
     @classmethod
-    async def async_measure_raw(cls, run, loop, delta_time):
+    async def async_measure_raw(cls, run, loop):
         """Construct a new DataPoint object based a new, raw measurement.
 
         :type run: `classes.Run`
@@ -333,8 +333,8 @@ class DataPoint(object):
 
         voltage_ref = settings.MAX_VOLTAGE * run.duty_cycle_ref / 100
         voltage_sample = settings.MAX_VOLTAGE * run.duty_cycle_sample / 100
-        heat_ref = voltage_ref * current_ref * delta_time
-        heat_sample = voltage_sample * current_sample * delta_time
+        heat_ref = voltage_ref * current_ref
+        heat_sample = voltage_sample * current_sample
 
         return cls(run, datetime.datetime.now(),
                    temp_ref, temp_sample, heat_ref, heat_sample)
