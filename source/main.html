@@ -152,20 +152,20 @@ Concurrency based on Python 3.5&#8217;s async/await syntax with the asyncio libr
 <dl class="docutils">
 <dt>Hayley Weir, 11/12/16:</dt>
 <dd>Hardware (GPIO control),
-PID calculation,
-Heat ramp process</dd>
+pid calculation,
+heat ramp process</dd>
 <dt>Jin Cheng, 12/12/16:</dt>
-<dd>Asynchronous functions, event loops, futures and coroutines,
-Web API communication,
-Calorimetry and flow logic,
-Implement current -&gt; power -&gt; energy conversion,
-Documentation</dd>
+<dd>Refactored Hayley&#8217;s code into modular and asynchronous functions, event loops, futures and co-routines.
+Introduced web API communication functions,
+calorimetry and flow logic,
+implement current -&gt; power conversion,
+documentation</dd>
 <dt>Jin Cheng, 16/01/17:</dt>
 <dd>Several debugging changes to simplify calibration,
-Allow customisation of PID params, loop interval, maximum ramp rate from web interface.</dd>
+allow customisation of PID params, loop interval, maximum ramp rate from web interface.</dd>
 <dt>Jin Cheng, 17/01/17:</dt>
 <dd>Major refactor of common flow logic code into classes,
-Optimisation of the temperature ramp logic to linearise temp profile as much as possible.</dd>
+optimisation of the temperature ramp logic to make temp profile as linear as possible.</dd>
 </dl>
 <dl class="function">
 <dt id="main.active">

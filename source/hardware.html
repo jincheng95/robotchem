@@ -161,12 +161,11 @@ LED controls,
 initialisation function,
 hardware components testing</dd>
 <dt>Jin Cheng 12/12/16:</dt>
-<dd>function cleanup and asynchronisation, introduced wrappers
-the asynchronous PWM control queue
+<dd>function cleanup and asynchronisation,
+the asynchronous PWM control queue,
 documentation</dd>
 <dt>Jin Cheng 17/01/17:</dt>
-<dd>allow customisation of PID params from the web interface,
-the flashing LED function</dd>
+<dd>allow customisation of PID params from the web interface</dd>
 </dl>
 <dl class="class">
 <dt id="hardware.PID">
@@ -201,7 +200,7 @@ while the set point can be updated after class construction and at any point in 
 <code class="descname">update</code><span class="sig-paren">(</span><em>feedback_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#PID.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.PID.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates PID output for a given feedback from sensor.</p>
 <div class="math">
-<p><img src="../_images/math/2b62886733e1f35148a17081741afd7c017a7a6e.png" alt="u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d {de}/{dt}"/></p>
+<p><img src="../_images/math/1005de28b0fbb6b03bff51c0bd03bf650f1cb11f.png" alt="u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d \frac{de}{dt}"/></p>
 </div><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -210,7 +209,7 @@ while the set point can be updated after class construction and at any point in 
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">PID output for current time.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">PID output after accounting for feedback value</td>
 </tr>
 </tbody>
 </table>

@@ -209,7 +209,7 @@
     <span class="c1"># user defined numbers</span>
     <span class="n">start_temp</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">(</span><span class="s1">&#39;Start Temperature (Celsius)&#39;</span><span class="p">)</span>
     <span class="n">target_temp</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">(</span><span class="s1">&#39;Target Temperature (Celsius)&#39;</span><span class="p">)</span>
-    <span class="n">ramp_rate</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">(</span><span class="s1">&#39;Rate of Temp Ramp (Celsius per second)&#39;</span><span class="p">)</span>
+    <span class="n">ramp_rate</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">FloatField</span><span class="p">(</span><span class="s1">&#39;Rate of Temp Ramp (Celsius per minute)&#39;</span><span class="p">)</span>
 
     <span class="c1"># automatically edited flags and dates to determine state of the run</span>
     <span class="n">creation_time</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="s1">&#39;Creation Date&#39;</span><span class="p">,</span> <span class="n">auto_now_add</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
