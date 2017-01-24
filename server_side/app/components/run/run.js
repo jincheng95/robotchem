@@ -112,7 +112,7 @@ export default class Run extends Component {
     const {data_points} = this.state;
     const {run, code, toggleLoading} = this.props;
 
-    var since;
+    let since;
     if( !isEmpty(data_points) ) {
       since = last(data_points).measured_at;
     } else {

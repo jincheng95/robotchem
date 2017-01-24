@@ -21,7 +21,7 @@ export default class Start extends Component {
     this.state = {
       step: 0,
       start_temp: start_temp,
-      target_temp: start_temp + 1,
+      target_temp: 100,
       ramp_rate: max_ramp_rate / 2,
       nickname: "",
       email: "",
