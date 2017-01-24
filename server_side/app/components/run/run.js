@@ -114,7 +114,7 @@ export default class Run extends Component {
 
     let since;
     if( !isEmpty(data_points) ) {
-      since = last(data_points).measured_at;
+      since = last(data_points).received_at;
     } else {
       since = run.creation_time;
     }
