@@ -144,8 +144,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-classes">
-<span id="classes"></span><h1>Classes<a class="headerlink" href="#module-classes" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-robotchem.classes">
+<span id="classes"></span><h1>Classes<a class="headerlink" href="#module-robotchem.classes" title="Permalink to this headline">¶</a></h1>
 <p>Classes to generalise common patterns with DSC data.
 Has some similarities to the database models on the web backend.</p>
 <dl class="docutils">
@@ -155,13 +155,13 @@ Has some similarities to the database models on the web backend.</p>
 <dd>Further simplification of the Run object.</dd>
 </dl>
 <dl class="class">
-<dt id="classes.DataPoint">
-<em class="property">class </em><code class="descclassname">classes.</code><code class="descname">DataPoint</code><span class="sig-paren">(</span><em>run</em>, <em>measured_at</em>, <em>temp_ref</em>, <em>temp_sample</em>, <em>heat_ref</em>, <em>heat_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#DataPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataPoint" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.DataPoint">
+<em class="property">class </em><code class="descclassname">robotchem.classes.</code><code class="descname">DataPoint</code><span class="sig-paren">(</span><em>run</em>, <em>measured_at</em>, <em>temp_ref</em>, <em>temp_sample</em>, <em>heat_ref</em>, <em>heat_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#DataPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.DataPoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>An object based on the web backend database model <cite>DataPoint</cite>.</p>
 <dl class="classmethod">
-<dt id="classes.DataPoint.async_measure_raw">
-<em class="property">classmethod </em><code class="descname">async_measure_raw</code><span class="sig-paren">(</span><em>run</em>, <em>loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#DataPoint.async_measure_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataPoint.async_measure_raw" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.DataPoint.async_measure_raw">
+<em class="property">classmethod </em><code class="descname">async_measure_raw</code><span class="sig-paren">(</span><em>run</em>, <em>loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#DataPoint.async_measure_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.DataPoint.async_measure_raw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct a new DataPoint object based a new, raw measurement.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -182,8 +182,8 @@ Has some similarities to the database models on the web backend.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="classes.DataPoint.jsonify">
-<code class="descname">jsonify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#DataPoint.jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.DataPoint.jsonify" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.DataPoint.jsonify">
+<code class="descname">jsonify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#DataPoint.jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.DataPoint.jsonify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pickle properties of this object into a JSON-ifiable dictionary. For communications with the web interface.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -200,14 +200,14 @@ Has some similarities to the database models on the web backend.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="classes.Run">
-<em class="property">class </em><code class="descclassname">classes.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>run_id</em>, <em>start_temp</em>, <em>target_temp</em>, <em>ramp_rate</em>, <em>max_ramp_rate</em>, <em>PID_ref</em>, <em>PID_sample</em>, <em>interval</em>, <em>min_upload_length</em>, <em>stabilization_duration</em>, <em>temp_tolerance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.Run">
+<em class="property">class </em><code class="descclassname">robotchem.classes.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>run_id</em>, <em>start_temp</em>, <em>target_temp</em>, <em>ramp_rate</em>, <em>max_ramp_rate</em>, <em>PID_ref</em>, <em>PID_sample</em>, <em>interval</em>, <em>min_upload_length</em>, <em>stabilization_duration</em>, <em>temp_tolerance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>An object loosely based on the backend database model <cite>Run</cite> with additional hardware properties
 such as the PID object, the Analog-to-digital object, and the Network upload queue.</p>
 <dl class="method">
-<dt id="classes.Run.batch_setpoint">
-<code class="descname">batch_setpoint</code><span class="sig-paren">(</span><em>setpoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run.batch_setpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run.batch_setpoint" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.Run.batch_setpoint">
+<code class="descname">batch_setpoint</code><span class="sig-paren">(</span><em>setpoint</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.batch_setpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.batch_setpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Changes the set point for both PID objects related to the run&#8217;s sample and reference cells.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -220,8 +220,8 @@ such as the PID object, the Analog-to-digital object, and the Network upload que
 </dd></dl>
 
 <dl class="method">
-<dt id="classes.Run.check_stabilization">
-<code class="descname">check_stabilization</code><span class="sig-paren">(</span><em>value</em>, <em>duration=None</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run.check_stabilization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run.check_stabilization" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.Run.check_stabilization">
+<code class="descname">check_stabilization</code><span class="sig-paren">(</span><em>value</em>, <em>duration=None</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.check_stabilization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.check_stabilization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the latest temperatures are within range of the <code class="docutils literal"><span class="pre">value</span></code> given.         The measurements must be made within a specified amount of time ago and         the temperature comparison tolerance is also customisable.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -248,12 +248,12 @@ such as the PID object, the Analog-to-digital object, and the Network upload que
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="classes.Run.from_web_resp">
-<em class="property">classmethod </em><code class="descname">from_web_resp</code><span class="sig-paren">(</span><em>json_data</em>, <em>temp_ref</em>, <em>temp_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run.from_web_resp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run.from_web_resp" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.Run.from_web_resp">
+<em class="property">classmethod </em><code class="descname">from_web_resp</code><span class="sig-paren">(</span><em>json_data</em>, <em>temp_ref</em>, <em>temp_sample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.from_web_resp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.from_web_resp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct a Run object from a dictionary of returned values from the web status API page.
 PID objects are instantiated with initial temperature values supplied.
 The customisable parameters from the web API are also stored,
-and if none is given, defaults from <a class="reference internal" href="settings.html#module-settings" title="settings"><code class="xref py py-mod docutils literal"><span class="pre">settings</span></code></a> will be used.</p>
+and if none is given, defaults from <code class="xref py py-mod docutils literal"><span class="pre">settings</span></code> will be used.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -265,7 +265,7 @@ and if none is given, defaults from <a class="reference internal" href="settings
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="#classes.Run" title="classes.Run"><code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code></a> object.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code> object.</p>
 </td>
 </tr>
 </tbody>
@@ -273,11 +273,11 @@ and if none is given, defaults from <a class="reference internal" href="settings
 </dd></dl>
 
 <dl class="method">
-<dt id="classes.Run.make_measurement">
-<code class="descname">make_measurement</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run.make_measurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run.make_measurement" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.Run.make_measurement">
+<code class="descname">make_measurement</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.make_measurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.make_measurement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a new measurement asynchronously and store it to the series of measurements related to this run.
 All measurements are put into the network queue responsible for this run&#8217;s data.</p>
-<p>Temperature measurements made are automatically fed into the <a class="reference internal" href="hardware.html#hardware.PID" title="hardware.PID"><code class="xref py py-class docutils literal"><span class="pre">hardware.PID</span></code></a>
+<p>Temperature measurements made are automatically fed into the <code class="xref py py-class docutils literal"><span class="pre">hardware.PID</span></code>
 objects related to this run.
 The main event loop is used to change the duty cycle on the respective heater PWM objects,
 <code class="xref py py-class docutils literal"><span class="pre">RPi.GPIO.PWM</span></code>.</p>
@@ -287,7 +287,7 @@ The main event loop is used to change the duty cycle on the respective heater PW
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>_loop</strong> (<em>asyncio.BaseEventLoop</em>) &#8211; The main event loop.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#classes.DataPoint" title="classes.DataPoint">classes.DataPoint</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#robotchem.classes.DataPoint" title="robotchem.classes.DataPoint">classes.DataPoint</a></td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The DataPoint object, containing all measurements made and measurement time.</td>
 </tr>
@@ -296,8 +296,8 @@ The main event loop is used to change the duty cycle on the respective heater PW
 </dd></dl>
 
 <dl class="method">
-<dt id="classes.Run.queue_upload">
-<code class="descname">queue_upload</code><span class="sig-paren">(</span><em>_loop</em>, <em>override_threshold=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/classes.html#Run.queue_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classes.Run.queue_upload" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.Run.queue_upload">
+<code class="descname">queue_upload</code><span class="sig-paren">(</span><em>_loop</em>, <em>override_threshold=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/classes.html#Run.queue_upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.classes.Run.queue_upload" title="Permalink to this definition">¶</a></dt>
 <dd><p>An asynchronous function that uploads payloads by consuming from the network queue
 only when a specified amount of time has passed from time of last processing
 and when a specified number of items exist in the queue.
@@ -318,7 +318,7 @@ The asynchronous process breaks otherwise.</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">if sample has been inserted and formal temp ramp can begin</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="utils.html#utils.StopHeatingError" title="utils.StopHeatingError"><strong>StopHeatingError</strong></a> &#8211; When this error is raised, any async function that calls it must give control         back to the idle loop and stop heating. Raised if a &#8216;stop_flag&#8217; field returns True from the web API response.</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="utils.html#robotchem.utils.StopHeatingError" title="robotchem.utils.StopHeatingError"><strong>StopHeatingError</strong></a> &#8211; When this error is raised, any async function that calls it must give control         back to the idle loop and stop heating. Raised if a &#8216;stop_flag&#8217; field returns True from the web API response.</p>
 </td>
 </tr>
 </tbody>
@@ -326,8 +326,8 @@ The asynchronous process breaks otherwise.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="classes.Run.real_ramp_rate">
-<code class="descname">real_ramp_rate</code><a class="headerlink" href="#classes.Run.real_ramp_rate" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.classes.Run.real_ramp_rate">
+<code class="descname">real_ramp_rate</code><a class="headerlink" href="#robotchem.classes.Run.real_ramp_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the real temperature increment per main loop cycle, in degrees Celsius.
 The <code class="docutils literal"><span class="pre">ramp_rate</span></code> field is selected by the user on the web interface and
 the <code class="docutils literal"><span class="pre">self.ramp_rate</span></code> property stores the ramp rate in degrees Celsius per <em>minute</em>.</p>

@@ -144,8 +144,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-hardware">
-<span id="hardware-controls"></span><h1>Hardware Controls<a class="headerlink" href="#module-hardware" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-robotchem.hardware">
+<span id="hardware-controls"></span><h1>Hardware Controls<a class="headerlink" href="#module-robotchem.hardware" title="Permalink to this headline">¶</a></h1>
 <p>This module contains GPIO hardware controls for:</p>
 <ol class="arabic simple">
 <li>the temperature sensors,</li>
@@ -168,22 +168,22 @@ documentation</dd>
 <dd>allow customisation of PID params from the web interface</dd>
 </dl>
 <dl class="class">
-<dt id="hardware.PID">
-<em class="property">class </em><code class="descclassname">hardware.</code><code class="descname">PID</code><span class="sig-paren">(</span><em>init_val</em>, <em>Kp=None</em>, <em>Ki=None</em>, <em>Kd=None</em>, <em>set_point=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#PID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.PID" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.PID">
+<em class="property">class </em><code class="descclassname">robotchem.hardware.</code><code class="descname">PID</code><span class="sig-paren">(</span><em>init_val</em>, <em>Kp=None</em>, <em>Ki=None</em>, <em>Kd=None</em>, <em>set_point=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>An object representing a PID controller,
 allowing the two heaters to have separate PID params.</p>
 <p>Stores historical integral and derivative values so far,
 while the set point can be updated after class construction and at any point in time.</p>
 <dl class="method">
-<dt id="hardware.PID.clear">
-<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#PID.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.PID.clear" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.PID.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clears all PID computations and coefficients.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="hardware.PID.set_setpoint">
-<code class="descname">set_setpoint</code><span class="sig-paren">(</span><em>set_point</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#PID.set_setpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.PID.set_setpoint" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.PID.set_setpoint">
+<code class="descname">set_setpoint</code><span class="sig-paren">(</span><em>set_point</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID.set_setpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID.set_setpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a new set-point temperature for this PID controller object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -196,8 +196,8 @@ while the set point can be updated after class construction and at any point in 
 </dd></dl>
 
 <dl class="method">
-<dt id="hardware.PID.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>feedback_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#PID.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.PID.update" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.PID.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>feedback_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#PID.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.PID.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates PID output for a given feedback from sensor.</p>
 <div class="math">
 <p><img src="../_images/math/1005de28b0fbb6b03bff51c0bd03bf650f1cb11f.png" alt="u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d \frac{de}{dt}"/></p>
@@ -218,8 +218,8 @@ while the set point can be updated after class construction and at any point in 
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware._read_adc">
-<code class="descclassname">hardware.</code><code class="descname">_read_adc</code><span class="sig-paren">(</span><em>channel</em>, <em>adc_object</em>, <em>gain=1</em>, <em>scale=5.405405405405405e-06</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#_read_adc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware._read_adc" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware._read_adc">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">_read_adc</code><span class="sig-paren">(</span><em>channel</em>, <em>adc_object</em>, <em>gain=1</em>, <em>scale=5.405405405405405e-06</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#_read_adc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware._read_adc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads measurement at a ADC channel with a specified GAIN.
 Converts the measurement mV into current in amps with a scaling factor.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -241,8 +241,8 @@ Converts the measurement mV into current in amps with a scaling factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.cleanup">
-<code class="descclassname">hardware.</code><code class="descname">cleanup</code><span class="sig-paren">(</span><em>*heaters</em>, <em>wipe=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.cleanup" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.cleanup">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">cleanup</code><span class="sig-paren">(</span><em>*heaters</em>, <em>wipe=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.cleanup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cleans up the whole GPIO board. Use when exception is raised.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -259,8 +259,8 @@ Converts the measurement mV into current in amps with a scaling factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.flash_LED">
-<code class="descclassname">hardware.</code><code class="descname">flash_LED</code><span class="sig-paren">(</span><em>*pins</em>, <em>period=0.15</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#flash_LED"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.flash_LED" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.flash_LED">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">flash_LED</code><span class="sig-paren">(</span><em>*pins</em>, <em>period=0.15</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#flash_LED"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.flash_LED" title="Permalink to this definition">¶</a></dt>
 <dd><p>An async coroutine that routinely flashes the LEDs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -277,8 +277,8 @@ Converts the measurement mV into current in amps with a scaling factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.indicate_heating">
-<code class="descclassname">hardware.</code><code class="descname">indicate_heating</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#indicate_heating"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.indicate_heating" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.indicate_heating">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">indicate_heating</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#indicate_heating"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.indicate_heating" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicate the device is heating in an active calorimetry by turning on/off LED lights.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -291,14 +291,14 @@ Converts the measurement mV into current in amps with a scaling factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.indicate_starting_up">
-<code class="descclassname">hardware.</code><code class="descname">indicate_starting_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#indicate_starting_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.indicate_starting_up" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.indicate_starting_up">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">indicate_starting_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#indicate_starting_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.indicate_starting_up" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicate the device is heating to start_temp by turning on/off LED lights.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.initialize">
-<code class="descclassname">hardware.</code><code class="descname">initialize</code><span class="sig-paren">(</span><em>board_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.initialize" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.initialize">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">initialize</code><span class="sig-paren">(</span><em>board_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><ol class="arabic simple">
 <li>Initial setup for GPIO board.</li>
 <li>Make all GPIO output pins set up as outputs.</li>
@@ -320,8 +320,8 @@ Converts the measurement mV into current in amps with a scaling factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.measure_all">
-<code class="descclassname">hardware.</code><code class="descname">measure_all</code><span class="sig-paren">(</span><em>loop</em>, <em>adc_object</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#measure_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.measure_all" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.measure_all">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">measure_all</code><span class="sig-paren">(</span><em>loop</em>, <em>adc_object</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#measure_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.measure_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>A convenience function to measure all readings with one concurrent Future object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -341,20 +341,20 @@ Converts the measurement mV into current in amps with a scaling factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.read_current_ref">
-<code class="descclassname">hardware.</code><code class="descname">read_current_ref</code><span class="sig-paren">(</span><em>adc_object</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#read_current_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.read_current_ref" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.read_current_ref">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_current_ref</code><span class="sig-paren">(</span><em>adc_object</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_current_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_current_ref" title="Permalink to this definition">¶</a></dt>
 <dd><p>An async wrapper function for reading real-time current at the reference.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.read_current_sample">
-<code class="descclassname">hardware.</code><code class="descname">read_current_sample</code><span class="sig-paren">(</span><em>adc_object</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#read_current_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.read_current_sample" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.read_current_sample">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_current_sample</code><span class="sig-paren">(</span><em>adc_object</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_current_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_current_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>An async wrapper function for reading real-time current at the sample.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.read_temp">
-<code class="descclassname">hardware.</code><code class="descname">read_temp</code><span class="sig-paren">(</span><em>identifier</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#read_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.read_temp" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.read_temp">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_temp</code><span class="sig-paren">(</span><em>identifier</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_temp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads from the One-Wire thermocouple temperature info from its bus.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -371,8 +371,8 @@ Converts the measurement mV into current in amps with a scaling factor.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.read_temp_ref">
-<code class="descclassname">hardware.</code><code class="descname">read_temp_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#read_temp_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.read_temp_ref" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.read_temp_ref">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_temp_ref</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_temp_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_temp_ref" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads reference cell temperature.
 This is a wrapper for the <cite>read_temp</cite> function,     with the device ID set with <cite>TEMP_SENSOR_ID_REF</cite> in the <cite>settings.py</cite> file.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -386,8 +386,8 @@ This is a wrapper for the <cite>read_temp</cite> function,     with the device I
 </dd></dl>
 
 <dl class="function">
-<dt id="hardware.read_temp_sample">
-<code class="descclassname">hardware.</code><code class="descname">read_temp_sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/hardware.html#read_temp_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hardware.read_temp_sample" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.hardware.read_temp_sample">
+<code class="descclassname">robotchem.hardware.</code><code class="descname">read_temp_sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/hardware.html#read_temp_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.hardware.read_temp_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads sample cell temperature.
 This is a wrapper for the <cite>read_temp</cite> function,     with the device ID set with <cite>TEMP_SENSOR_ID_SAMPLE</cite> in the settings.py file.</p>
 <table class="docutils field-list" frame="void" rules="none">

@@ -162,7 +162,7 @@
 
 <span class="kn">import</span> <span class="nn">async_timeout</span>
 
-<span class="kn">from</span> <span class="nn">robotchem</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">import</span> <span class="nn">settings</span>
 
 
 <div class="viewcode-block" id="StopHeatingError"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.StopHeatingError">[docs]</a><span class="k">class</span> <span class="nc">StopHeatingError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
@@ -221,6 +221,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">NetworkQueue</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NetworkQueue.put"><a class="viewcode-back" href="../../source/utils.html#robotchem.utils.NetworkQueue.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Put a json object into the networking queue, to await upload to the server. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Network queue size: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">NetworkQueue</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>

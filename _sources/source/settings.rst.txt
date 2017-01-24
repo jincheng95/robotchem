@@ -8,7 +8,7 @@ local_settings.py
 
 Contains one constant, ``ACCESS_CODE``, which stores the access code to 'authenticate' communication with the server.
 
-.. automodule:: local_settings
+.. automodule:: robotchem.local_settings
     :members:
     :undoc-members:
     :show-inheritance:
@@ -17,7 +17,7 @@ Contains one constant, ``ACCESS_CODE``, which stores the access code to 'authent
 settings.py
 -----------
 
-.. automodule:: settings
+.. automodule:: robotchem.settings
     :members:
     :undoc-members:
     :show-inheritance:

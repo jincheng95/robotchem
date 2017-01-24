@@ -144,8 +144,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-main">
-<span id="main-module"></span><h1>Main Module<a class="headerlink" href="#module-main" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-robotchem.main">
+<span id="main-module"></span><h1>Main Module<a class="headerlink" href="#module-robotchem.main" title="Permalink to this headline">¶</a></h1>
 <p>Main script to be run automatically on raspberry Pi startup.
 Web requests, measurements and GPIO control occur simultaneously and independently.
 Concurrency based on Python 3.5&#8217;s async/await syntax with the asyncio library.</p>
@@ -168,31 +168,31 @@ allow customisation of PID params, loop interval, maximum ramp rate from web int
 optimisation of the temperature ramp logic to make temp profile as linear as possible.</dd>
 </dl>
 <dl class="function">
-<dt id="main.active">
-<code class="descclassname">main.</code><code class="descname">active</code><span class="sig-paren">(</span><em>_loop</em>, <em>**calorimeter_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#active"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.active" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.main.active">
+<code class="descclassname">robotchem.main.</code><code class="descname">active</code><span class="sig-paren">(</span><em>_loop</em>, <em>**calorimeter_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/main.html#active"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.main.active" title="Permalink to this definition">¶</a></dt>
 <dd><p>An asynchronous coroutine run periodically during an active calorimetry job.
 Contains logic about the set point, heating to start temp as quickly as possible, and uploading measurements.</p>
 <p>This function is the overarching loop responsible for two main parts of the DSC job.</p>
 <ol class="arabic simple">
 <li>Firstly measure both temperatures simultaneously.</li>
-<li>Instantiate a new <a class="reference internal" href="classes.html#classes.Run" title="classes.Run"><code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code></a> object containing relevant basic info about this DSC run.
+<li>Instantiate a new <code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code> object containing relevant basic info about this DSC run.
 The info comes from the web API JSON response in the form of a dict.
-This dict then constructs the <a class="reference internal" href="classes.html#classes.Run" title="classes.Run"><code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code></a> object using the special classmethod
-<a class="reference internal" href="classes.html#classes.Run.from_web_resp" title="classes.Run.from_web_resp"><code class="xref py py-meth docutils literal"><span class="pre">classes.Run.from_web_resp()</span></code></a>.</li>
+This dict then constructs the <code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code> object using the special classmethod
+<code class="xref py py-meth docutils literal"><span class="pre">classes.Run.from_web_resp()</span></code>.</li>
 <li>Switch on LED lights to indicate starting up. Asynchronously, yield control to the
-<a class="reference internal" href="#main.get_ready" title="main.get_ready"><code class="xref py py-func docutils literal"><span class="pre">main.get_ready()</span></code></a> co-routine loop. Coincidentally, when a new <code class="xref py py-class docutils literal"><span class="pre">Run</span></code> object is
+<code class="xref py py-func docutils literal"><span class="pre">main.get_ready()</span></code> co-routine loop. Coincidentally, when a new <code class="xref py py-class docutils literal"><span class="pre">Run</span></code> object is
 instantiated, it will automatically set the heaters</li>
 <li>When control is given back to this function,
 it suggests that temperature has stabilised at the start temperature.
 Switch on LED lights to indicate heating up, while yielding control to the
-<a class="reference internal" href="#main.run_calorimetry" title="main.run_calorimetry"><code class="xref py py-func docutils literal"><span class="pre">main.run_calorimetry()</span></code></a> co-routine.</li>
+<code class="xref py py-func docutils literal"><span class="pre">main.run_calorimetry()</span></code> co-routine.</li>
 <li>When control is again yielded to this function,
 the DSC job in question has finished.
 Clean up the GPIO boards and go back to the
-<a class="reference internal" href="#main.idle" title="main.idle"><code class="xref py py-func docutils literal"><span class="pre">main.idle()</span></code></a> loop.</li>
+<code class="xref py py-func docutils literal"><span class="pre">main.idle()</span></code> loop.</li>
 </ol>
-<p>This function will also go back to the <a class="reference internal" href="#main.idle" title="main.idle"><code class="xref py py-func docutils literal"><span class="pre">main.idle()</span></code></a> loop and cleanup if at any point
-a <a class="reference internal" href="utils.html#utils.StopHeatingError" title="utils.StopHeatingError"><code class="xref py py-exc docutils literal"><span class="pre">utils.StopHeatingError</span></code></a> is raised.</p>
+<p>This function will also go back to the <code class="xref py py-func docutils literal"><span class="pre">main.idle()</span></code> loop and cleanup if at any point
+a <code class="xref py py-exc docutils literal"><span class="pre">utils.StopHeatingError</span></code> is raised.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -208,23 +208,23 @@ a <a class="reference internal" href="utils.html#utils.StopHeatingError" title="
 </dd></dl>
 
 <dl class="function">
-<dt id="main.get_ready">
-<code class="descclassname">main.</code><code class="descname">get_ready</code><span class="sig-paren">(</span><em>_loop</em>, <em>run</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#get_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.get_ready" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.main.get_ready">
+<code class="descclassname">robotchem.main.</code><code class="descname">get_ready</code><span class="sig-paren">(</span><em>_loop</em>, <em>run</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/main.html#get_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.main.get_ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>An aync function that gets the temperatures to starting temp as quickly as possible.</p>
-<p>It first instantiate and initialise the heater PWM objects related to the <a class="reference internal" href="classes.html#classes.Run" title="classes.Run"><code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code></a> object,
+<p>It first instantiate and initialise the heater PWM objects related to the <code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code> object,
 so that their duty cycles can be changed inside the loop.</p>
 <p>The loop itself flows like this:</p>
 <ol class="arabic simple">
 <li>Make all temperature, current measurements simultaneously. After making measurements,
-the <a class="reference internal" href="classes.html#classes.Run.make_measurement" title="classes.Run.make_measurement"><code class="xref py py-meth docutils literal"><span class="pre">classes.Run.make_measurement()</span></code></a> method automatically updates the PID controllers
+the <code class="xref py py-meth docutils literal"><span class="pre">classes.Run.make_measurement()</span></code> method automatically updates the PID controllers
 with the new measurements and changes the heater PWM values. Its setpoint, though,
 is never changed from the starting temperature, ensuring it is reached as quickly as possible.</li>
-<li>Put measurement data into the <a class="reference internal" href="utils.html#utils.NetworkQueue" title="utils.NetworkQueue"><code class="xref py py-class docutils literal"><span class="pre">utils.NetworkQueue</span></code></a> queue to be uploaded to the web.
-After queueing, the <a class="reference internal" href="classes.html#classes.Run.queue_upload" title="classes.Run.queue_upload"><code class="xref py py-meth docutils literal"><span class="pre">classes.Run.queue_upload()</span></code></a> method should check if the user has
+<li>Put measurement data into the <code class="xref py py-class docutils literal"><span class="pre">utils.NetworkQueue</span></code> queue to be uploaded to the web.
+After queueing, the <code class="xref py py-meth docutils literal"><span class="pre">classes.Run.queue_upload()</span></code> method should check if the user has
 inserted the sample and prepared for the formal heat ramp.</li>
 <li>Check if the temperature has stabilised around the start temperature.
 If so, and if user has inserted the sample, go back to the
-<a class="reference internal" href="#main.active" title="main.active"><code class="xref py py-func docutils literal"><span class="pre">main.active()</span></code></a> function, which will invoke next the formal linear heat ramp.</li>
+<code class="xref py py-func docutils literal"><span class="pre">main.active()</span></code> function, which will invoke next the formal linear heat ramp.</li>
 </ol>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -241,21 +241,21 @@ If so, and if user has inserted the sample, go back to the
 </dd></dl>
 
 <dl class="function">
-<dt id="main.idle">
-<code class="descclassname">main.</code><code class="descname">idle</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.idle" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.main.idle">
+<code class="descclassname">robotchem.main.</code><code class="descname">idle</code><span class="sig-paren">(</span><em>_loop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/main.html#idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.main.idle" title="Permalink to this definition">¶</a></dt>
 <dd><p>An asynchronous coroutine run periodically during idle periods.
 Checks the web API if it should start new jobs, and updates the web API about measured temperatures.</p>
 <p>The periodicity of refreshing and updating web API is determined by
-the <a class="reference internal" href="settings.html#settings.WEB_API_IDLE_INTERVAL" title="settings.WEB_API_IDLE_INTERVAL"><code class="xref py py-const docutils literal"><span class="pre">settings.WEB_API_IDLE_INTERVAL</span></code></a> value,
+the <code class="xref py py-const docutils literal"><span class="pre">settings.WEB_API_IDLE_INTERVAL</span></code> value,
 or the corresponding value received from the web API.</p>
 <p>This loop does the following:</p>
 <ol class="arabic simple">
 <li>Read reference and sample temperatures (simultanouesly)</li>
 <li>Upload temperature values to the web API address specified by the
-<a class="reference internal" href="settings.html#settings.WEB_API_BASE_ADDRESS" title="settings.WEB_API_BASE_ADDRESS"><code class="xref py py-const docutils literal"><span class="pre">settings.WEB_API_BASE_ADDRESS</span></code></a> value.</li>
+<code class="xref py py-const docutils literal"><span class="pre">settings.WEB_API_BASE_ADDRESS</span></code> value.</li>
 <li>If the web response includes some basic information about a user-specified new calorimetry job,
-enter the <a class="reference internal" href="#main.active" title="main.active"><code class="xref py py-func docutils literal"><span class="pre">main.active()</span></code></a> loop.</li>
-<li>After the <a class="reference internal" href="#main.active" title="main.active"><code class="xref py py-func docutils literal"><span class="pre">main.active()</span></code></a> loop has finished running, this function will have control again,
+enter the <code class="xref py py-func docutils literal"><span class="pre">main.active()</span></code> loop.</li>
+<li>After the <code class="xref py py-func docutils literal"><span class="pre">main.active()</span></code> loop has finished running, this function will have control again,
 which suggests that the active job has ended.</li>
 <li>Renew running this loop after a certain time interval.</li>
 </ol>
@@ -270,19 +270,19 @@ which suggests that the active job has ended.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="main.run_calorimetry">
-<code class="descclassname">main.</code><code class="descname">run_calorimetry</code><span class="sig-paren">(</span><em>_loop</em>, <em>run</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#run_calorimetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#main.run_calorimetry" title="Permalink to this definition">¶</a></dt>
+<dt id="robotchem.main.run_calorimetry">
+<code class="descclassname">robotchem.main.</code><code class="descname">run_calorimetry</code><span class="sig-paren">(</span><em>_loop</em>, <em>run</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/robotchem/main.html#run_calorimetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#robotchem.main.run_calorimetry" title="Permalink to this definition">¶</a></dt>
 <dd><p>An async function that starts the heat ramp until the end temp is reached at the rate of choice.
 Periodically and transmit currents and temperatures to web API.</p>
-<p>This loop runs similarly to the <a class="reference internal" href="#main.get_ready" title="main.get_ready"><code class="xref py py-func docutils literal"><span class="pre">get_ready()</span></code></a> co-routine.
+<p>This loop runs similarly to the <a class="reference internal" href="#robotchem.main.get_ready" title="robotchem.main.get_ready"><code class="xref py py-func docutils literal"><span class="pre">get_ready()</span></code></a> co-routine.
 But in addition to PWM calculations and network queues,
 this loop also:</p>
 <ol class="arabic simple">
-<li>Each cycle, check if temperature has &#8216;stabilised&#8217; around the setpoint of the <a class="reference internal" href="classes.html#classes.Run" title="classes.Run"><code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code></a> object.
+<li>Each cycle, check if temperature has &#8216;stabilised&#8217; around the setpoint of the <code class="xref py py-class docutils literal"><span class="pre">classes.Run</span></code> object.
 Note the threshold for determining temperature stabilisation is less stringent for this purpose,
 because being too strict may lead to a staircase temperature profile from experience.</li>
 <li>If stabilised, increase the setpoint temperature by a ramp increment.
-This increment value is a fraction of the <a class="reference internal" href="settings.html#settings.MAX_RAMP_RATE" title="settings.MAX_RAMP_RATE"><code class="xref py py-const docutils literal"><span class="pre">settings.MAX_RAMP_RATE</span></code></a> value, or the corresponding
+This increment value is a fraction of the <code class="xref py py-const docutils literal"><span class="pre">settings.MAX_RAMP_RATE</span></code> value, or the corresponding
 setting on the web server.
 The exact percentage of the maximum is as specified for this particular DSC job on the website.</li>
 <li>If temperatures have stabilised around the end temperature for a specified duration,
@@ -298,7 +298,7 @@ stop heating and upload the remainder of all measurement data.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="utils.html#utils.StopHeatingError" title="utils.StopHeatingError"><strong>StopHeatingError</strong></a> &#8211; raised when the end temperature has been reached for a certain amount of time.</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="utils.html#robotchem.utils.StopHeatingError" title="robotchem.utils.StopHeatingError"><strong>StopHeatingError</strong></a> &#8211; raised when the end temperature has been reached for a certain amount of time.</p>
 </td>
 </tr>
 </tbody>

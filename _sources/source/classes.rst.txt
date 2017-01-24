@@ -3,7 +3,7 @@
 Classes
 =======
 
-.. automodule:: classes
+.. automodule:: robotchem.classes
     :members:
     :private-members:
     :undoc-members:

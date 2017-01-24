@@ -163,13 +163,12 @@
 <span class="sd">    hardware components testing</span>
 
 <span class="sd">Jin Cheng 12/12/16:</span>
-<span class="sd">    function cleanup and asynchronisation, introduced wrappers</span>
-<span class="sd">    the asynchronous PWM control queue</span>
+<span class="sd">    function cleanup and asynchronisation,</span>
+<span class="sd">    the asynchronous PWM control queue,</span>
 <span class="sd">    documentation</span>
 
 <span class="sd">Jin Cheng 17/01/17:</span>
-<span class="sd">    allow customisation of PID params from the web interface,</span>
-<span class="sd">    the flashing LED function</span>
+<span class="sd">    allow customisation of PID params from the web interface</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">asyncio</span>
@@ -177,7 +176,7 @@
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">robotchem</span> <span class="k">import</span> <span class="n">settings</span>
+<span class="kn">import</span> <span class="nn">settings</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">FAKE_HARDWARE</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">Adafruit_ADS1x15</span>
@@ -233,12 +232,13 @@
         <span class="sd">&quot;&quot;&quot;Calculates PID output for a given feedback from sensor.</span>
 
 <span class="sd">        .. math::</span>
-<span class="sd">            u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d {de}/{dt}</span>
+<span class="sd">            u(t) = K_p e(t) + K_i \int_{0}^{t} e(t) dt + K_d \\frac{de}{dt}</span>
+
 
 <span class="sd">        :type feedback_value: float | int</span>
 <span class="sd">        :param feedback_value: temperature reading</span>
 <span class="sd">        :rtype: float</span>
-<span class="sd">        :return: PID output for current time.</span>
+<span class="sd">        :return: PID output after accounting for feedback value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_point</span> <span class="o">-</span> <span class="n">feedback_value</span>
         <span class="n">delta_error</span> <span class="o">=</span> <span class="n">error</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_error</span>
@@ -341,7 +341,7 @@
     <span class="k">return</span> <span class="k">await</span> <span class="n">read_temp</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">TEMP_SENSOR_ID_SAMPLE</span><span class="p">)</span></div>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_read_adc</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">adc_object</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">185000.0</span><span class="p">)):</span>
+<div class="viewcode-block" id="_read_adc"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware._read_adc">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">_read_adc</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">adc_object</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">185000.0</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reads measurement at a ADC channel with a specified GAIN.</span>
 <span class="sd">    Converts the measurement mV into current in amps with a scaling factor.</span>
@@ -351,7 +351,7 @@
 <span class="sd">    :param scale: scale factor of the final output, by default converts mV into current in ampere.</span>
 <span class="sd">    :return: ADC measurement.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">adc_object</span><span class="o">.</span><span class="n">read_adc</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">gain</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+    <span class="k">return</span> <span class="n">adc_object</span><span class="o">.</span><span class="n">read_adc</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">gain</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span></div>
 
 
 <div class="viewcode-block" id="read_current_ref"><a class="viewcode-back" href="../../source/hardware.html#robotchem.hardware.read_current_ref">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">read_current_ref</span><span class="p">(</span><span class="n">adc_object</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

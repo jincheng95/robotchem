@@ -162,16 +162,16 @@
 
 <span class="kn">import</span> <span class="nn">aiohttp</span>
 
-<span class="kn">from</span> <span class="nn">robotchem</span> <span class="k">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">robotchem.hardware</span> <span class="k">import</span> <span class="n">measure_all</span><span class="p">,</span> <span class="n">PID</span><span class="p">,</span> <span class="n">initialize</span>
-<span class="kn">from</span> <span class="nn">robotchem.utils</span> <span class="k">import</span> <span class="n">NetworkQueue</span><span class="p">,</span> <span class="n">clamp</span><span class="p">,</span> <span class="n">roughly_equal</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">StopHeatingError</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">from</span> <span class="nn">hardware</span> <span class="k">import</span> <span class="n">measure_all</span><span class="p">,</span> <span class="n">PID</span><span class="p">,</span> <span class="n">initialize</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="k">import</span> <span class="n">NetworkQueue</span><span class="p">,</span> <span class="n">clamp</span><span class="p">,</span> <span class="n">roughly_equal</span><span class="p">,</span> <span class="n">fetch</span><span class="p">,</span> <span class="n">StopHeatingError</span>
 
 
 <div class="viewcode-block" id="Run"><a class="viewcode-back" href="../../source/classes.html#robotchem.classes.Run">[docs]</a><span class="k">class</span> <span class="nc">Run</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An object loosely based on the backend database model `Run` with additional hardware properties</span>
 <span class="sd">    such as the PID object, the Analog-to-digital object, and the Network upload queue.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">,</span> <span class="n">start_temp</span><span class="p">,</span> <span class="n">target_temp</span><span class="p">,</span> <span class="n">ramp_rate</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_id</span><span class="p">,</span> <span class="n">start_temp</span><span class="p">,</span> <span class="n">target_temp</span><span class="p">,</span> <span class="n">ramp_rate</span><span class="p">,</span> <span class="n">max_ramp_rate</span><span class="p">,</span>
                  <span class="n">PID_ref</span><span class="p">,</span> <span class="n">PID_sample</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">min_upload_length</span><span class="p">,</span> <span class="n">stabilization_duration</span><span class="p">,</span>
                  <span class="n">temp_tolerance</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -185,6 +185,9 @@
 <span class="sd">        :param target_temp: Target temperature specified by the user on the web interface.</span>
 <span class="sd">        :type ramp_rate: float</span>
 <span class="sd">        :param ramp_rate: Ramp rate (0 - 1), as fraction of max rate, specified by the user on the web interface.</span>
+<span class="sd">        :type max_ramp_rate: float</span>
+<span class="sd">        :param max_ramp_rate: Maximum ramp rate allowed in degrees Celsius per minute,</span>
+<span class="sd">            specified by the user on the Calibrate web page.</span>
 <span class="sd">        :type PID_ref: hardware.PID</span>
 <span class="sd">        :param PID_ref: PID object for the reference heater</span>
 <span class="sd">        :type PID_sample: hardware.PID</span>
@@ -197,12 +200,13 @@
 <span class="sd">        :param stabilization_duration: Minimum duration, in seconds, that temperature must stabilise before moving on.</span>
 <span class="sd">        :type temp_tolerance: float</span>
 <span class="sd">        :param temp_tolerance: Maximum difference between two temperature readings, in degrees Celsius,</span>
-<span class="sd">        for them to be considered equivalent.</span>
+<span class="sd">            for them to be considered equivalent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">run_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_temp</span> <span class="o">=</span> <span class="n">start_temp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_temp</span> <span class="o">=</span> <span class="n">target_temp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rate</span> <span class="o">=</span> <span class="n">ramp_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_ramp_rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_ramp_rate</span> <span class="o">+</span> <span class="mf">0.434</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.06411489</span>  <span class="c1"># degrees per minute -&gt; degrees per cycle</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">PID_ref</span> <span class="o">=</span> <span class="n">PID_ref</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">PID_sample</span> <span class="o">=</span> <span class="n">PID_sample</span>
@@ -219,7 +223,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_finished</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">network_queue</span> <span class="o">=</span> <span class="n">NetworkQueue</span><span class="p">(</span><span class="n">threshold_time</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span> <span class="n">threshold_qsize</span><span class="o">=</span><span class="n">min_upload_length</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_points</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -228,14 +232,14 @@
 <span class="sd">        Make a new measurement asynchronously and store it to the series of measurements related to this run.</span>
 <span class="sd">        All measurements are put into the network queue responsible for this run&#39;s data.</span>
 
-<span class="sd">        Temperature measurements made are automatically fed into the :class:`robotchem.hardware.PID`</span>
+<span class="sd">        Temperature measurements made are automatically fed into the :class:`hardware.PID`</span>
 <span class="sd">        objects related to this run.</span>
 <span class="sd">        The main event loop is used to change the duty cycle on the respective heater PWM objects,</span>
 <span class="sd">        :class:`RPi.GPIO.PWM`.</span>
 
 <span class="sd">        :type _loop: asyncio.BaseEventLoop</span>
 <span class="sd">        :param _loop: The main event loop.</span>
-<span class="sd">        :rtype: robotchem.classes.DataPoint</span>
+<span class="sd">        :rtype: classes.DataPoint</span>
 <span class="sd">        :return: The DataPoint object, containing all measurements made and measurement time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -245,7 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">now</span>
 
         <span class="c1"># make new data point by new measurements</span>
-        <span class="n">measurement</span> <span class="o">=</span> <span class="k">await</span> <span class="n">DataPoint</span><span class="o">.</span><span class="n">async_measure_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_loop</span><span class="p">,</span> <span class="n">delta_time</span><span class="p">)</span>
+        <span class="n">measurement</span> <span class="o">=</span> <span class="k">await</span> <span class="n">DataPoint</span><span class="o">.</span><span class="n">async_measure_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measurement</span><span class="p">)</span>
 
         <span class="c1"># send its json representation into the upload queue</span>
@@ -386,13 +390,18 @@
     <span class="k">def</span> <span class="nf">real_ramp_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the real temperature increment per main loop cycle, in degrees Celsius.</span>
-<span class="sd">        The `ramp_rate` field is selected by the user on the web interface and</span>
-<span class="sd">        the `self.ramp_rate` property stores the percentage of the maximum available ramp rate.</span>
+<span class="sd">        The ``ramp_rate`` field is selected by the user on the web interface and</span>
+<span class="sd">        the ``self.ramp_rate`` property stores the ramp rate in degrees Celsius per *minute*.</span>
+
+<span class="sd">        The output value is clamped between a maximum value (if too high, it can be dangerous)</span>
+<span class="sd">        and a minimum (from experience, a too small increment can lead to a stagnating temperature).</span>
 
 <span class="sd">        :rtype: float</span>
 <span class="sd">        :return: Temperature increase per cycle, in degrees Celsius.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp_rate</span> <span class="o">*</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_RAMP_RATE</span>
+        <span class="c1"># the following relationship was determined by testing + calibration by Lily and Rebeca</span>
+        <span class="n">celsius_per_cycle</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ramp_rate</span> <span class="o">+</span> <span class="mf">0.434</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.06411489</span>
+        <span class="k">return</span> <span class="n">clamp</span><span class="p">(</span><span class="n">celsius_per_cycle</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_ramp_rate</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
 <div class="viewcode-block" id="Run.from_web_resp"><a class="viewcode-back" href="../../source/classes.html#robotchem.classes.Run.from_web_resp">[docs]</a>    <span class="k">def</span> <span class="nf">from_web_resp</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">json_data</span><span class="p">,</span> <span class="n">temp_ref</span><span class="p">,</span> <span class="n">temp_sample</span><span class="p">):</span>
@@ -400,12 +409,12 @@
 <span class="sd">        Construct a Run object from a dictionary of returned values from the web status API page.</span>
 <span class="sd">        PID objects are instantiated with initial temperature values supplied.</span>
 <span class="sd">        The customisable parameters from the web API are also stored,</span>
-<span class="sd">        and if none is given, defaults from :mod:`robotchem.settings` will be used.</span>
+<span class="sd">        and if none is given, defaults from :mod:`settings` will be used.</span>
 
 <span class="sd">        :param json_data: Returned JSON response.</span>
 <span class="sd">        :param temp_ref: Measured temperature at ref.</span>
 <span class="sd">        :param temp_sample: Measured temperature at sample</span>
-<span class="sd">        :return: A :class:`robotchem.classes.Run` object.</span>
+<span class="sd">        :return: A :class:`classes.Run` object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">run_data</span> <span class="o">=</span> <span class="n">json_data</span><span class="p">[</span><span class="s1">&#39;has_active_runs&#39;</span><span class="p">]</span>
 
@@ -418,7 +427,8 @@
         <span class="n">PID_ref</span> <span class="o">=</span> <span class="n">PID</span><span class="p">(</span><span class="n">temp_ref</span><span class="p">,</span> <span class="o">**</span><span class="n">PID_init_kwargs</span><span class="p">)</span>
         <span class="n">PID_sample</span> <span class="o">=</span> <span class="n">PID</span><span class="p">(</span><span class="n">temp_sample</span><span class="p">,</span> <span class="o">**</span><span class="n">PID_init_kwargs</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;start_temp&#39;</span><span class="p">],</span> <span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;target_temp&#39;</span><span class="p">],</span> <span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;ramp_rate&#39;</span><span class="p">],</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;start_temp&#39;</span><span class="p">],</span> <span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;target_temp&#39;</span><span class="p">],</span>
+                   <span class="n">run_data</span><span class="p">[</span><span class="s1">&#39;ramp_rate&#39;</span><span class="p">],</span> <span class="n">run_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_ramp_rate&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_RAMP_RATE</span><span class="p">,</span>
                    <span class="n">PID_ref</span><span class="p">,</span> <span class="n">PID_sample</span><span class="p">,</span>
                    <span class="n">json_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;active_loop_interval&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAIN_LOOP_INTERVAL</span><span class="p">,</span>
                    <span class="n">json_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;web_api_min_upload_length&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">settings</span><span class="o">.</span><span class="n">WEB_API_MIN_UPLOAD_LENGTH</span><span class="p">,</span>
@@ -431,12 +441,12 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">measured_at</span><span class="p">,</span> <span class="n">temp_ref</span><span class="p">,</span> <span class="n">temp_sample</span><span class="p">,</span> <span class="n">heat_ref</span><span class="p">,</span> <span class="n">heat_sample</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">run</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">measured_at</span> <span class="o">=</span> <span class="n">measured_at</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measured_at</span> <span class="o">=</span> <span class="n">measured_at</span>  <span class="c1"># datetime</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">temp_ref</span> <span class="o">=</span> <span class="n">temp_ref</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">temp_sample</span> <span class="o">=</span> <span class="n">temp_sample</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">heat_ref</span> <span class="o">=</span> <span class="n">heat_ref</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">heat_sample</span> <span class="o">=</span> <span class="n">heat_sample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_ref</span> <span class="o">=</span> <span class="n">temp_ref</span>  <span class="c1"># deg C</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_sample</span> <span class="o">=</span> <span class="n">temp_sample</span>  <span class="c1"># deg C</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_ref</span> <span class="o">=</span> <span class="n">heat_ref</span>  <span class="c1"># heat flow / mW</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heat_sample</span> <span class="o">=</span> <span class="n">heat_sample</span>  <span class="c1"># heat flow / mW</span>
 
 <div class="viewcode-block" id="DataPoint.jsonify"><a class="viewcode-back" href="../../source/classes.html#robotchem.classes.DataPoint.jsonify">[docs]</a>    <span class="k">def</span> <span class="nf">jsonify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Pickle properties of this object into a JSON-ifiable dictionary. For communications with the web interface.</span>
@@ -455,24 +465,24 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
     <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="DataPoint.async_measure_raw"><a class="viewcode-back" href="../../source/classes.html#robotchem.classes.DataPoint.async_measure_raw">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_measure_raw</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="n">delta_time</span><span class="p">):</span>
+<div class="viewcode-block" id="DataPoint.async_measure_raw"><a class="viewcode-back" href="../../source/classes.html#robotchem.classes.DataPoint.async_measure_raw">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_measure_raw</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">loop</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Construct a new DataPoint object based a new, raw measurement.</span>
 
-<span class="sd">        :type run: `robotchem.classes.Run`</span>
+<span class="sd">        :type run: `classes.Run`</span>
 <span class="sd">        :param run: parent `Run` object.</span>
 <span class="sd">        :type loop: asyncio.BaseEventLoop</span>
 <span class="sd">        :param loop: main event loop.</span>
 <span class="sd">        :type delta_time: float</span>
 <span class="sd">        :param delta_time: time, in seconds, passed since last measurement (i.e. construction \</span>
 <span class="sd">        of previous instance of this class related to the `Run`)</span>
-<span class="sd">        :return: `robotchem.classes.DataPoint` object.</span>
+<span class="sd">        :return: `classes.DataPoint` object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">temp_ref</span><span class="p">,</span> <span class="n">temp_sample</span><span class="p">,</span> <span class="n">current_ref</span><span class="p">,</span> <span class="n">current_sample</span> <span class="o">=</span> <span class="k">await</span> <span class="n">measure_all</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">adc</span><span class="p">)</span>
 
         <span class="n">voltage_ref</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_VOLTAGE</span> <span class="o">*</span> <span class="n">run</span><span class="o">.</span><span class="n">duty_cycle_ref</span> <span class="o">/</span> <span class="mi">100</span>
         <span class="n">voltage_sample</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MAX_VOLTAGE</span> <span class="o">*</span> <span class="n">run</span><span class="o">.</span><span class="n">duty_cycle_sample</span> <span class="o">/</span> <span class="mi">100</span>
-        <span class="n">heat_ref</span> <span class="o">=</span> <span class="n">voltage_ref</span> <span class="o">*</span> <span class="n">current_ref</span> <span class="o">*</span> <span class="n">delta_time</span>
-        <span class="n">heat_sample</span> <span class="o">=</span> <span class="n">voltage_sample</span> <span class="o">*</span> <span class="n">current_sample</span> <span class="o">*</span> <span class="n">delta_time</span>
+        <span class="n">heat_ref</span> <span class="o">=</span> <span class="n">voltage_ref</span> <span class="o">*</span> <span class="n">current_ref</span> <span class="o">*</span> <span class="mi">1000</span>   <span class="c1"># P = VI then W -&gt; mW</span>
+        <span class="n">heat_sample</span> <span class="o">=</span> <span class="n">voltage_sample</span> <span class="o">*</span> <span class="n">current_sample</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># P = VI then W -&gt; mW</span>
 
         <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                    <span class="n">temp_ref</span><span class="p">,</span> <span class="n">temp_sample</span><span class="p">,</span> <span class="n">heat_ref</span><span class="p">,</span> <span class="n">heat_sample</span><span class="p">)</span></div></div>
