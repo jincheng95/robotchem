@@ -9,7 +9,7 @@ export const simple_humanized_axes = {
 
   heat_ref: 'Heat Flow (reference)',
   heat_sample: 'Heat Flow (sample)',
-  heat_diff: 'Heat Difference'
+  heat_diff: 'Heat Flow Difference'
 };
 
 
@@ -22,7 +22,7 @@ const humanized_axes = {
 
   heat_ref: 'Reference Cell Heat Flow (mW)',
   heat_sample: 'Sample Cell Heat Flow (mW)',
-  heat_diff: 'Heat Differential (mW)'
+  heat_diff: 'Heat Flow Difference (mW)'
 };
 
 export default humanized_axes;

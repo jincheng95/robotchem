@@ -58,7 +58,7 @@ class Run(object):
         self.start_temp = start_temp
         self.target_temp = target_temp
         self.ramp_rate = ramp_rate
-        self.max_ramp_rate = (max_ramp_rate + 0.434) * 0.06411489  # degrees per minute -> degrees per cycle
+        self.max_ramp_rate = (max_ramp_rate + 0.434) * 0.02  # degrees per minute -> degrees per cycle
 
         self.PID_ref = PID_ref
         self.PID_sample = PID_sample
@@ -252,7 +252,8 @@ class Run(object):
         :return: Temperature increase per cycle, in degrees Celsius.
         """
         # the following relationship was determined by testing + calibration by Lily and Rebeca
-        celsius_per_cycle = (self.ramp_rate + 0.434) * 0.06411489
+        # celsius_per_cycle = (self.ramp_rate + 0.434) * 0.06411489
+        celsius_per_cycle = (self.ramp_rate + 0.434) * 0.02
         return clamp(celsius_per_cycle, 0, self.max_ramp_rate)
 
     @classmethod
