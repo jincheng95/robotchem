@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import moment from "moment";
 import includes from "lodash/includes";
 import concat from "lodash/concat";
+import filter from 'lodash/filter';
 import Divider from "material-ui/Divider";
 import LinePlot from "./lineplot";
 import PlotToolbar from "./plottoolbar";
@@ -36,7 +37,7 @@ export default class PlotContainer extends Component {
     const {run, data_points} = this.props;
     const {start_temp, target_temp, is_finished} = run;
 
-    var refs = [];
+    let refs = [];
     if( includes(yKeys, 'temp_ref') || includes(yKeys, 'temp_sample') ){
       refs = concat(refs, [
         (<ReferenceLine key="start-temp" alwaysShow y={start_temp} label="Start" stroke="red" strokeDasharray="5 5"/>),
@@ -68,7 +69,7 @@ export default class PlotContainer extends Component {
   }
   handleNewPlotChange(key, value) {
     const { new_plot } = this.state;
-    var _new_plot = {...new_plot};
+    let _new_plot = {...new_plot};
     _new_plot[key] = value;
     this.setState({new_plot: _new_plot});
   }
@@ -91,7 +92,8 @@ export default class PlotContainer extends Component {
   }
 
   renderIndividualPlot(type, index, extraProps) {
-    const {data_points, is_active} = this.props;
+    let { data_points, is_active } = this.props;
+
     const props = {
       data: data_points,
       key: index,

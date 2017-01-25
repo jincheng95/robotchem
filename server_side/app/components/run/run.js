@@ -102,7 +102,9 @@ export default class Run extends Component {
       const measured_at = moment(value.measured_at);
       new_value.time_since = Math.abs(measured_at.diff(oldest_point.measured_at, 'seconds'));
       new_value.time_of_day = measured_at.unix();
-      new_value.heat_diff = value.heat_sample - value.heat_ref;
+      if (new_value.temp_sample >= this.props.run.start_temp) {
+        new_value.heat_diff = value.heat_sample - value.heat_ref;
+      }
       new_value.temp_average = (value.temp_sample + value.temp_ref) / 2;
       return new_value;
     });
