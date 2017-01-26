@@ -193,7 +193,7 @@ async def read_temp_sample():
     return await read_temp(settings.TEMP_SENSOR_ID_SAMPLE)
 
 
-async def _read_adc(channel, adc_object, gain=16, scale=0.026394, shift=10.81081):
+async def _read_adc(channel, adc_object, gain=1, scale=0.026394, shift=10.81081):
     """
     Reads measurement at a ADC channel with a specified gain.
         Converts the measurement mV into current in amps with a scaling factor and an absolute shift.
