@@ -135,21 +135,11 @@ htmlhelp_basename = 'Robofluxdoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
-
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
-
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
-
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
+    'inputenc': '',
+    'utf8extra': '',
+    'preamble': r'''
+\usepackage[utf8x]{inputenc}
+''',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples

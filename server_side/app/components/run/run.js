@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
+
 import moment from 'moment';
 import axios from 'axios';
+
+import LPF from 'lpf';
+
 import isEmpty from 'lodash/isEmpty';
 import last from 'lodash/last';
 import concat from 'lodash/concat';
@@ -49,8 +53,8 @@ const StatColumn = (props) => {
 };
 
 const RunOptions = (props) => {
-  const { id, name, creation_time, start_time, is_running, is_finished, finish_time,
-        start_temp, target_temp, ramp_rate, calorimeter, email } = props.run;
+  const { creation_time, start_time, is_running, is_finished, finish_time,
+        start_temp, target_temp, ramp_rate, email } = props.run;
   const duration = is_running ? `Started ${moment(start_time).fromNow()}`
     : is_finished ? `Stopped ${moment(finish_time).fromNow()}` : 'Waiting...';
   return (
@@ -103,7 +107,7 @@ export default class Run extends Component {
       new_value.time_since = Math.abs(measured_at.diff(oldest_point.measured_at, 'seconds'));
       new_value.time_of_day = measured_at.unix();
       if (new_value.temp_sample >= this.props.run.start_temp) {
-        new_value.heat_diff = value.heat_sample - value.heat_ref;
+        new_value.heat_diff = LPF.next(value.heat_sample - value.heat_ref);
       }
       new_value.temp_average = (value.temp_sample + value.temp_ref) / 2;
       return new_value;
@@ -161,7 +165,7 @@ export default class Run extends Component {
   }
   componentWillUnmount() {
     const {autorefreshInt} = this.state;
-    if(!!autorefreshInt | autorefreshInt == 0) {
+    if(!!autorefreshInt || autorefreshInt == 0) {
       this.cancelAutorefresh();
     }
   }

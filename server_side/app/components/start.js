@@ -158,7 +158,7 @@ export default class Start extends Component {
                   <h4>Temperature will increase at approx. {Math.round(ramp_rate * 10) / 10} °C per minute</h4>
                   <p className="text-muted">...after reaching a start temperature of {start_temp} °C.</p>
                   <div style={{marginRight: '1em'}}>
-                    <Slider value={ramp_rate / max_ramp_rate} min={1.2 / max_ramp_rate} onChange={this.changeRampRate}/>
+                    <Slider value={ramp_rate / max_ramp_rate} min={0.5 / max_ramp_rate} onChange={this.changeRampRate}/>
                   </div>
                   {this.renderStepActions(1)}
                 </StepContent>
